@@ -103,37 +103,28 @@ function documentTop(el) {
 }
 
 /**
- * A visible trace of what the scroll actually did, for diagnosing a device I
- * cannot reach. Off unless ?scrolldebug=1 is on the URL, so it never shows to a
- * registrant.
+ * Put an element at the top of the viewport, now, without animating.
+ *
+ * Used for moving between steps of the registration form, where landing
+ * reliably matters far more than gliding. Every animated route to this — Lenis,
+ * CSS smooth scrolling — depends on a frame loop that may be throttled,
+ * suspended, or simply not driving the page, and each failure leaves the reader
+ * stranded at the bottom of the step they just finished.
+ *
+ * It repeats because the step being closed shortens the page, and the clamp
+ * that follows would otherwise undo the jump. There is deliberately no
+ * rect-based correction afterwards: one was tried and it was the bug. It
+ * measured the form after the jump, and a rect read mid-reflow reported a drift
+ * that did not exist, so it scrolled back down and undid a landing that had
+ * been correct. offsetTop is scroll-independent, so repeating the same call
+ * converges instead of chasing itself.
  */
-const scrollDebug = new URLSearchParams(window.location.search).has('scrolldebug');
-let debugPanel = null;
-
-function trace(line) {
-    if (! scrollDebug) return;
-
-    if (! debugPanel) {
-        debugPanel = document.createElement('div');
-        debugPanel.style.cssText =
-            'position:fixed;top:0;left:0;right:0;z-index:99999;background:rgba(0,0,0,.88);' +
-            'color:#5fe3d3;font:11px/1.45 ui-monospace,monospace;padding:6px 8px;' +
-            'max-height:42vh;overflow:auto;white-space:pre-wrap;';
-        document.body.appendChild(debugPanel);
-    }
-
-    debugPanel.textContent += line + '\n';
-    debugPanel.scrollTop = debugPanel.scrollHeight;
-}
-
 export function jumpTo(target, offset = -110) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
-    if (!el) return trace('jumpTo: element missing');
+    if (!el) return;
 
-    const go = (label) => {
+    const go = () => {
         const top = Math.max(0, documentTop(el) + offset);
-        const before = Math.round(window.scrollY);
-
         window.scrollTo(0, top);
 
         // Lenis keeps its own idea of where the page is; left unsynced it eases
@@ -141,30 +132,17 @@ export function jumpTo(target, offset = -110) {
         // failure here must not take the scroll down with it.
         try {
             lenis?.scrollTo(top, { immediate: true, force: true });
-        } catch (e) {
-            trace(`  lenis sync failed: ${e.message}`);
+        } catch {
+            // Lenis is not driving this page; the native scroll above stands.
         }
-
-        trace(
-            `${label} want=${Math.round(top)} was=${before} now=${Math.round(window.scrollY)} ` +
-            `elTop=${Math.round(el.getBoundingClientRect().top)} doc=${document.documentElement.scrollHeight}`
-        );
     };
 
-    // No rect-based "correction" pass. One was tried and it was the bug: it
-    // measured the element after the jump, and a rect read mid-reflow reported
-    // a 562px drift that did not exist, so it scrolled back down and undid a
-    // landing that had been correct. offsetTop is scroll-independent, so
-    // repeating the same call converges instead of chasing itself.
-    trace(`— jumpTo offset=${offset} lenis=${lenis ? 'yes' : 'no'} touch=${nativeScrolling}`);
-
-    go('t0');
-    window.setTimeout(() => go('t120'), 120);
-    window.setTimeout(() => go('t340'), 340);
+    go();
+    window.setTimeout(go, 120);
+    window.setTimeout(go, 340);
     // Leaving step 1 collapses four tall category cards at once, and the page is
-    // still shrinking when the first correction runs. One more pass, after the
-    // largest reflow on the form has finished.
-    window.setTimeout(() => go('t700'), 700);
+    // still shrinking when the earlier passes land.
+    window.setTimeout(go, 700);
 }
 
 export function stopScroll() {
