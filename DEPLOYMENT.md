@@ -188,3 +188,77 @@ working email.
 **Phone numbers are published** in the alumni directory at the association's
 instruction. Registrants can withdraw from their portal, and committee members'
 private numbers are never published.
+
+---
+
+## The live deployment (panel2.firevps.net)
+
+Deployed 4 August 2026 to **https://rcmalumni.astgd.com**, a CyberPanel site on
+`panel2.firevps.net` (51.79.149.130), a shared host running 57 sites. Everything
+below is confined to this one site.
+
+| | |
+| --- | --- |
+| App root | `/home/rcmalumni.astgd.com/public_html` |
+| Web root | `/home/rcmalumni.astgd.com/public_html/public` |
+| PHP | `/usr/local/lsws/lsphp84/bin/php` (8.4.20) |
+| Database | `rcmal8475_rcmaa` (MariaDB 10.3) |
+| Server | LiteSpeed Enterprise 6.3.5 — `.htaccess` is honoured |
+| Repo access | read-only deploy key at `/home/rcmalumni.astgd.com/.ssh/rcmaa_deploy` |
+
+### Redeploying
+
+```bash
+cd /home/rcmalumni.astgd.com/public_html
+sudo -u rcmal8475 git pull
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php /usr/bin/composer install --no-dev --optimize-autoloader
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan migrate --force
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan optimize:clear
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan config:cache
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan route:cache
+sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan view:cache
+```
+
+### Four things that will bite you
+
+**Permissions.** LiteSpeed runs as `nobody`. `public_html` must stay group
+`nogroup` and traversable — `chown -R rcmal8475:rcmal8475` on it makes every page
+404, because the web server can no longer descend into the document root. It is
+currently `711 rcmal8475:nogroup`. The app files inside are owned by the site
+user; only PHP (via suexec) needs to read them.
+
+**Node.** The site user only has Node 10; Node 22 lives in root's nvm. Build
+assets as root with
+`export PATH=/root/.nvm/versions/node/v22.23.1/bin:$PATH`, then
+`chown -R rcmal8475:rcmal8475` the result. `node_modules` is not needed at
+runtime and is removed after building.
+
+**`npm ci` fails on this host.** `package-lock.json` was generated on macOS and
+omits the Linux-only optional native packages (`@emnapi/*`), so `npm ci` refuses
+to run. Use `npm install`, then `git checkout -- package-lock.json` to leave the
+checkout clean. Worth fixing properly in the lock file.
+
+**The SSL certificate.** CyberPanel issued a Let's Encrypt **staging**
+certificate when the site was created, which no browser trusts. It was replaced
+with a real one via acme.sh:
+
+```bash
+/root/.acme.sh/acme.sh --issue -d rcmalumni.astgd.com -d www.rcmalumni.astgd.com \
+  -w /usr/local/lsws/Example/html --server letsencrypt --ecc --force
+/root/.acme.sh/acme.sh --install-cert -d rcmalumni.astgd.com --ecc \
+  --key-file /etc/letsencrypt/live/rcmalumni.astgd.com/privkey.pem \
+  --fullchain-file /etc/letsencrypt/live/rcmalumni.astgd.com/fullchain.pem \
+  --reloadcmd "/usr/local/lsws/bin/lswsctrl restart"
+```
+
+acme.sh renews it automatically. If the site is ever recreated through the
+CyberPanel UI, check the issuer again — a staging cert says
+`CN = (STAGING) ...`.
+
+### The vhost
+
+`/usr/local/lsws/conf/vhosts/rcmalumni.astgd.com/vhost.conf` was edited to point
+`DocumentRoot` at `public_html/public` and to use the php84 handler instead of
+php83. A backup of the original is at `/root/vhost.rcmalumni.bak.*`. CyberPanel
+can rewrite this file if the site is modified through the panel — check the
+document root if the site suddenly 404s.
