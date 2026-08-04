@@ -47,7 +47,7 @@
                     <h2 class="heading-display text-xl text-ink-950">Your details</h2>
                     <p class="prose-rc mt-1.5 text-sm">
                         Change anything here yourself. Your name, session and payment can only be
-                        altered by the committee — call the helpdesk on {{ config('rcmaa.contact.hotline') }}.
+                        altered by the committee — call the helpdesk on {{ config('rcmaa.contact.helpline') }}.
                     </p>
 
                     <div class="mt-7 grid gap-6 sm:grid-cols-2">
@@ -96,6 +96,7 @@
                         @foreach ([
                             'Category' => $r->category_label,
                             'Session' => $r->session,
+                            'Masters session' => $r->masters_session ?: '—',
                             'Degree' => $r->degree_label,
                             'Guests' => $r->guest_total,
                             'Amount due' => 'BDT '.number_format($r->amount_due),
@@ -168,11 +169,11 @@
 
                 <div class="card p-5">
                     <p class="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-brass-700">Helpdesk</p>
-                    <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.hotline')) }}"
+                    <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.helpline')) }}"
                        class="mt-2 block text-base font-medium text-ink-900 transition hover:text-brass-700">
-                        {{ config('rcmaa.contact.hotline') }}
+                        {{ config('rcmaa.contact.helpline') }}
                     </a>
-                    <p class="mt-1 text-xs text-ink-400">{{ config('rcmaa.contact.hotline_hours') }}</p>
+                    <p class="mt-1 text-xs text-ink-400">{{ config('rcmaa.contact.helpline_hours') }}</p>
                 </div>
             </aside>
         </div>

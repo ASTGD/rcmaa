@@ -72,6 +72,11 @@ class Registration extends Model
         $this->attributes['session'] = self::normaliseSession($value);
     }
 
+    public function setMastersSessionAttribute($value): void
+    {
+        $this->attributes['masters_session'] = self::normaliseSession($value);
+    }
+
     /** Human-quotable over the phone: RC26-4F9K2B. */
     public static function generateReference(): string
     {

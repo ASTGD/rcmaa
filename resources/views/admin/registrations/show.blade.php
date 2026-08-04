@@ -67,9 +67,11 @@
                     'Permanent address' => $registration->permanent_address ?: '—',
                 ],
                 'Academic' => [
-                    'Session' => $registration->session,
+                    'Session' => $registration->session
+                        .($registration->masters_session ? ' (Honours)' : ''),
+                    'Masters session' => $registration->masters_session ?: '—',
                     'Degree' => $registration->degree_label,
-                    'Passing year' => $registration->passing_year,
+                    'Passing year' => $registration->passing_year ?: 'Still studying',
                     'Class roll' => $registration->class_roll ?: '—',
                     'Registration no' => $registration->registration_no ?: '—',
                 ],

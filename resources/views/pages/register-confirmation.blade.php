@@ -54,8 +54,9 @@
                         'Mobile' => $registration->mobile,
                         'Email' => $registration->email,
                         'Session' => $registration->session,
+                        'Masters session' => $registration->masters_session ?: null,
                         'Degree' => $registration->degree_label,
-                        'Passing year' => $registration->passing_year,
+                        'Passing year' => $registration->passing_year ?: 'Still studying',
                         'Employment' => $registration->employment_label,
                         'T-shirt size' => $registration->tshirt_size,
                         'Cultural programme' => $registration->cultural_program ? 'Yes — performing' : 'No',
@@ -101,7 +102,7 @@
 
             <x-alert type="info" class="mt-8">
                 Spotted a mistake? Call the helpdesk on
-                <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.hotline')) }}" class="font-semibold underline underline-offset-2">{{ config('rcmaa.contact.hotline') }}</a>
+                <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.helpline')) }}" class="font-semibold underline underline-offset-2">{{ config('rcmaa.contact.helpline') }}</a>
                 with your reference number — please do not submit a second registration.
             </x-alert>
         </div>

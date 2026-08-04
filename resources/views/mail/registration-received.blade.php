@@ -19,7 +19,7 @@ Please keep your reference number safe — you will need it at the registration 
 Check your status
 </x-mail::button>
 
-Verification usually takes one to two working days. If anything looks wrong, reply to this email or call the helpdesk on {{ config('rcmaa.contact.hotline') }} ({{ config('rcmaa.contact.hotline_hours') }}).
+Verification usually takes one to two working days. If anything looks wrong, reply to this email or call the helpdesk on {{ config('rcmaa.contact.helpline') }} ({{ config('rcmaa.contact.helpline_hours') }}).
 
 We look forward to seeing you on {{ \Carbon\Carbon::parse(config('rcmaa.registration.event_date'))->format('j F Y') }}.
 

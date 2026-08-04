@@ -31,6 +31,7 @@ class GuestCountTest extends TestCase
             'present_address' => 'Boalia, Rajshahi',
             'session' => '2008-09',
             'degree' => 'both',
+            'masters_session' => '2012-13',
             'passing_year' => 2012,
             'employment_status' => 'employed',
             'profession' => 'Education',

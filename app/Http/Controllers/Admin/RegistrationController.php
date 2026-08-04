@@ -21,7 +21,7 @@ class RegistrationController extends Controller
             'registrations' => $this->filtered($request)->paginate(25)->withQueryString(),
             'filters' => $request->only('q', 'status', 'year', 'degree', 'tshirt', 'category'),
             'categories' => RegistrationPricing::categories(),
-            'years' => Registration::distinct()->orderByDesc('passing_year')->pluck('passing_year'),
+            'years' => Registration::whereNotNull('passing_year')->distinct()->orderByDesc('passing_year')->pluck('passing_year'),
             'byCategory' => Registration::query()
                 ->selectRaw('category, COUNT(*) as total, SUM(amount_paid) as paid')
                 ->groupBy('category')
@@ -81,10 +81,14 @@ class RegistrationController extends Controller
                 array_keys(config('rcmaa.options.sessions')),
                 array_filter([$registration->session])
             ))],
+            'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
             'degree' => ['required', Rule::in(array_keys($options['degrees']))],
             'class_roll' => ['nullable', 'string', 'max:64'],
             'registration_no' => ['nullable', 'string', 'max:64'],
-            'passing_year' => ['required', 'integer', 'min:'.config('rcmaa.college_founded'), 'max:'.(date('Y') + 1)],
+            'passing_year' => [
+                'required_unless:category,current_student', 'nullable', 'integer',
+                'min:'.config('rcmaa.college_founded'), 'max:'.(date('Y') + 1),
+            ],
             'employment_status' => ['required', Rule::in(array_keys($options['employment_statuses']))],
             'profession' => ['nullable', 'string', 'max:120'],
             'designation' => ['nullable', 'string', 'max:120'],
@@ -191,6 +195,7 @@ class RegistrationController extends Controller
             'Present Address' => $r->present_address,
             'Permanent Address' => $r->permanent_address,
             'Session' => $r->session,
+            'Masters Session' => $r->masters_session,
             'Degree' => $r->degree_label,
             'Class Roll' => $r->class_roll,
             'Registration No' => $r->registration_no,

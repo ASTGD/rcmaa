@@ -98,7 +98,7 @@
                         <p>Rajshahi College Campus, Rajshahi</p>
                     </div>
                     <div class="text-right text-[0.72rem] leading-relaxed text-ink-500">
-                        <p>Helpdesk {{ config('rcmaa.contact.hotline') }}</p>
+                        <p>Helpdesk {{ config('rcmaa.contact.helpline') }}</p>
                         <p>{{ config('rcmaa.contact.email') }}</p>
                     </div>
                 </div>

@@ -38,10 +38,16 @@ class RegistrationRequest extends FormRequest
 
             // Part 2 — Academic
             'session' => ['required', Rule::in(array_keys(config('rcmaa.options.sessions')))],
+            // Only somebody who did both degrees here has a second session.
+            'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
             'degree' => ['required', Rule::in(array_keys($options['degrees']))],
             'class_roll' => ['nullable', 'string', 'max:64'],
             'registration_no' => ['nullable', 'string', 'max:64'],
-            'passing_year' => ['required', 'integer', 'min:'.config('rcmaa.college_founded'), 'max:'.($currentYear + 1)],
+            // Current students have not passed yet, so there is nothing to give.
+            'passing_year' => [
+                'required_unless:category,current_student', 'nullable', 'integer',
+                'min:'.config('rcmaa.college_founded'), 'max:'.($currentYear + 1),
+            ],
 
             // Part 3 — Professional
             'employment_status' => ['required', Rule::in(array_keys($options['employment_statuses']))],

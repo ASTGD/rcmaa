@@ -45,7 +45,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
             @unless (config('rcmaa.registration.open'))
                 <x-alert type="info" title="Registration is currently closed" class="mx-auto max-w-3xl">
                     Online registration for the Grand Reunion is not open at the moment. Please contact the
-                    helpdesk on {{ config('rcmaa.contact.hotline') }} if you believe this is an error.
+                    helpdesk on {{ config('rcmaa.contact.helpline') }} if you believe this is an error.
                 </x-alert>
             @else
 
@@ -245,10 +245,11 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                             {{-- Publishing a mobile number is a decision the registrant should
                                  make knowingly, so it is stated at the point of entry. --}}
                             <x-alert type="info" title="Your mobile number will be published" class="mt-6">
-                                Verified registrations appear in the public
+                                Verified registrations appear in the
                                 <a href="{{ route('directory') }}" class="font-semibold underline underline-offset-2">alumni directory</a>,
-                                which shows your name, session, profession, photograph and mobile number so
-                                that fellow graduates can reach you. Your email, addresses and blood group are
+                                which is open only to registered members who have signed in. It shows your
+                                name, session, profession, photograph and mobile number so that fellow
+                                graduates can reach you. Your email, addresses and blood group are
                                 <strong>not</strong> published. You can ask us to remove your number at any time.
                             </x-alert>
 
@@ -258,17 +259,33 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                         <div x-show="step === 3" x-cloak>
                             @include('partials.register.heading', ['n' => 3, 'en' => 'Academic Information', 'bn' => 'শিক্ষা সংক্রান্ত তথ্য'])
 
+                            {{-- Degree comes first: it decides which sessions are asked
+                                 for below, and the labels are meaningless until it is
+                                 answered. --}}
+                            <x-choice-group name="degree" label="Degree Completed from Rajshahi College" required
+                                            :options="$opt['degrees']" cols="sm:grid-cols-2" class="mb-6"/>
+
                             <div class="grid gap-6 sm:grid-cols-2">
-                                <x-field name="session" label="Session" bn="অনার্স / মাস্টার্স সেশন" required
+                                {{-- One input that renames itself, not four sharing a name:
+                                     x-show only hides a field, it does not stop it being
+                                     submitted, and the browser keeps the last one. --}}
+                                <x-field name="session" label="Session" bn="সেশন" required
+                                         label-if="sessionLabel" bn-if="sessionLabelBn"
                                          type="select" :options="$opt['sessions']"
                                          placeholder="Select your session…"
                                          hint="The session you were admitted in, not the year you passed."/>
-                                <x-field name="passing_year" label="Passing Year" type="number" required
-                                         placeholder="{{ now()->year - 10 }}"/>
 
-                                <x-choice-group name="degree" label="Degree Completed from Rajshahi College" required
-                                                :options="$opt['degrees']" cols="sm:grid-cols-2"
-                                                class="sm:col-span-2"/>
+                                <div x-show="needsMastersSession" x-collapse class="sm:col-span-1">
+                                    <x-field name="masters_session" label="Masters Session" bn="মাস্টার্স সেশন"
+                                             required-if="needsMastersSession"
+                                             type="select" :options="$opt['sessions']"
+                                             placeholder="Select your Masters session…"/>
+                                </div>
+
+                                <x-field name="passing_year" label="Passing Year" type="number"
+                                         required-if="form.category !== 'current_student'"
+                                         placeholder="{{ now()->year - 10 }}"
+                                         hint="Leave blank if you are still studying."/>
 
                                 <x-field name="class_roll" label="Class Roll" bn="যদি মনে থাকে"
                                          placeholder="Optional"/>
@@ -344,7 +361,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                     <x-alert type="info" title="Individual registration">
                                         The <span x-text="category?.label"></span> category does not include
                                         accompanying guests. If you need to bring someone, contact the helpdesk on
-                                        {{ config('rcmaa.contact.hotline') }}.
+                                        {{ config('rcmaa.contact.helpline') }}.
                                     </x-alert>
                                 </div>
 
@@ -481,7 +498,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                 @if ($anyUnconfigured)
                                     <x-alert type="error" title="Some payment accounts are not set up yet" class="mb-4">
                                         The accounts marked below have not been configured. Please contact the
-                                        helpdesk on {{ config('rcmaa.contact.hotline') }} before sending any money.
+                                        helpdesk on {{ config('rcmaa.contact.helpline') }} before sending any money.
                                     </x-alert>
                                 @endif
 
@@ -699,17 +716,17 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                     <div class="card mt-4 p-6">
                         <p class="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-brass-700">Helpdesk</p>
                         <p lang="bn" class="mt-2 text-sm text-ink-500">যেকোনো জিজ্ঞাসা বা কারিগরি সহায়তার জন্য যোগাযোগ করুন</p>
-                        <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.hotline')) }}"
+                        <a href="tel:{{ preg_replace('/[^\d+]/', '', config('rcmaa.contact.helpline')) }}"
                            class="mt-3 flex items-center gap-2.5 text-base font-medium text-ink-900 transition hover:text-brass-700">
                             <x-icon name="phone" class="h-4 w-4 text-brass-600"/>
-                            {{ config('rcmaa.contact.hotline') }}
+                            {{ config('rcmaa.contact.helpline') }}
                         </a>
                         <a href="mailto:{{ config('rcmaa.contact.email') }}"
                            class="mt-2 flex items-center gap-2.5 text-sm text-ink-600 transition hover:text-brass-700">
                             <x-icon name="mail" class="h-4 w-4 text-brass-600"/>
                             <span class="truncate">{{ config('rcmaa.contact.email') }}</span>
                         </a>
-                        <p class="mt-3 text-xs text-ink-400">{{ config('rcmaa.contact.hotline_hours') }}</p>
+                        <p class="mt-3 text-xs text-ink-400">{{ config('rcmaa.contact.helpline_hours') }}</p>
                     </div>
                 </aside>
 

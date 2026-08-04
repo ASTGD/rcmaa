@@ -60,7 +60,7 @@
                     ['email', 'Email', 'email', true],
                 ],
                 'Academic' => [
-                    ['passing_year', 'Passing year', 'number', true],
+                    ['passing_year', 'Passing year', 'number', false],
                     ['class_roll', 'Class roll', 'text', false],
                     ['registration_no', 'Registration no', 'text', false],
                 ],

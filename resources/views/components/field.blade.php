@@ -4,6 +4,12 @@
     'bn' => null,          // Bangla sub-label, exactly as on the paper form
     'type' => 'text',
     'required' => false,
+    // An Alpine expression, for fields that are only required sometimes. When
+    // given it drives the asterisk instead of `required`.
+    'requiredIf' => null,
+    // Alpine expressions for labels that depend on another answer.
+    'labelIf' => null,
+    'bnIf' => null,
     'hint' => null,
     'placeholder' => null,
     'options' => null,     // for type="select"
@@ -38,11 +44,19 @@
 
 <div {{ $attributes->merge(['class' => 'min-w-0']) }}>
     <label for="{{ $id }}" class="field-label">
-        {{ $label }}
-        @if ($bn)
+        @if ($labelIf)
+            <span x-text="{{ $labelIf }}">{{ $label }}</span>
+        @else
+            {{ $label }}
+        @endif
+        @if ($bnIf)
+            <span lang="bn" class="field-label-bn"> &middot; <span x-text="{{ $bnIf }}">{{ $bn }}</span></span>
+        @elseif ($bn)
             <span lang="bn" class="field-label-bn"> &middot; {{ $bn }}</span>
         @endif
-        @if ($required)
+        @if ($requiredIf)
+            <span class="text-red-600" aria-hidden="true" x-show="{{ $requiredIf }}">*</span>
+        @elseif ($required)
             <span class="text-red-600" aria-hidden="true">*</span>
         @endif
     </label>

@@ -42,6 +42,7 @@ export default (config = {}) => ({
         permanent_address: '',
 
         session: '',
+        masters_session: '',
         degree: '',
         class_roll: '',
         registration_no: '',
@@ -86,6 +87,40 @@ export default (config = {}) => ({
             }
         });
         this.$watch('step', () => this.animateStep());
+        // Changing away from "both" must not leave a stale Masters session behind.
+        this.$watch('form.degree', () => {
+            if (! this.needsMastersSession) this.form.masters_session = '';
+        });
+    },
+
+    // --- Academic ---------------------------------------------------------
+
+    /**
+     * "Session" on its own is ambiguous for anyone who studied here twice. The
+     * field relabels itself once the degree is known, so it is always clear
+     * which session is being asked for.
+     */
+    get sessionLabel() {
+        return {
+            bsc: 'Honours Session',
+            msc: 'Masters Session',
+            both: 'Honours Session',
+            previous_masters: "Previous Master's Session",
+        }[this.form.degree] ?? 'Session';
+    },
+
+    get sessionLabelBn() {
+        return {
+            bsc: 'অনার্স সেশন',
+            msc: 'মাস্টার্স সেশন',
+            both: 'অনার্স সেশন',
+            previous_masters: 'পূর্ববর্তী মাস্টার্স সেশন',
+        }[this.form.degree] ?? 'সেশন';
+    },
+
+    /** Only somebody who did both degrees here has a second session to give. */
+    get needsMastersSession() {
+        return this.form.degree === 'both';
     },
 
     // --- Category ---------------------------------------------------------
@@ -240,7 +275,7 @@ export default (config = {}) => ({
         const map = {
             1: ['category'],
             2: ['full_name_en', 'full_name_bn', 'blood_group', 'mobile', 'whatsapp', 'email', 'present_address', 'permanent_address'],
-            3: ['session', 'degree', 'class_roll', 'registration_no', 'passing_year'],
+            3: ['session', 'masters_session', 'degree', 'class_roll', 'registration_no', 'passing_year'],
             4: ['employment_status', 'profession', 'designation', 'organization'],
             5: ['tshirt_size', 'cultural_program', 'guest_count', 'guests'],
             6: ['memories', 'photo'],
@@ -258,7 +293,13 @@ export default (config = {}) => ({
         return {
             1: ['category'],
             2: ['full_name_en', 'mobile', 'email', 'present_address'],
-            3: ['session', 'degree', 'passing_year'],
+            // A current student has not passed yet, so the year is theirs to skip.
+            3: [
+                'degree',
+                'session',
+                ...(this.needsMastersSession ? ['masters_session'] : []),
+                ...(this.form.category === 'current_student' ? [] : ['passing_year']),
+            ],
             4: ['employment_status'],
             5: ['tshirt_size', 'cultural_program'],
             6: [],

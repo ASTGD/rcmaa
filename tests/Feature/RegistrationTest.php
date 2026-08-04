@@ -31,6 +31,7 @@ class RegistrationTest extends TestCase
             'permanent_address' => 'Village Char, Natore',
             'session' => '2008-09',
             'degree' => 'both',
+            'masters_session' => '2012-13',
             'class_roll' => '4412',
             'registration_no' => '990122',
             'passing_year' => 2012,

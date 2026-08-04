@@ -109,7 +109,7 @@
 
                                             <p class="mt-2 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
                                                 <x-icon name="graduation" class="h-3.5 w-3.5 flex-none text-brass-600"/>
-                                                Passed {{ $person->passing_year }}
+                                                {{ $person->passing_year ? 'Passed '.$person->passing_year : 'Currently studying' }}
                                             </p>
 
                                             @if ($person->profession)
