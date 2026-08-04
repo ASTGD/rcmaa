@@ -199,8 +199,8 @@ below is confined to this one site.
 
 | | |
 | --- | --- |
-| App root | `/home/rcmalumni.astgd.com/public_html` |
-| Web root | `/home/rcmalumni.astgd.com/public_html/public` |
+| App root | `/home/rcmalumni.astgd.com/rcmaa` |
+| Web root | `/home/rcmalumni.astgd.com/public_html` → symlink to `rcmaa/public` |
 | PHP | `/usr/local/lsws/lsphp84/bin/php` (8.4.20) |
 | Database | `rcmal8475_rcmaa` (MariaDB 10.3) |
 | Server | LiteSpeed Enterprise 6.3.5 — `.htaccess` is honoured |
@@ -209,7 +209,7 @@ below is confined to this one site.
 ### Redeploying
 
 ```bash
-cd /home/rcmalumni.astgd.com/public_html
+cd /home/rcmalumni.astgd.com/rcmaa      # the app root, not public_html
 sudo -u rcmal8475 git pull
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php /usr/bin/composer install --no-dev --optimize-autoloader
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan migrate --force
@@ -221,7 +221,12 @@ sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan view:cache
 
 ### Four things that will bite you
 
-**Permissions.** LiteSpeed runs as `nobody`. `public_html` must stay group
+**Work in `rcmaa/`, not `public_html/`.** `public_html` is a symlink to
+`rcmaa/public`. Running npm or git through the symlink half-works — npm walks up
+and finds the real `package.json`, but a relative `git checkout -- <file>` does
+not resolve and the deploy script stops midway, leaving the caches stale.
+
+**Permissions.** LiteSpeed runs as `nobody`. The document root must stay group
 `nogroup` and traversable — `chown -R rcmal8475:rcmal8475` on it makes every page
 404, because the web server can no longer descend into the document root. It is
 currently `711 rcmal8475:nogroup`. The app files inside are owned by the site
