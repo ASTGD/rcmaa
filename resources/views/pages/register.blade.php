@@ -152,12 +152,32 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                         </p>
 
                                         @if (! empty($cat['qualifies_bn']))
-                                            <div lang="bn" class="mt-3 rounded-lg bg-ink-900/4 px-3 py-2.5 font-bangla">
-                                                <p class="text-[0.78rem] font-semibold text-ink-700">{{ $cat['qualifies_bn'] }}</p>
-                                                <p class="mt-1 text-[0.76rem] leading-relaxed text-ink-500">{{ $cat['qualifies_note_bn'] }}</p>
-                                                @foreach ((array) $cat['eligibility_bn'] as $line)
-                                                    <p class="mt-1.5 text-[0.76rem] leading-relaxed text-ink-500">{{ $line }}</p>
-                                                @endforeach
+                                            {{-- Categories 3 and 4 carry several lines of session rules, and
+                                                 they were most of what made step 1 nearly three screens on a
+                                                 phone. Folded away by default, one tap to read. The toggle
+                                                 sits inside the card's <label>, so its click must be stopped
+                                                 or opening the rules would also select the category. --}}
+                                            <div x-data="{ open: false }" class="mt-3">
+                                                <button type="button" @click.stop.prevent="open = ! open"
+                                                        :aria-expanded="open ? 'true' : 'false'"
+                                                        aria-controls="eligibility-{{ $key }}"
+                                                        class="flex w-full items-center justify-between gap-2 rounded-lg bg-ink-900/4 px-3 py-2.5 text-left transition-colors hover:bg-ink-900/8">
+                                                    <span lang="bn" class="font-bangla text-[0.78rem] font-semibold text-ink-700">
+                                                        {{ $cat['qualifies_bn'] }}
+                                                    </span>
+                                                    <span class="flex-none text-brass-700 transition-transform duration-300"
+                                                          :class="open && 'rotate-180'">
+                                                        <x-icon name="chevron-down" class="h-3.5 w-3.5"/>
+                                                    </span>
+                                                </button>
+
+                                                <div id="eligibility-{{ $key }}" x-show="open" x-collapse x-cloak
+                                                     lang="bn" class="rounded-b-lg bg-ink-900/4 px-3 pb-2.5 font-bangla">
+                                                    <p class="text-[0.76rem] leading-relaxed text-ink-500">{{ $cat['qualifies_note_bn'] }}</p>
+                                                    @foreach ((array) $cat['eligibility_bn'] as $line)
+                                                        <p class="mt-1.5 text-[0.76rem] leading-relaxed text-ink-500">{{ $line }}</p>
+                                                    @endforeach
+                                                </div>
                                             </div>
                                         @elseif (! empty($cat['eligibility_bn']))
                                             <div lang="bn" class="mt-2 rounded-lg bg-ink-900/4 px-3 py-2 font-bangla">

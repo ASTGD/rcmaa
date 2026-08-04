@@ -137,4 +137,43 @@ class RegistrationCategoryTest extends TestCase
             ->assertSee('1,525')
             ->assertSee('1,015');
     }
+
+    /**
+     * The session rules for categories 3 and 4 run to several lines and made
+     * step 1 nearly three screens on a phone, so they fold away behind a
+     * toggle. The rules must still be present in the markup — collapsed, not
+     * dropped — and the toggle sits inside the card's <label>, so its click has
+     * to be stopped or reading the rules would silently select that category
+     * and change what somebody pays.
+     */
+    #[Test]
+    public function the_long_eligibility_rules_are_collapsed_but_still_present(): void
+    {
+        $body = $this->get(route('register.create'))->assertOk()->getContent();
+
+        foreach (['recent_graduate', 'current_student'] as $key) {
+            $this->assertStringContainsString('id="eligibility-'.$key.'"', $body);
+            $this->assertStringContainsString('aria-controls="eligibility-'.$key.'"', $body);
+        }
+
+        // The toggle must not fall through to the card's radio.
+        $this->assertStringContainsString('@click.stop.prevent="open = ! open"', $body);
+
+        // Every rule the association wrote is still in the page.
+        foreach (config('rcmaa.registration.categories') as $cat) {
+            foreach ((array) ($cat['eligibility_bn'] ?? []) as $line) {
+                $this->assertStringContainsString($line, $body, "Eligibility line dropped: {$line}");
+            }
+        }
+    }
+
+    /** The one-line rule on the Alumnus card stays in plain sight. */
+    #[Test]
+    public function the_short_eligibility_rule_is_not_hidden(): void
+    {
+        $this->get(route('register.create'))
+            ->assertOk()
+            ->assertSee('সেশনঃ ২০১৪-১৫ থেকে এর পূর্ববর্তী সকল ব্যাচ সমূহ', false)
+            ->assertDontSee('id="eligibility-alumni"', false);
+    }
 }
