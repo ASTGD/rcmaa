@@ -199,17 +199,17 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                             @include('partials.register.heading', ['n' => 2, 'en' => 'Personal Details', 'bn' => 'ব্যক্তিগত তথ্য'])
 
                             <div class="grid gap-6 sm:grid-cols-2">
-                                <x-field name="full_name_en" label="Full Name (English)" required
+                                <x-field name="full_name_en" autocomplete="name" label="Full Name (English)" required
                                          placeholder="e.g. Md. Rofikul Islam"/>
                                 <x-field name="full_name_bn" label="Full Name" bn="বাংলায় নাম"
                                          placeholder="মোঃ রফিকুল ইসলাম"/>
 
-                                <x-field name="mobile" label="Mobile / Contact No" bn="মোবাইল" type="tel" required
+                                <x-field name="mobile" autocomplete="tel" label="Mobile / Contact No" bn="মোবাইল" type="tel" required
                                          placeholder="01712345678"/>
-                                <x-field name="whatsapp" label="WhatsApp Number" type="tel"
+                                <x-field name="whatsapp" autocomplete="tel" label="WhatsApp Number" type="tel"
                                          placeholder="Leave blank if same as mobile"/>
 
-                                <x-field name="email" label="Email Address" type="email" required
+                                <x-field name="email" autocomplete="email" label="Email Address" type="email" required
                                          placeholder="you@example.com"
                                          hint="Your reference number and confirmation are sent here."/>
                                 <x-field name="blood_group" label="Blood Group" type="select"
@@ -217,7 +217,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          placeholder="Select blood group"
                                          hint="Optional, but useful for the on-site medical desk."/>
 
-                                <x-field name="present_address" label="Present Address" bn="বর্তমান ঠিকানা"
+                                <x-field name="present_address" autocomplete="street-address" label="Present Address" bn="বর্তমান ঠিকানা"
                                          type="textarea" rows="3" required class="sm:col-span-2"/>
                                 <x-field name="permanent_address" label="Permanent Address" bn="স্থায়ী ঠিকানা"
                                          type="textarea" rows="3" class="sm:col-span-2"/>
@@ -277,9 +277,9 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                 <div class="mt-8 grid gap-6 sm:grid-cols-2">
                                     <x-field name="profession" label="Profession / Sector" required
                                              placeholder="e.g. Education, Banking, Civil Service"/>
-                                    <x-field name="designation" label="Designation" bn="পদবী"
+                                    <x-field name="designation" autocomplete="organization-title" label="Designation" bn="পদবী"
                                              placeholder="e.g. Assistant Professor"/>
-                                    <x-field name="organization" label="Organization / Institution" bn="কর্মস্থল"
+                                    <x-field name="organization" autocomplete="organization" label="Organization / Institution" bn="কর্মস্থল"
                                              required class="sm:col-span-2"
                                              placeholder="e.g. Rajshahi College"/>
                                 </div>
@@ -576,8 +576,10 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                             @error('terms')<p class="field-error">{{ $message }}</p>@enderror
                         </div>
 
-                        {{-- ---------- Navigation ---------- --}}
-                        <div class="mt-10 flex items-center justify-between gap-4 border-t border-ink-900/8 pt-7">
+                        {{-- ---------- Navigation (tablet and desktop) ----------
+                             On phones this is replaced by the fixed bar below, so
+                             Continue is always in reach. --}}
+                        <div class="mt-10 hidden items-center justify-between gap-4 border-t border-ink-900/8 pt-7 md:flex">
                             <button type="button" @click="previous()" x-show="step > 1"
                                     class="btn btn-outline btn-sm">
                                 <x-icon name="chevron-left" class="h-3.5 w-3.5"/>
@@ -654,6 +656,50 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                         <p class="mt-3 text-xs text-ink-400">{{ config('rcmaa.contact.hotline_hours') }}</p>
                     </div>
                 </aside>
+
+                {{-- ---------- Mobile action bar ----------
+                     Most people register on a phone, and the steps run to two or
+                     three screens each. With the buttons at the foot of the card,
+                     every step ended in a long scroll to find "Continue" — and the
+                     running total sat below the whole form, so nobody saw what they
+                     were about to pay while filling it in. Both live here instead,
+                     pinned above the thumb. --}}
+                <div class="fixed inset-x-0 bottom-0 z-40 border-t border-ink-900/10 bg-white/95 backdrop-blur-sm md:hidden"
+                     style="padding-bottom: env(safe-area-inset-bottom)">
+                    <div class="flex items-center gap-3 px-4 py-3">
+                        <button type="button" @click="previous()" x-show="step > 1"
+                                class="grid h-12 w-12 flex-none place-items-center rounded-xl border border-ink-900/15 text-ink-700"
+                                aria-label="Back to the previous step">
+                            <x-icon name="chevron-left" class="h-5 w-5"/>
+                        </button>
+
+                        <div class="min-w-0 flex-1 leading-tight">
+                            <p class="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-ink-400">
+                                Step <span x-text="step"></span> of <span x-text="totalSteps"></span>
+                            </p>
+                            {{-- Before a category is picked the fee is genuinely
+                                 unknown; "BDT 0" would read as free. --}}
+                            <p class="truncate text-[0.95rem] font-semibold text-ink-950"
+                               x-text="form.category ? 'BDT ' + formattedFee : 'Choose your category'"></p>
+                        </div>
+
+                        <button type="button" @click="next()" x-show="step < totalSteps"
+                                class="btn btn-ink !h-12 flex-none !px-5">
+                            Continue
+                            <x-icon name="arrow-right" class="h-4 w-4"/>
+                        </button>
+
+                        <button type="submit" x-show="step === totalSteps" :disabled="submitting"
+                                class="btn btn-primary !h-12 flex-none !px-5">
+                            <span x-show="!submitting">Complete</span>
+                            <span x-show="submitting" x-cloak>Sending…</span>
+                            <x-icon name="check" class="h-4 w-4"/>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Clearance so the bar never covers the last field. --}}
+                <div class="h-24 md:hidden" aria-hidden="true"></div>
             </form>
             @endunless
         </div>

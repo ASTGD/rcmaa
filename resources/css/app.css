@@ -334,9 +334,18 @@
         background: #fff;
         border-radius: 0.75rem;
         padding: 0.8rem 1rem;
-        font-size: 0.9375rem;
+        /* 16px, not 15px, and deliberately so: iOS Safari zooms the whole page
+           when a focused field is under 16px. Across a seven-step form that is
+           a zoom-and-pinch-back on every single field. */
+        font-size: 1rem;
         color: var(--color-ink-900);
         transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+    }
+
+    @media (min-width: 768px) {
+        .input {
+            font-size: 0.9375rem;
+        }
     }
 
     .input::placeholder {

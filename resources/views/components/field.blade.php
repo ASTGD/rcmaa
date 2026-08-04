@@ -11,6 +11,9 @@
     // Current value for plain server-rendered forms. Alpine-backed forms hold
     // their own state and leave this null.
     'value' => null,
+    // Lets a phone offer the name, number or address it already knows. Most
+    // registrants are on a phone and many are not fast typists.
+    'autocomplete' => null,
     // Alpine binding. Defaults to form.<name>; pass :model="false" on plain
     // server-rendered forms that have no Alpine state behind them.
     'model' => null,
@@ -46,7 +49,8 @@
 
     @if ($type === 'textarea')
         <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ $rows }}" class="input"
-                  placeholder="{{ $placeholder }}" @if ($serverError) aria-invalid="true" @endif
+                  placeholder="{{ $placeholder }}"
+                  @if ($autocomplete) autocomplete="{{ $autocomplete }}" @endif @if ($serverError) aria-invalid="true" @endif
                   {!! $binding !!}>{{ $current }}</textarea>
 
     @elseif ($type === 'select')
@@ -62,6 +66,7 @@
     @else
         <input id="{{ $id }}" name="{{ $name }}" type="{{ $type }}" class="input"
                placeholder="{{ $placeholder }}" value="{{ $current }}"
+               @if ($autocomplete) autocomplete="{{ $autocomplete }}" @endif
                @if ($type === 'tel') inputmode="tel" @endif
                @if ($type === 'number') inputmode="numeric" @endif
                @if ($serverError) aria-invalid="true" @endif {!! $binding !!}>

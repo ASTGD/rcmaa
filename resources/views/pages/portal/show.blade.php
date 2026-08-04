@@ -51,20 +51,20 @@
                     </p>
 
                     <div class="mt-7 grid gap-6 sm:grid-cols-2">
-                        <x-field name="mobile" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
-                        <x-field name="whatsapp" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
+                        <x-field name="mobile" autocomplete="tel" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
+                        <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
                         <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
                                  :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
                                  placeholder="Select blood group"/>
                         <x-field name="tshirt_size" :value="$r->tshirt_size" label="T-shirt size" type="select" required :model="false"
                                  :options="array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes'])"/>
-                        <x-field name="present_address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
+                        <x-field name="present_address" autocomplete="street-address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
                                  type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
                         <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
                                  type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
                         <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
-                        <x-field name="designation" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
-                        <x-field name="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
+                        <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
+                        <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
                         <x-field name="memories" :value="$r->memories" label="Your memories of the department" type="textarea"
                                  rows="5" :model="false" class="sm:col-span-2"/>
                     </div>
