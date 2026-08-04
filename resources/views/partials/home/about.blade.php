@@ -5,9 +5,9 @@
             {{-- Image stack --}}
             <div class="relative">
                 <div class="relative overflow-hidden rounded-3xl" data-reveal="mask">
-                    <img src="{{ asset('media/about-department.svg') }}"
-                         alt="Students in the Department of Mathematics, Rajshahi College"
-                         class="aspect-4/5 w-full object-cover" loading="lazy" data-parallax="-0.06">
+                    <div class="aspect-4/5 w-full" data-parallax="-0.06">
+                        @include('partials.home.about-figure')
+                    </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-ink-950/50 to-transparent"></div>
                 </div>
 

@@ -4,6 +4,7 @@ import collapse from '@alpinejs/collapse';
 import { initSmoothScroll, scrollTo, ScrollTrigger, prefersReducedMotion } from './lib/motion';
 import { initReveals, initParallax, initCounters, initMarquees } from './lib/reveals';
 import { initHero, initHeaderTheme } from './lib/hero';
+import { initMathFigure } from './lib/figure';
 import registrationForm from './components/registration-form';
 import gallery from './components/gallery';
 import countdown from './components/countdown';
@@ -26,6 +27,7 @@ function boot() {
     initParallax();
     initCounters();
     initMarquees();
+    initMathFigure();
 
     // In-page anchors go through Lenis so they inherit the same easing.
     document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach((link) => {

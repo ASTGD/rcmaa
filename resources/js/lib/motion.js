@@ -6,6 +6,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Lenis is set up with syncTouch: false, so on a touch screen the browser keeps
+// its own momentum scrolling and Lenis is not the thing moving the page.
+const nativeScrolling = window.matchMedia('(pointer: coarse)').matches;
+
 let lenis = null;
 
 /**
@@ -41,13 +45,25 @@ export function getLenis() {
 }
 
 export function scrollTo(target, options = {}) {
-    if (lenis) {
-        lenis.scrollTo(target, { offset: -90, duration: 1.2, ...options });
+    const el = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!el) return;
+
+    // Only hand this to Lenis where Lenis actually drives the scroll. On touch
+    // it does not, and lenis.scrollTo() there simply never moves the page —
+    // which left every "Continue" on the registration form stranded halfway
+    // down the previous step on a phone.
+    if (lenis && !nativeScrolling) {
+        lenis.scrollTo(el, { offset: -90, duration: 1.2, ...options });
         return;
     }
 
-    const el = typeof target === 'string' ? document.querySelector(target) : target;
-    el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // scrollIntoView cannot express the offset that clears the sticky header,
+    // so the position is worked out directly.
+    const offset = options.offset ?? -90;
+    window.scrollTo({
+        top: Math.max(0, window.scrollY + el.getBoundingClientRect().top + offset),
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
 }
 
 export function stopScroll() {
