@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Registration;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -10,6 +11,12 @@ use Tests\TestCase;
 class LegacyImportTest extends TestCase
 {
     use RefreshDatabase;
+
+    /** The directory is members-only; these checks view it as the committee. */
+    private function viewingDirectory(): self
+    {
+        return $this->actingAs(User::factory()->create(['is_admin' => true]));
+    }
 
     #[Test]
     public function it_imports_the_legacy_entries_as_pending_and_keeps_them_out_of_the_directory(): void
@@ -26,7 +33,7 @@ class LegacyImportTest extends TestCase
         $this->assertStringContainsString('did not capture', $legacy->admin_note);
 
         // Unverified rows must never surface publicly.
-        $this->get(route('directory'))->assertOk()->assertDontSee('mdrashedulsumon@gmail.com');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertDontSee('mdrashedulsumon@gmail.com');
     }
 
     #[Test]

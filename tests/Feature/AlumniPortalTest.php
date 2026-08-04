@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\AlumniAccessLink;
 use App\Models\Registration;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -18,6 +19,12 @@ use Tests\TestCase;
 class AlumniPortalTest extends TestCase
 {
     use RefreshDatabase;
+
+    /** The directory is members-only; these checks view it as the committee. */
+    private function viewingDirectory(): self
+    {
+        return $this->actingAs(User::factory()->create(['is_admin' => true]));
+    }
 
     private function registration(array $overrides = []): Registration
     {
@@ -167,7 +174,7 @@ class AlumniPortalTest extends TestCase
     public function the_registrant_can_remove_themselves_from_the_directory(): void
     {
         $r = $this->registration(['full_name_en' => 'Wants Privacy']);
-        $this->get(route('directory'))->assertOk()->assertSee('Wants Privacy');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertSee('Wants Privacy');
 
         $this->open($r);
         $this->patch(route('portal.update'), [
@@ -179,7 +186,7 @@ class AlumniPortalTest extends TestCase
 
         $this->assertFalse($r->fresh()->listed_in_directory);
         $this->assertSame(Registration::STATUS_VERIFIED, $r->fresh()->payment_status);
-        $this->get(route('directory'))->assertOk()->assertDontSee('Wants Privacy');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertDontSee('Wants Privacy');
     }
 
     #[Test]

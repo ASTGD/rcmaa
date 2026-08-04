@@ -9,10 +9,16 @@
         <div class="container-rc">
             {{-- Contact channels, as published by the association --}}
             <div class="grid gap-5 md:grid-cols-3" data-reveal data-reveal-stagger="0.1">
+                @php
+                    // The association gave the Helpdesk hours and an email but no
+                    // number, so that card points at email rather than a tel: link
+                    // with nothing behind it.
+                    $dial = fn (?string $n) => $n ? 'tel:'.preg_replace('/[^\d+]/', '', $n) : null;
+                @endphp
                 @foreach ([
-                    ['phone', 'Registration Helpline', config('rcmaa.contact.hotline'), config('rcmaa.contact.hotline_hours'), 'tel:'.preg_replace('/[^\d+]/', '', config('rcmaa.contact.hotline'))],
-                    ['clock', 'Helpdesk', config('rcmaa.contact.helpdesk'), config('rcmaa.contact.helpdesk_hours'), 'tel:'.preg_replace('/[^\d+]/', '', config('rcmaa.contact.helpdesk'))],
-                    ['mail', 'Email', config('rcmaa.contact.email'), 'Replies within two working days', 'mailto:'.config('rcmaa.contact.email')],
+                    ['phone', 'Official Contact', config('rcmaa.contact.phone'), config('rcmaa.contact.hotline_hours'), $dial(config('rcmaa.contact.phone'))],
+                    ['users', 'Registration Helpline', config('rcmaa.contact.helpline'), config('rcmaa.contact.helpline_hours'), $dial(config('rcmaa.contact.helpline'))],
+                    ['clock', 'Helpdesk', config('rcmaa.contact.email'), config('rcmaa.contact.helpdesk_hours'), 'mailto:'.config('rcmaa.contact.email')],
                 ] as [$icon, $label, $value, $note, $href])
                     <a href="{{ $href }}" class="card card-hover group p-7" data-reveal-item>
                         <span class="grid h-12 w-12 place-items-center rounded-xl bg-ink-900 text-brass-500 transition-colors duration-500 group-hover:bg-brass-500 group-hover:text-ink-950">

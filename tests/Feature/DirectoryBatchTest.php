@@ -36,6 +36,12 @@ class DirectoryBatchTest extends TestCase
         ], $overrides));
     }
 
+    /** Opens a portal session, which is what the directory now requires. */
+    private function asMember(): self
+    {
+        return $this->actingAs(User::factory()->create(['is_admin' => true]));
+    }
+
     /** Typed variants of one batch must not become several headings. */
     #[Test]
     public function session_spellings_collapse_to_one_batch(): void
@@ -49,7 +55,7 @@ class DirectoryBatchTest extends TestCase
             Registration::listed()->distinct()->pluck('session')->all()
         );
 
-        $body = $this->get(route('directory'))->assertOk()->getContent();
+        $body = $this->asMember()->get(route('directory'))->assertOk()->getContent();
         $this->assertSame(1, substr_count($body, 'Session 2008-09'));
     }
 
@@ -60,7 +66,7 @@ class DirectoryBatchTest extends TestCase
         $this->alumnus('Bravo Two', '2008-09');
         $this->alumnus('Charlie Three', '2014-15');
 
-        $this->get(route('directory'))
+        $this->asMember()->get(route('directory'))
             ->assertOk()
             ->assertSee('Session 2008-09')
             ->assertSee('Session 2014-15')
@@ -77,7 +83,7 @@ class DirectoryBatchTest extends TestCase
         $this->alumnus('Older Person', '2005-06');
         $this->alumnus('Newer Person', '2018-19');
 
-        $body = $this->get(route('directory'))->assertOk()->getContent();
+        $body = $this->asMember()->get(route('directory'))->assertOk()->getContent();
 
         $this->assertLessThan(
             strpos($body, 'Session 2005-06'),
@@ -92,7 +98,7 @@ class DirectoryBatchTest extends TestCase
         $this->alumnus('Alpha One', '2008-09');
         $this->alumnus('Charlie Three', '2014-15');
 
-        $this->get(route('directory', ['session' => '2008-09']))
+        $this->asMember()->get(route('directory', ['session' => '2008-09']))
             ->assertOk()
             ->assertSee('Alpha One')
             ->assertDontSee('Charlie Three')
@@ -109,10 +115,10 @@ class DirectoryBatchTest extends TestCase
         }
 
         // Seven batches, six per page.
-        $first = $this->get(route('directory'))->assertOk();
+        $first = $this->asMember()->get(route('directory'))->assertOk();
         $first->assertSee('Session 2007-08')->assertDontSee('Session 2001-02');
 
-        $second = $this->get(route('directory', ['page' => 2]))->assertOk();
+        $second = $this->asMember()->get(route('directory', ['page' => 2]))->assertOk();
         $second->assertSee('Session 2001-02')->assertSee('Person 0A')->assertSee('Person 0B');
     }
 
@@ -123,7 +129,7 @@ class DirectoryBatchTest extends TestCase
         $this->alumnus('Unverified Person', '2010-11', ['payment_status' => Registration::STATUS_PENDING]);
         $this->alumnus('Opted Out Person', '2010-11', ['listed_in_directory' => false]);
 
-        $this->get(route('directory'))
+        $this->asMember()->get(route('directory'))
             ->assertOk()
             ->assertSee('Shown Person')
             ->assertDontSee('Unverified Person')
@@ -136,7 +142,7 @@ class DirectoryBatchTest extends TestCase
         $this->alumnus('Alpha One', '2008-09');
         $this->alumnus('Charlie Three', '2014-15');
 
-        $this->get(route('directory'))
+        $this->asMember()->get(route('directory'))
             ->assertOk()
             ->assertSee('Jump to batch')
             ->assertSee(route('directory', ['session' => '2008-09']), false)

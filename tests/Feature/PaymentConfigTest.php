@@ -38,14 +38,44 @@ class PaymentConfigTest extends TestCase
             ->assertDontSee('Not configured');
     }
 
+    /**
+     * The association listed three channels on 4 August 2026: an Official
+     * Contact line, a separate Registration Helpline, and a Helpdesk they gave
+     * no number for. The last one matters — a tel: link built from a null
+     * number is a dead link on every page that renders it.
+     */
     #[Test]
-    public function the_public_phone_number_is_the_association_helpline(): void
+    public function the_contact_details_are_the_ones_the_association_listed(): void
     {
-        $this->assertSame('+880 1643-740416', config('rcmaa.contact.phone'));
-        $this->assertSame('+880 1643-740416', config('rcmaa.contact.hotline'));
+        $this->assertSame('01400-366369', config('rcmaa.contact.phone'));
+        $this->assertSame('01990168773', config('rcmaa.contact.helpline'));
+        $this->assertNull(config('rcmaa.contact.helpdesk'), 'No helpdesk number was supplied.');
 
-        $this->get(route('contact'))->assertOk()->assertSee('+880 1643-740416');
-        $this->get(route('home'))->assertOk()->assertSee('+880 1643-740416');
+        $this->get(route('contact'))->assertOk()
+            ->assertSee('01400-366369')
+            ->assertSee('01990168773')
+            ->assertSee('rcmaa.alumni@gmail.com');
+
+        $this->get(route('home'))->assertOk()->assertSee('01400-366369');
+    }
+
+    #[Test]
+    public function whatsapp_points_at_the_official_number(): void
+    {
+        $this->assertSame('https://wa.me/8801400366369', config('rcmaa.contact.whatsapp'));
+
+        $this->get(route('contact'))->assertOk()->assertSee('wa.me/8801400366369', false);
+    }
+
+    /** A missing number must not render an empty tel: link anywhere. */
+    #[Test]
+    public function pages_that_show_contact_channels_survive_the_missing_number(): void
+    {
+        foreach (['contact', 'help-center', 'faqs', 'register.create'] as $route) {
+            $body = $this->get(route($route))->assertOk()->getContent();
+            $this->assertStringNotContainsString('href="tel:"', $body, "Empty tel: link on {$route}");
+            $this->assertStringNotContainsString('tel:"', $body, "Empty tel: link on {$route}");
+        }
     }
 
     /**

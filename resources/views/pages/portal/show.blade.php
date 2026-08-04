@@ -75,7 +75,7 @@
                                    @checked(old('listed_in_directory', $r->listed_in_directory))>
                             <span class="choice-box mt-0.5" aria-hidden="true"></span>
                             <span class="text-[0.85rem] font-normal leading-relaxed">
-                                <strong class="font-semibold">Show me in the public alumni directory.</strong>
+                                <strong class="font-semibold">Show me in the alumni directory.</strong>
                                 It lists your name, session, profession, photograph and mobile number so
                                 fellow graduates can reach you. Your email and addresses are never published.
                             </span>

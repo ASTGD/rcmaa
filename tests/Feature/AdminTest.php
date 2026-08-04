@@ -19,6 +19,12 @@ class AdminTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** The directory is members-only; these checks view it as the committee. */
+    private function viewingDirectory(): self
+    {
+        return $this->actingAs(User::factory()->create(['is_admin' => true]));
+    }
+
     private function admin(): User
     {
         return User::factory()->create(['is_admin' => true]);
@@ -173,7 +179,7 @@ class AdminTest extends TestCase
             'payment_status' => Registration::STATUS_VERIFIED,
         ]);
 
-        $this->get(route('directory'))
+        $this->viewingDirectory()->get(route('directory'))
             ->assertOk()
             ->assertSee('Verified Person')
             ->assertDontSee('Pending Person');
@@ -195,7 +201,7 @@ class AdminTest extends TestCase
             'blood_group' => 'AB-',
         ]);
 
-        $this->get(route('directory'))
+        $this->viewingDirectory()->get(route('directory'))
             ->assertOk()
             ->assertSee('01755500011')
             ->assertDontSee('private@example.com')
@@ -207,7 +213,8 @@ class AdminTest extends TestCase
     {
         $this->get(route('privacy'))
             ->assertOk()
-            ->assertSee('mobile number is published')
+            ->assertSee('It is not public: only registered members who have signed in')
+            ->assertSee('mobile number is listed')
             ->assertSee('are not published');
     }
 

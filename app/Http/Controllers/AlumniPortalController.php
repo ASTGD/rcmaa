@@ -24,7 +24,8 @@ use Illuminate\Validation\Rule;
  */
 class AlumniPortalController extends Controller
 {
-    private const SESSION_KEY = 'alumni_registration_id';
+    /** Public so the directory gate can look for the same session. */
+    public const SESSION_KEY = 'alumni_registration_id';
 
     private const LINK_MINUTES = 60;
 

@@ -39,7 +39,12 @@ class CommitteePrivacyTest extends TestCase
 
         $this->assertGreaterThan(40, $phones->count(), 'The roster should be seeded.');
 
-        $routes = [route('home'), route('about'), route('our-goal'), route('directory')];
+        $routes = [route('home'), route('about'), route('our-goal')];
+
+        // The directory is members-only now, so it is swept while signed in —
+        // a committee member's private number must not leak there either.
+        $this->actingAs(User::factory()->create(['is_admin' => true]));
+        $routes[] = route('directory');
 
         foreach (array_keys(CommitteeMember::COMMITTEES) as $group) {
             $routes[] = route('committee', ['group' => $group]);

@@ -14,7 +14,7 @@
                 ['briefcase', 'Career support', 'Mentorship, referrals and guidance from alumni already established in academia, government and industry.'],
                 ['bell', 'Official announcements', 'Notices from the committee delivered on the site rather than lost in a group chat.'],
                 ['graduation', 'Give back to the department', 'A structured way to support current students — prizes, resources, and help for those in need.'],
-                ['shield', 'Verified membership', 'Payments are checked by hand and every entry is confirmed before it reaches the public directory.'],
+                ['shield', 'Verified membership', 'Payments are checked by hand and every entry is confirmed before it reaches the directory.'],
                 ['camera', 'The shared record', 'A growing archive of photographs and milestones from across the department\'s history.'],
                 ['globe', 'A global community', 'Graduates spread far beyond Rajshahi, held together by one register and one point of contact.'],
             ] as [$icon, $heading, $body])

@@ -20,7 +20,7 @@
             ],
         ],
         'What is published' => [
-            'The public alumni directory shows your name, session, passing year, profession, photograph and mobile number. The mobile number is published so that alumni can reach one another directly — it is visible to anyone who visits the directory, including people outside the association.',
+            'The alumni directory shows your name, session, passing year, profession, photograph and mobile number. It is not public: only registered members who have signed in, and the committee, can open it. The mobile number is listed so that fellow graduates can reach you directly, and you can remove yourself from the directory at any time from your own portal without affecting your registration.',
             'Your WhatsApp number, email address, present and permanent addresses, blood group and payment details are not published. They are held by the committee for administering your registration.',
             'If you would prefer your mobile number not to appear, write to us at the address below and we will remove it from the directory.',
             'Committee members with administrator access can see your full record in order to verify payments and organise events.',
@@ -29,13 +29,13 @@
             'We do not process card payments and we never ask for a PIN, OTP or password. You pay the association directly through its bKash Merchant account, and then tell us the transaction reference so a committee member can match it against the account. We store only that reference, the sending number, the amount and, if you upload one, the receipt you attach.',
         ],
         'How long we keep it' => [
-            'Registration records are kept for as long as you remain a member of the association, and are used to maintain the historical record of who attended which reunion. You may ask us to remove your entry from the public directory, or to delete your record entirely, at any time.',
+            'Registration records are kept for as long as you remain a member of the association, and are used to maintain the historical record of who attended which reunion. You may ask us to remove your entry from the directory, or to delete your record entirely, at any time.',
         ],
         'Cookies' => [
             'This site sets a session cookie that keeps you signed in and protects forms against cross-site request forgery. It sets no advertising or third-party tracking cookies.',
             'Your progress through the registration form is saved in your own browser\'s local storage so you can leave and come back. That data never leaves your device until you submit the form, and it is cleared once you do.',
         ],
         'Your rights' => [
-            'You can ask us what we hold about you, ask for it to be corrected, ask for it to be removed from the public directory, or ask for it to be deleted altogether. Write to the address below and we will act on it.',
+            'You can ask us what we hold about you, ask for it to be corrected, ask for it to be removed from the directory, or ask for it to be deleted altogether. Write to the address below and we will act on it.',
         ],
     ]"/>

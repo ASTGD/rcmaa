@@ -6,7 +6,7 @@ Dear {{ $registration->full_name_en }},
 Use the button below to open your registration for the
 **{{ config('rcmaa.registration.event_name') }}**. You can correct your contact
 details, change your T-shirt size, print your entry pass, and choose whether you
-appear in the public alumni directory.
+appear in the alumni directory.
 
 <x-mail::button :url="$url">
 Open my registration

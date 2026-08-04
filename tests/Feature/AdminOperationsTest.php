@@ -19,6 +19,12 @@ class AdminOperationsTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** The directory is members-only; these checks view it as the committee. */
+    private function viewingDirectory(): self
+    {
+        return $this->actingAs(User::factory()->create(['is_admin' => true]));
+    }
+
     private function admin(): User
     {
         return User::factory()->create(['is_admin' => true]);
@@ -129,7 +135,7 @@ class AdminOperationsTest extends TestCase
     {
         $r = $this->registration(['full_name_en' => 'Opt Out Person']);
 
-        $this->get(route('directory'))->assertOk()->assertSee('Opt Out Person');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertSee('Opt Out Person');
 
         $this->actingAs($this->admin())
             ->put(route('admin.registrations.update-details', $r),
@@ -141,7 +147,7 @@ class AdminOperationsTest extends TestCase
         // Still verified — their seat is intact.
         $this->assertSame(Registration::STATUS_VERIFIED, $r->payment_status);
 
-        $this->get(route('directory'))->assertOk()->assertDontSee('Opt Out Person');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertDontSee('Opt Out Person');
     }
 
     // --- Committee accounts -------------------------------------------------
@@ -245,7 +251,7 @@ class AdminOperationsTest extends TestCase
         $this->assertSame(Registration::STATUS_VERIFIED, $r->payment_status);
         $this->assertTrue($r->listed_in_directory, 'Verification must not unlist anybody.');
 
-        $this->get(route('directory'))->assertOk()->assertSee($r->full_name_en);
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertSee($r->full_name_en);
     }
 
     /** And an opt-out must survive verification too. */
@@ -260,6 +266,6 @@ class AdminOperationsTest extends TestCase
         ])->assertRedirect();
 
         $this->assertFalse($r->fresh()->listed_in_directory);
-        $this->get(route('directory'))->assertOk()->assertDontSee('Wants Privacy');
+        $this->viewingDirectory()->get(route('directory'))->assertOk()->assertDontSee('Wants Privacy');
     }
 }

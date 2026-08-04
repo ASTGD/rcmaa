@@ -155,7 +155,7 @@
                     <input type="checkbox" name="listed_in_directory" value="1"
                            @checked(old('listed_in_directory', $registration->listed_in_directory))>
                     <span class="choice-box" aria-hidden="true"></span>
-                    <span>List in the public directory</span>
+                    <span>List in the members-only alumni directory</span>
                 </label>
             </div>
 

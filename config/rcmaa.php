@@ -22,43 +22,77 @@ return [
     | Contact
     |--------------------------------------------------------------------------
     |
-    | Channels and hours are taken from the association's contact page.
-    | +880 1643-740416 is the single public number across the whole site.
+    | As the association listed them on 4 August 2026. Two numbers now: the
+    | Official Contact line, and a separate Registration Helpline. WhatsApp is
+    | the Official Contact number for both channels.
     |
     */
 
     'contact' => [
         'email' => env('RCMAA_EMAIL', 'rcmaa.alumni@gmail.com'),
-        'phone' => env('RCMAA_PHONE', '+880 1643-740416'),
-        'hotline' => env('RCMAA_HOTLINE', '+880 1643-740416'),
+
+        // Official Contact — the association's main line, 9am to 9pm.
+        'phone' => env('RCMAA_PHONE', '01400-366369'),
+        'hotline' => env('RCMAA_HOTLINE', '01400-366369'),
         'hotline_hours' => '09:00 AM — 09:00 PM',
-        'helpdesk' => env('RCMAA_HELPDESK', '+880 1643-740416'),
-        // The association's FAQ (4 Aug 2026) states 10:00 AM to 1:00 PM.
-        'helpdesk_hours' => '10:00 AM — 01:00 PM',
+
+        // Registration Helpline — a different number, same hours.
+        'helpline' => env('RCMAA_HELPLINE', '01990168773'),
+        'helpline_hours' => '09:00 AM — 09:00 PM',
+
+        // Helpdesk — the association gave hours and an email but no number.
+        'helpdesk' => env('RCMAA_HELPDESK', null),
+        'helpdesk_hours' => '09:00 AM — 02:00 PM',
+
         // Donations above the registration fee are arranged by phone first.
         'donation' => env('RCMAA_DONATION_PHONE', '০১৪০০-৩৬৬৩৬৯'),
-        'whatsapp' => env('RCMAA_WHATSAPP', 'https://wa.link/u9bvuh'),
+
+        'whatsapp_number' => env('RCMAA_WHATSAPP_NUMBER', '01400-366369'),
+        'whatsapp' => env('RCMAA_WHATSAPP', 'https://wa.me/8801400366369'),
+
         'address' => 'Department of Mathematics, Rajshahi College, Rajshahi 6100, Bangladesh',
         'map' => 'https://maps.google.com/?q=Rajshahi+College,+Rajshahi',
     ],
 
     /*
     |--------------------------------------------------------------------------
-    | Contact channels, as published on the association's contact page
+    | Contact channels, exactly as the association listed them
     |--------------------------------------------------------------------------
+    |
+    | Three channels, two phone numbers between them, and a helpdesk they did
+    | not give a number for — so it is shown as email-only rather than invented.
+    |
     */
 
     'contact_channels' => [
-        ['label' => 'Official Contact', 'phone' => '+880 1643-740416', 'email' => 'rcmaa.alumni@gmail.com', 'hours' => '9:00 AM — 9:00 PM'],
-        ['label' => 'Registration Helpline', 'phone' => '+880 1643-740416', 'email' => 'rcmaa.alumni@gmail.com', 'hours' => '9:00 AM — 9:00 PM'],
-        ['label' => 'Helpdesk', 'phone' => '+880 1643-740416', 'email' => null, 'hours' => '10:00 AM — 1:00 PM'],
+        [
+            'label' => 'Official Contact',
+            'phone' => '01400-366369',
+            'whatsapp' => '01400-366369',
+            'email' => 'rcmaa.alumni@gmail.com',
+            'hours' => '9:00 AM — 9:00 PM',
+        ],
+        [
+            'label' => 'Registration Helpline',
+            'phone' => '01990168773',
+            'whatsapp' => '01400-366369',
+            'email' => 'rcmaa.alumni@gmail.com',
+            'hours' => '9:00 AM — 9:00 PM',
+        ],
+        [
+            'label' => 'Helpdesk',
+            'phone' => null,
+            'whatsapp' => null,
+            'email' => 'rcmaa.alumni@gmail.com',
+            'hours' => '9:00 AM — 2:00 PM',
+        ],
     ],
 
     'social' => [
         'facebook' => env('RCMAA_FACEBOOK', 'https://www.facebook.com/share/1LBwi1LCRU/'),
         'linkedin' => env('RCMAA_LINKEDIN', ''),
         'twitter' => env('RCMAA_TWITTER', ''),
-        'whatsapp' => env('RCMAA_WHATSAPP', 'https://wa.link/u9bvuh'),
+        'whatsapp' => env('RCMAA_WHATSAPP', 'https://wa.me/8801400366369'),
     ],
 
     /*

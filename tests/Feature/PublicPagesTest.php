@@ -26,7 +26,6 @@ class PublicPagesTest extends TestCase
             'events' => ['events.index'],
             'notices' => ['notices.index'],
             'gallery' => ['gallery'],
-            'directory' => ['directory'],
             'faqs' => ['faqs'],
             'contact' => ['contact'],
             'how to apply' => ['how-to-apply'],

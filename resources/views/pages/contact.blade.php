@@ -54,10 +54,21 @@
                             </span>
                         </div>
 
-                        <a href="tel:{{ preg_replace('/[^\d+]/', '', $channel['phone']) }}"
-                           class="mt-2.5 flex items-center gap-2.5 text-sm font-medium text-ink-900 transition hover:text-brass-700">
-                            <x-icon name="phone" class="h-4 w-4 flex-none text-brass-600"/>{{ $channel['phone'] }}
-                        </a>
+                        @if ($channel['phone'])
+                            <a href="tel:{{ preg_replace('/[^\d+]/', '', $channel['phone']) }}"
+                               class="mt-2.5 flex items-center gap-2.5 text-sm font-medium text-ink-900 transition hover:text-brass-700">
+                                <x-icon name="phone" class="h-4 w-4 flex-none text-brass-600"/>{{ $channel['phone'] }}
+                            </a>
+                        @endif
+
+                        @if (! empty($channel['whatsapp']))
+                            <a href="https://wa.me/88{{ preg_replace('/\D/', '', $channel['whatsapp']) }}"
+                               target="_blank" rel="noopener"
+                               class="mt-1.5 flex items-center gap-2.5 text-sm text-ink-600 transition hover:text-brass-700">
+                                <x-icon name="whatsapp" class="h-4 w-4 flex-none text-brass-600"/>
+                                WhatsApp {{ $channel['whatsapp'] }}
+                            </a>
+                        @endif
 
                         @if ($channel['email'])
                             <a href="mailto:{{ $channel['email'] }}"

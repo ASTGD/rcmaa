@@ -11,6 +11,18 @@
                 <x-alert type="success" title="Check your inbox" class="mb-8">{{ session('status') }}</x-alert>
             @endif
 
+            {{-- Sent here from the directory. Without this the redirect reads as
+                 a dead end rather than an explanation. --}}
+            @if (session('directory_gate'))
+                <x-alert type="info" title="Members only" class="mb-8">
+                    {{ session('directory_gate') }}
+                    <span lang="bn" class="mt-2 block font-bangla">
+                        অ্যালামনাই ডিরেক্টরি শুধুমাত্র RCMAA-এর নিবন্ধিত সদস্যদের জন্য।
+                        নিবন্ধনের সময় দেওয়া ইমেইল দিন, আমরা একটি লিংক পাঠিয়ে দেবো।
+                    </span>
+                </x-alert>
+            @endif
+
             <form method="POST" action="{{ route('portal.send-link') }}" class="card relative p-6 md:p-8">
                 @csrf
                 <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -35,7 +47,7 @@
 
                 <p class="field-hint mt-4">
                     The link lasts one hour. Use it to correct your details, print your entry pass,
-                    or remove yourself from the public directory.
+                    or remove yourself from the alumni directory.
                 </p>
             </form>
 
@@ -43,7 +55,7 @@
                 @foreach ([
                     ['book', 'Correct your details', 'Mobile, address, T-shirt size and workplace — no phone call needed.'],
                     ['download', 'Print your pass', 'Take it to the registration desk on the day.'],
-                    ['lock', 'Directory control', 'Choose whether you appear in the public alumni directory.'],
+                    ['lock', 'Directory control', 'Choose whether you appear in the members-only alumni directory.'],
                 ] as [$icon, $heading, $body])
                     <div class="card p-5" data-reveal>
                         <span class="grid h-10 w-10 place-items-center rounded-xl bg-brass-100 text-brass-700">

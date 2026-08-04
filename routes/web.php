@@ -42,7 +42,7 @@ Route::get('/notice', [NoticeController::class, 'index'])->name('notices.index')
 Route::get('/notice/{notice}', [NoticeController::class, 'show'])->name('notices.show');
 
 Route::get('/gallery', GalleryController::class)->name('gallery');
-Route::get('/directory', DirectoryController::class)->name('directory');
+Route::get('/directory', DirectoryController::class)->middleware('directory')->name('directory');
 Route::get('/faqs', FaqController::class)->name('faqs');
 
 Route::get('/contact', [ContactController::class, 'show'])->name('contact');

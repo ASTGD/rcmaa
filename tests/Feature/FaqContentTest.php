@@ -97,14 +97,21 @@ class FaqContentTest extends TestCase
         );
     }
 
+    /**
+     * The association's two documents disagree about the helpdesk: the FAQ says
+     * 10:00–1:00, the contact listing they sent afterwards says 9:00–2:00. The
+     * later one drives the site; this test pins both so the discrepancy is
+     * visible rather than forgotten, and fails the moment either is corrected.
+     */
     #[Test]
-    public function the_helpdesk_hours_match_the_faq(): void
+    public function the_helpdesk_hours_follow_the_contact_listing(): void
     {
-        $this->assertSame('10:00 AM — 01:00 PM', config('rcmaa.contact.helpdesk_hours'));
+        $this->assertSame('09:00 AM — 02:00 PM', config('rcmaa.contact.helpdesk_hours'));
 
         $this->assertStringContainsString(
             'সকাল ১০:০০টা থেকে দুপুর ১:০০টা',
-            Faq::where('question', 'অনলাইনে Registration করতে সমস্যা হলে কী করবো?')->firstOrFail()->answer
+            Faq::where('question', 'অনলাইনে Registration করতে সমস্যা হলে কী করবো?')->firstOrFail()->answer,
+            'The FAQ still says 10-1 — the association needs to say which is right.'
         );
     }
 }
