@@ -30,7 +30,7 @@
 
             @if ($sources->isNotEmpty())
                 <video data-hero-video
-                       class="absolute inset-0 h-full w-full object-cover"
+                       class="absolute inset-0 h-full w-full object-cover brightness-125 saturate-110"
                        autoplay muted loop playsinline preload="metadata"
                        poster="{{ $poster }}" aria-hidden="true" tabindex="-1">
                     @foreach ($sources as $ext => $mime)
@@ -42,7 +42,7 @@
             {{-- Shown until the video reports `playing`, and permanently if
                  autoplay is refused or no footage has been supplied yet. --}}
             <div data-hero-poster
-                 class="absolute inset-0 bg-ink-900 bg-cover bg-center transition-opacity duration-700"
+                 class="absolute inset-0 bg-ink-900 bg-cover bg-center brightness-125 saturate-110 transition-opacity duration-700"
                  style="background-image:url('{{ $poster }}')"></div>
         </div>
 
@@ -51,10 +51,10 @@
              the text is and lightest where the footage is worth seeing. --}}
         {{-- Narrow screens put the text across the full width, so they get an
              even scrim instead of the left-weighted one. --}}
-        <div class="absolute inset-0 bg-ink-950/65 md:bg-ink-950/40"></div>
-        <div class="absolute inset-0 hidden bg-gradient-to-r from-ink-950/90 via-ink-950/55 to-transparent md:block"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-ink-950/85 via-transparent to-ink-950/45"></div>
-        <div class="bg-grid-light absolute inset-0 opacity-40"></div>
+        <div class="absolute inset-0 bg-ink-950/45 md:bg-ink-950/22"></div>
+        <div class="absolute inset-0 hidden bg-gradient-to-r from-ink-950/85 via-ink-950/45 to-transparent md:block"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink-950/75 via-transparent to-ink-950/30"></div>
+        <div class="bg-grid-light absolute inset-0 opacity-25"></div>
     </div>
 
     {{-- Content --}}
