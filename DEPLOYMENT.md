@@ -41,15 +41,20 @@ Open <http://127.0.0.1:8000>.
 | Page | Expect |
 | --- | --- |
 | `/` | Video hero, countdown, "Join the Association" and "View Directory" |
-| `/committee` | 48 members across 4 committees, with portraits |
+| `/committee` | 48 members with portraits — 6 under Convening Committee, 42 under Reunion Sub-Committee |
 | `/gallery` | 10 images |
 | `/heritage` | 28 milestones, 1873–2026 |
 | `/register` | 7-step form, category pricing, session dropdown |
 | `/directory` | Empty until somebody registers — this is correct |
 | `/faqs` | 14 questions |
 
-The directory and the home page's "Recently joined" panel are **empty on a fresh
-install**. Both are built from verified registrations, and there are none. To see
+**Advisory Committee and Batch Representatives are empty** — the association has
+not supplied those lists yet. Both pages render a "No members" state rather than
+breaking. Add them through `/admin` when the names arrive, or ask the client to
+send them.
+
+The directory and the home page's "Recently joined" panel are also **empty on a
+fresh install**. Both are built from verified registrations, and there are none. To see
 them populated, register through the form, then verify the payment in
 `/admin/registrations`.
 
