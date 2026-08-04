@@ -71,8 +71,8 @@
                             turned it white on near-white and it vanished. --}}
                        @class([
                            'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] font-medium transition-colors duration-300',
-                           'text-brass-700 [.is-over-dark_&]:text-brass-400' => $isActive,
-                           'text-ink-700 hover:text-ink-950 [.is-over-dark_&]:text-ink-200 [.is-over-dark_&]:hover:text-white' => ! $isActive,
+                           'header-link is-current text-brass-700' => $isActive,
+                           'header-link text-ink-700 hover:text-ink-950' => ! $isActive,
                        ])>
                         {{ $item['label'] }}
                         @isset($item['children'])
@@ -121,7 +121,7 @@
 
         <div class="flex flex-none items-center gap-3">
             <a href="{{ route('portal.request') }}"
-               class="hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block [.is-over-dark_&]:text-ink-200 [.is-over-dark_&]:hover:text-white">
+               class="header-link hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block ">
                 Login
             </a>
             <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">

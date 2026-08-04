@@ -110,6 +110,7 @@
     .lenis.lenis-stopped {
         overflow: hidden;
     }
+
 }
 
 /* ============================================================================
@@ -544,4 +545,24 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* ============================================================================
+   Header over dark sections
+   ============================================================================
+   The bar darkens as a dark section passes under it, and its links have to
+   follow or they sit navy-on-navy.
+
+   One rule for all of them rather than [.is-over-dark_&]: variants repeated on
+   each link. That scattering caused a real bug earlier: a variant prefix in
+   front of a two-class string scoped only the first class, a bare
+   hover:text-white escaped, and every nav link turned white on the light bar.
+   A single rule cannot drift out of step with itself. */
+.is-over-dark .header-link {
+    color: var(--color-parchment);
+}
+
+.is-over-dark .header-link:hover,
+.is-over-dark .header-link.is-current {
+    color: var(--color-brass-400);
 }

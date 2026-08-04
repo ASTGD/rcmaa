@@ -117,27 +117,38 @@ class PublicPagesTest extends TestCase
     }
 
     /**
-     * The header sits over a dark hero at the top of a page and over light
-     * content once scrolled, and swaps its palette with an .is-over-dark class.
+     * The header darkens as it passes over a dark section, and everything in it
+     * has to follow — links, the Login link, and the logo wordmark beside the
+     * seal, which was left dark navy and became unreadable there.
      *
-     * Writing [.is-over-dark_&]:{{ 'text-ink-200 hover:text-white' }} scoped only
-     * the first class, so hover:text-white leaked out and applied on the light
-     * header as well — hovering a nav item turned it white on a near-white bar
-     * and it disappeared. Every dark-mode utility must carry its own variant.
+     * The link colours are one rule in app.css keyed on .header-link rather
+     * than a variant repeated on each element. That repetition caused a real
+     * bug: a variant prefix in front of a two-class string scoped only the
+     * first class, so a bare hover:text-white escaped and turned every nav
+     * link invisible on the light bar.
      */
     #[Test]
-    public function the_navigation_never_carries_an_unscoped_light_hover(): void
+    public function the_header_adapts_when_it_passes_over_a_dark_section(): void
     {
         $body = $this->get(route('faqs'))->assertOk()->getContent();
+        $header = substr($body, strpos($body, '<header'), strpos($body, '</header>') - strpos($body, '<header'));
 
-        $this->assertStringContainsString('[.is-over-dark_&]:hover:text-white', $body);
+        // Every link the rule governs is tagged for it.
+        $this->assertGreaterThanOrEqual(8, substr_count($header, 'header-link'));
+
+        // The wordmark carries its own dark-state colour. Its classes come
+        // through {{ }}, so the ampersand arrives HTML-escaped.
+        $this->assertStringContainsString('[.is-over-dark_&amp;]:text-parchment', $header);
+        $this->assertStringContainsString('[.is-over-dark_&amp;]:text-brass-400', $header);
+
+        // No unscoped light colour may reach the light bar.
         $this->assertDoesNotMatchRegularExpression(
-            '/class="[^"]*(?<!_&\]:)hover:text-white/',
-            $body,
-            'hover:text-white must always be scoped to .is-over-dark.'
+            '/class="[^"]*(?<!_&\]:)hover:text-white/', $header,
+            'A light hover must never apply on the light header.'
         );
 
-        // And the light-header hover is still present.
-        $this->assertStringContainsString('hover:text-ink-950', $body);
+        // The light-state palette is still there.
+        $this->assertStringContainsString('text-ink-700', $header);
+        $this->assertStringContainsString('hover:text-ink-950', $header);
     }
 }
