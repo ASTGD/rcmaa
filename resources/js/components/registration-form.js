@@ -1,5 +1,5 @@
 import { gsap } from '../lib/motion';
-import { scrollTo } from '../lib/motion';
+import { scrollTo, jumpTo } from '../lib/motion';
 
 /**
  * Multi-step reunion registration.
@@ -341,7 +341,7 @@ export default (config = {}) => ({
             const el = this.$el.querySelector('[aria-invalid="true"]');
             if (!el) return;
             el.focus({ preventScroll: true });
-            scrollTo(el, { offset: -160, duration: 0.8 });
+            jumpTo(el, -160);
         };
 
         this.$nextTick(run);
@@ -349,7 +349,10 @@ export default (config = {}) => ({
     },
 
     toTop() {
-        const run = () => scrollTo(this.$el, { offset: -110 });
+        // Biased generously: the page is still settling when this runs, and
+        // landing a little low simply shows some breathing space above the
+        // step, while landing high hides the progress rail behind the header.
+        const run = () => jumpTo(this.$el, -190);
 
         // $nextTick is built on requestAnimationFrame, which browsers throttle
         // or suspend — a backgrounded tab, low-power mode. If it never fires,

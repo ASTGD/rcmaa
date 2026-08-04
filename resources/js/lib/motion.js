@@ -87,6 +87,63 @@ export function scrollTo(target, options = {}) {
     }, 320);
 }
 
+/**
+ * The document position of an element, walking the offset chain.
+ *
+ * Deliberately not getBoundingClientRect() + scrollY: that pair is only
+ * meaningful at the instant it is read, and a step change is exactly when it is
+ * not — the page is being re-laid-out and the browser is clamping the scroll
+ * because the document just got shorter. offsetTop is measured from the
+ * document, so it does not care where we currently are.
+ */
+function documentTop(el) {
+    let y = 0;
+    for (let node = el; node; node = node.offsetParent) y += node.offsetTop;
+    return y;
+}
+
+/**
+ * Put an element at the top of the viewport, now, without animating.
+ *
+ * Used for moving between steps of the registration form, where landing
+ * reliably matters far more than gliding. Every animated route to this —
+ * Lenis, CSS smooth scrolling — depends on a frame loop that may be throttled,
+ * suspended, or simply not driving the page, and each failure leaves the reader
+ * stranded at the bottom of the step they just finished. This cannot fail that
+ * way. It repeats because the step being closed shortens the page, and the
+ * clamp that follows would otherwise undo the jump.
+ */
+export function jumpTo(target, offset = -110) {
+    const el = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!el) return;
+
+    const go = () => {
+        const top = Math.max(0, documentTop(el) + offset);
+        window.scrollTo(0, top);
+        // Lenis keeps its own idea of where the page is. Left unsynced it will
+        // ease back to that on the next frame and quietly undo the jump.
+        lenis?.scrollTo(top, { immediate: true, force: true });
+    };
+
+    // Land it, then check where it actually landed. offsetTop can disagree with
+    // the rendered position while a step is still opening, so the last word goes
+    // to the element itself rather than to any arithmetic about it.
+    const settle = () => {
+        go();
+        const drift = el.getBoundingClientRect().top - -offset;
+        if (Math.abs(drift) > 8) window.scrollBy(0, drift);
+        lenis?.scrollTo(window.scrollY, { immediate: true, force: true });
+    };
+
+    go();
+    window.setTimeout(go, 120);
+    window.setTimeout(settle, 340);
+    // Leaving step 1 collapses four tall category cards at once, and the page is
+    // still shrinking when the first correction runs. One more pass, after the
+    // largest reflow on the form has finished.
+    window.setTimeout(settle, 700);
+}
+
 export function stopScroll() {
     lenis?.stop();
     document.documentElement.classList.add('lenis-stopped');
