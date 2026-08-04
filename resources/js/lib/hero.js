@@ -77,19 +77,17 @@ export function initHero() {
         '-=0.85'
     );
 
-    // Slow drift on the video plus a fade-out of the copy as the user leaves.
+    // Slow drift on the video as the user scrolls away.
+    //
+    // The copy used to fade and lift on the same scrub. It was removed: the
+    // headline, the buttons and the countdown all thinned out while still on
+    // screen, which read as the page failing to render rather than as an
+    // effect. The hero now simply scrolls away, fully legible until it goes.
     gsap.to(hero.querySelector('[data-hero-media]'), {
         yPercent: 18,
         scale: 1.1,
         ease: 'none',
         scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
-    });
-
-    gsap.to(hero.querySelector('[data-hero-content]'), {
-        opacity: 0,
-        y: -70,
-        ease: 'none',
-        scrollTrigger: { trigger: hero, start: 'top top', end: '70% top', scrub: true },
     });
 }
 
