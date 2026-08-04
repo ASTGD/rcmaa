@@ -17,7 +17,7 @@
     <img src="{{ asset('media/logo.png') }}"
          alt="{{ config('rcmaa.name') }}"
          class="{{ $size }} flex-none object-contain"
-         width="512" height="512" loading="eager" decoding="async">
+         width="288" height="275" loading="eager" decoding="async">
 
     @if ($wordmark)
         <span class="flex flex-col leading-none">
