@@ -33,7 +33,10 @@ return [
         'hotline' => env('RCMAA_HOTLINE', '+880 1643-740416'),
         'hotline_hours' => '09:00 AM — 09:00 PM',
         'helpdesk' => env('RCMAA_HELPDESK', '+880 1643-740416'),
-        'helpdesk_hours' => '09:00 AM — 02:00 PM',
+        // The association's FAQ (4 Aug 2026) states 10:00 AM to 1:00 PM.
+        'helpdesk_hours' => '10:00 AM — 01:00 PM',
+        // Donations above the registration fee are arranged by phone first.
+        'donation' => env('RCMAA_DONATION_PHONE', '০১৪০০-৩৬৬৩৬৯'),
         'whatsapp' => env('RCMAA_WHATSAPP', 'https://wa.link/u9bvuh'),
         'address' => 'Department of Mathematics, Rajshahi College, Rajshahi 6100, Bangladesh',
         'map' => 'https://maps.google.com/?q=Rajshahi+College,+Rajshahi',
@@ -48,7 +51,7 @@ return [
     'contact_channels' => [
         ['label' => 'Official Contact', 'phone' => '+880 1643-740416', 'email' => 'rcmaa.alumni@gmail.com', 'hours' => '9:00 AM — 9:00 PM'],
         ['label' => 'Registration Helpline', 'phone' => '+880 1643-740416', 'email' => 'rcmaa.alumni@gmail.com', 'hours' => '9:00 AM — 9:00 PM'],
-        ['label' => 'Helpdesk', 'phone' => '+880 1643-740416', 'email' => null, 'hours' => '9:00 AM — 2:00 PM'],
+        ['label' => 'Helpdesk', 'phone' => '+880 1643-740416', 'email' => null, 'hours' => '10:00 AM — 1:00 PM'],
     ],
 
     'social' => [

@@ -521,6 +521,42 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                     <span lang="bn" class="font-bangla">বিকাশ অ্যাপে &ldquo;Payment&rdquo; অপশন
                                     ব্যবহার করুন, &ldquo;Send Money&rdquo; নয়।</span>
                                 </p>
+
+                                {{-- Donations above the registration fee, at the
+                                     association's instruction. It has to be read
+                                     BEFORE paying, so it sits with the account
+                                     details rather than further down the step. --}}
+                                @php
+                                    // The number is shown in Bangla numerals, but a tel: link
+                                    // needs ASCII — \D would strip Bangla digits entirely.
+                                    $donationLine = strtr(config('rcmaa.contact.donation'), [
+                                        '০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4',
+                                        '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9',
+                                        '-' => '', ' ' => '',
+                                    ]);
+                                @endphp
+                                <div class="mt-4 rounded-xl border border-brass-500/40 bg-brass-100/60 p-4">
+                                    <p lang="bn" class="font-bangla text-[0.86rem] font-semibold text-ink-900">
+                                        বিশেষ নির্দেশনা
+                                    </p>
+                                    <p lang="bn" class="mt-1.5 font-bangla text-[0.82rem] leading-relaxed text-ink-700">
+                                        যদি কোনো নিবন্ধনকারী নির্ধারিত রেজিস্ট্রেশন ফি-এর অতিরিক্ত আর্থিক সহযোগিতা
+                                        (Donation/Contribution) প্রদান করতে ইচ্ছুক হন, তাহলে অনুগ্রহ করে সরাসরি
+                                        পেমেন্ট করার পূর্বে নিচের নম্বরে যোগাযোগ করুন।
+                                    </p>
+                                    <a href="tel:{{ $donationLine }}"
+                                       class="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 py-2.5 font-mono text-[0.9rem] font-semibold text-ink-900 transition hover:text-brass-700">
+                                        <x-icon name="phone" class="h-4 w-4 text-brass-600"/>
+                                        {{ config('rcmaa.contact.donation') }}
+                                    </a>
+                                    <p lang="bn" class="mt-2.5 font-bangla text-[0.8rem] leading-relaxed text-ink-600">
+                                        অতিরিক্ত অনুদান সংক্রান্ত প্রয়োজনীয় নির্দেশনা ও পেমেন্ট প্রক্রিয়া
+                                        যোগাযোগের মাধ্যমে জানিয়ে দেওয়া হবে।
+                                    </p>
+                                    <p class="mt-2 text-[0.78rem] leading-relaxed text-ink-500">
+                                        Registering only? Ignore this and pay the total shown above.
+                                    </p>
+                                </div>
                             </div>
 
                             {{-- Proof of payment --}}
@@ -562,7 +598,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                             <span class="block text-sm font-semibold text-ink-800"
                                                   x-text="receiptName || 'Attach your bKash confirmation'"></span>
                                             <span class="block text-xs text-ink-400">
-                                                Screenshot of the confirmation SMS, or a bank slip &middot;
+                                                Screenshot of your bKash confirmation SMS &middot;
                                                 JPG, PNG, WebP or PDF &middot; maximum 4 MB
                                             </span>
                                         </span>

@@ -104,4 +104,26 @@ class PaymentConfigTest extends TestCase
         $this->post(route('register.store'), ['payment_method' => 'bkash'] + $payload)
             ->assertRedirect()->assertSessionHasNoErrors();
     }
+
+    /**
+     * The association asked for a donation notice on the payment step. It has
+     * to be read before somebody pays, so it sits with the account details
+     * rather than lower down the step.
+     */
+    #[Test]
+    public function the_payment_step_carries_the_donation_notice(): void
+    {
+        $body = $this->get(route('register.create'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('বিশেষ নির্দেশনা', $body);
+        $this->assertStringContainsString('Donation/Contribution', $body);
+        $this->assertStringContainsString('০১৪০০-৩৬৬৩৬৯', $body);
+        $this->assertStringContainsString('tel:01400366369', $body);
+
+        // It must appear alongside the account, above the transaction fields.
+        $notice = strpos($body, 'বিশেষ নির্দেশনা');
+        $trxField = strpos($body, 'name="transaction_id"');
+        $this->assertNotFalse($notice);
+        $this->assertLessThan($trxField, $notice, 'The notice must be read before paying.');
+    }
 }

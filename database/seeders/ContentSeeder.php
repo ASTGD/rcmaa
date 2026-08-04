@@ -130,23 +130,77 @@ class ContentSeeder extends Seeder
         }
     }
 
+    /**
+     * The association's own FAQ, supplied 4 August 2026, in their wording.
+     *
+     * Kept in Bangla because that is how they wrote it and how their alumni
+     * read it; the English terms they mixed in are theirs too. The earlier
+     * English set this replaces is removed by question below, rather than
+     * clearing the table, so anything an admin adds through /admin survives a
+     * re-seed.
+     */
     private function faqs(): void
     {
         $faqs = [
-            ['membership', 'Who is eligible to join RCMAA?', 'Any graduate of the Department of Mathematics, Rajshahi College — B.Sc (Honors), M.Sc, both, or Previous Masters — is eligible to join the association. You will be asked for your session and passing year during registration.'],
-            ['membership', 'I have lost my class roll and registration number. Can I still register?', 'Yes. The class roll and registration number fields are optional precisely because many alumni no longer have their records. Your name, session and passing year are enough for the committee to verify you.'],
-            ['registration', 'How do I register for the Grand Reunion 2026?', 'Complete the registration form on this website. It takes about five minutes and covers your personal, academic and professional details, your T-shirt size, any accompanying guests, and finally your payment information. Your progress is saved in your browser as you go, so you can leave and come back.'],
-            ['registration', 'Can I bring my spouse or family?', 'Yes. Select the number of accompanying guests on the reunion step and provide each guest\'s name, relation and occupation. A separate guest fee applies per person and is added to your total automatically.'],
-            ['registration', 'I want to perform in the cultural programme. What do I need to do?', 'Select "Yes" on the cultural programme question during registration. Prior registration is mandatory in order to perform on the event day — performers cannot be added at the venue.'],
-            ['registration', 'What size should my photograph be?', 'Upload a passport-size photograph in JPG, PNG or WebP format, no larger than 1 MB and at least 200×200 pixels. It is used on your reunion identity card.'],
-            ['payment', 'How do I pay the registration fee?', 'Pay the total amount to the association\'s bKash Merchant account, shown on the payment step of the form. Because it is a Merchant account, use the "Payment" option in your bKash app — not "Send Money". Then enter the transaction ID, the number you paid from, and the exact amount. Attaching a screenshot of the confirmation helps the committee verify you faster.'],
-            ['payment', 'How long does payment verification take?', 'The committee verifies payments manually, normally within one to two working days. You will receive a confirmation email once your registration is verified, and you can check the status at any time using your reference number.'],
-            ['payment', 'I entered the wrong transaction ID. What now?', 'Contact the helpdesk with your reference number and the correct transaction ID. Do not submit a second registration — each transaction ID can only be used once, and duplicate entries slow verification down for everyone.'],
-            ['payment', 'Are refunds available?', 'Requests for refunds should be made to the reunion committee through the helpdesk before the registration deadline. Refunds after the deadline are at the committee\'s discretion, since catering and merchandise are ordered against confirmed numbers.'],
-            ['events', 'What is included in the registration fee?', 'The registration fee covers your reunion kit, event T-shirt, lunch and refreshments, and entry to the cultural evening. Accompanying guests are covered by the separate guest fee.'],
-            ['events', 'When and where is Math Nexus 2026?', 'The Grand Reunion is scheduled for 19 December 2026 on the Rajshahi College campus. The date was approved in writing by the Principal of Rajshahi College on 25 January 2026.'],
-            ['general', 'When was RCMAA founded?', 'The association\'s journey began on 16 December 2025 and it took formal shape at a meeting on 3 January 2026, with students from the 2011-12 through 2024-25 sessions taking part. Rajshahi College itself has taught since 1873.'],
-            ['general', 'How is my personal information used?', 'Your contact details are used by the committee to administer your registration and are never published. The public alumni directory shows only your name, session, passing year and profession. See the Privacy Policy for the full detail.'],
+            ['general', 'RCMAA কী?',
+                'Rajshahi College Mathematics Alumni Association (RCMAA) হলো রাজশাহী কলেজের গণিত বিভাগের বর্তমান ও প্রাক্তন শিক্ষার্থীদের একটি স্থায়ী প্ল্যাটফর্ম। এর মূল উদ্দেশ্য হলো Alumni Network গড়ে তোলা, পারস্পরিক যোগাযোগ বৃদ্ধি করা এবং বিভিন্ন শিক্ষামূলক, সামাজিক ও পুনর্মিলনী কার্যক্রমের মাধ্যমে সকলকে একটি বন্ধনে যুক্ত রাখা।'],
+
+            ['membership', 'RCMAA-এর সদস্য কারা হতে পারবেন?',
+                'রাজশাহী কলেজের গণিত বিভাগের সকল বর্তমান ও প্রাক্তন শিক্ষার্থী RCMAA-এর সদস্য হতে পারবেন।'],
+
+            ['membership', 'সদস্য হওয়ার নিয়ম কী?',
+                'প্রথম Math Nexus – RCMAA Reunion 2026-এ যারা সফলভাবে নিবন্ধন (Registration) সম্পন্ন করবেন, তারাই RCMAA-এর সদস্য হিসেবে অন্তর্ভুক্ত হবেন।'],
+
+            ['events', 'Math Nexus – RCMAA Reunion 2026 কবে অনুষ্ঠিত হবে?',
+                'রিইউনিয়ন আগামী ১৯ ডিসেম্বর ২০২৬ তারিখে অনুষ্ঠিত হবে।'],
+
+            ['events', 'রিইউনিয়ন কোথায় অনুষ্ঠিত হবে?',
+                'অনুষ্ঠানটি রাজশাহী কলেজ প্রাঙ্গণে অনুষ্ঠিত হবে।'],
+
+            ['events', 'কারা রিইউনিয়নে অংশগ্রহণ করতে পারবেন?',
+                'রাজশাহী কলেজের গণিত বিভাগের বর্তমান ও প্রাক্তন শিক্ষার্থী, শিক্ষক এবং কর্মচারীবৃন্দ রিইউনিয়নে অংশগ্রহণ করতে পারবেন।'],
+
+            ['registration', 'অতিথি (Guest) আনা যাবে কি?',
+                'হ্যাঁ। শিক্ষক, কর্মচারী এবং প্রাক্তন শিক্ষার্থীরা নির্ধারিত নিয়ম অনুযায়ী অতিথি (Guest) নিয়ে অংশগ্রহণ করতে পারবেন।'],
+
+            ['payment', 'Guest Fee কত?',
+                'প্রতিজন অতিথির জন্য নির্ধারিত ফি ৫০০ টাকা।'],
+
+            ['registration', 'কীভাবে Registration সম্পন্ন করতে হবে?',
+                'রেজিস্ট্রেশন শুধুমাত্র অনলাইনের মাধ্যমে সম্পন্ন করা যাবে। কোনো অফলাইন রেজিস্ট্রেশন ব্যবস্থা থাকবে না।'],
+
+            ['registration', 'অনলাইনে Registration করতে সমস্যা হলে কী করবো?',
+                'রেজিস্ট্রেশন করতে কোনো সমস্যা হলে রাজশাহী কলেজের গণিত বিভাগের Help Desk-এ সকাল ১০:০০টা থেকে দুপুর ১:০০টা-এর মধ্যে যোগাযোগ করলে প্রয়োজনীয় সহযোগিতা প্রদান করা হবে।'],
+
+            ['payment', 'Registration Fee কীভাবে পরিশোধ করতে হবে?',
+                'রেজিস্ট্রেশন ফি শুধুমাত্র বিকাশ (bKash)-এর মাধ্যমে পরিশোধ করা যাবে।'],
+
+            ['payment', 'Registration Fee কি ফেরতযোগ্য (Refundable)?',
+                'না। একবার রেজিস্ট্রেশন সম্পন্ন হলে কোনো অবস্থাতেই Registration Fee ফেরতযোগ্য হবে না।'],
+
+            ['general', 'ওয়েবসাইটে Login করার সুবিধা থাকবে কি?',
+                'হ্যাঁ। সদস্যরা নিজস্ব অ্যাকাউন্টে লগইন করতে পারবেন।'],
+
+            ['general', 'Alumni Database কে দেখতে পারবেন?',
+                'শুধুমাত্র RCMAA-এর নিবন্ধিত সদস্যরাই লগইন করার মাধ্যমে Alumni Database দেখতে পারবেন।'],
+
+            ['events', 'রিইউনিয়নে প্রবেশের জন্য ID Card প্রয়োজন হবে কি?',
+                'হ্যাঁ। অনুষ্ঠানে প্রবেশের জন্য অফিসিয়াল RCMAA Reunion ID Card প্রদর্শন বাধ্যতামূলক।'],
+
+            ['events', 'অনুষ্ঠানে খাবারের ব্যবস্থা থাকবে কি?',
+                'হ্যাঁ। সকল নিবন্ধিত অংশগ্রহণকারীর জন্য সকালের নাস্তা এবং দুপুরের খাবারের ব্যবস্থা থাকবে।'],
+
+            ['events', 'সাংস্কৃতিক অনুষ্ঠান থাকবে কি?',
+                'হ্যাঁ। রিইউনিয়নের অংশ হিসেবে একটি Grand Cultural Program আয়োজন করা হবে।'],
+
+            ['events', 'স্মরণিকা (Souvenir) প্রকাশ করা হবে কি?',
+                'হ্যাঁ। রিইউনিয়ন উপলক্ষে একটি স্মরণিকা প্রকাশ করা হবে।'],
+
+            ['general', 'কোনো সমস্যা বা তথ্যের প্রয়োজন হলে কোথায় যোগাযোগ করবো?',
+                'যেকোনো ধরনের সহযোগিতার জন্য রাজশাহী কলেজের গণিত বিভাগের Help Desk-এ সরাসরি যোগাযোগ করতে পারবেন। ই-মেইল: rcmaa.alumni@gmail.com। Facebook Page: Rajshahi College Mathematics Alumni Association (RCMAA)।'],
+
+            ['general', 'RCMAA-এর মূল লক্ষ্য কী?',
+                'RCMAA-এর প্রধান লক্ষ্য হলো গণিত বিভাগের বর্তমান ও প্রাক্তন শিক্ষার্থীদের মধ্যে একটি শক্তিশালী, স্থায়ী ও কার্যকর Alumni Network গড়ে তোলা; পারস্পরিক সহযোগিতা বৃদ্ধি করা এবং ভবিষ্যৎ প্রজন্মের জন্য একটি সুসংগঠিত Alumni Community প্রতিষ্ঠা করা।'],
         ];
 
         foreach ($faqs as $i => [$category, $question, $answer]) {
@@ -155,5 +209,24 @@ class ContentSeeder extends Seeder
                 ['category' => $category, 'answer' => $answer, 'sort_order' => $i, 'is_published' => true]
             );
         }
+
+        // The English set written before the association sent their own. Removed
+        // by question so nothing added through /admin is caught in the sweep.
+        Faq::whereIn('question', [
+            'Who is eligible to join RCMAA?',
+            'I have lost my class roll and registration number. Can I still register?',
+            'How do I register for the Grand Reunion 2026?',
+            'Can I bring my spouse or family?',
+            'I want to perform in the cultural programme. What do I need to do?',
+            'What size should my photograph be?',
+            'How do I pay the registration fee?',
+            'How long does payment verification take?',
+            'I entered the wrong transaction ID. What now?',
+            'Are refunds available?',
+            'What is included in the registration fee?',
+            'When and where is Math Nexus 2026?',
+            'When was RCMAA founded?',
+            'How is my personal information used?',
+        ])->delete();
     }
 }
