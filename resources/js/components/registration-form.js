@@ -433,10 +433,8 @@ export default (config = {}) => ({
     },
 
     toTop() {
-        // Biased generously: the page is still settling when this runs, and
-        // landing a little low simply shows some breathing space above the
-        // step, while landing high hides the progress rail behind the header.
-        const run = () => jumpTo(this.$el, -190);
+        // Clears the sticky header with a little room to spare.
+        const run = () => jumpTo(this.$el, -110);
 
         // $nextTick is built on requestAnimationFrame, which browsers throttle
         // or suspend — a backgrounded tab, low-power mode. If it never fires,
