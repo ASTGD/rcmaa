@@ -79,11 +79,11 @@ class RegistrationCategoryTest extends TestCase
     }
 
     #[Test]
-    public function guests_cost_three_thousand_each_for_the_categories_that_allow_them(): void
+    public function guests_cost_five_hundred_each_for_the_categories_that_allow_them(): void
     {
-        $this->assertSame(3000, RegistrationPricing::guestFee());
-        $this->assertSame(2535 + 3000, RegistrationPricing::total('alumni', 1));
-        $this->assertSame(2535 + 6000, RegistrationPricing::total('teacher', 2));
+        $this->assertSame(500, RegistrationPricing::guestFee());
+        $this->assertSame(2535 + 500, RegistrationPricing::total('alumni', 1));
+        $this->assertSame(2535 + 1000, RegistrationPricing::total('teacher', 2));
     }
 
     #[Test]
@@ -100,7 +100,7 @@ class RegistrationCategoryTest extends TestCase
             'category' => 'current_student',
             'guest_count' => '1',
             'guests' => [['name' => 'Someone', 'relation' => 'Friend', 'occupation' => '-']],
-            'amount_paid' => 1015 + 3000,
+            'amount_paid' => 1015 + 500,
         ]))->assertSessionHasErrors('guest_count');
 
         $this->assertSame(0, Registration::count());

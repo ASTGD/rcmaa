@@ -110,7 +110,7 @@ return [
     |
     | Registration is priced by category, not a single flat fee — see the
     | association's "Registration Page" specification. Only categories 1 and 2
-    | may bring accompanying guests, at BDT 3,000 each.
+    | may bring accompanying guests, at BDT 500 each.
     |
     | Fees are in BDT and overridable from .env so the committee can adjust
     | pricing without a deploy.
@@ -184,7 +184,7 @@ return [
         ],
 
         // Charged per accompanying guest, for the categories that allow them.
-        'guest_fee' => (int) env('RCMAA_FEE_GUEST', 3000),
+        'guest_fee' => (int) env('RCMAA_FEE_GUEST', 500),
     ],
 
     /*

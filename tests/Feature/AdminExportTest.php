@@ -44,8 +44,8 @@ class AdminExportTest extends TestCase
             'payment_method' => 'bkash',
             'transaction_id' => 'A1B2C3D4E5',
             'sender_number' => '01712345678',
-            'amount_paid' => 5535,
-            'amount_due' => 5535,
+            'amount_paid' => 3035,
+            'amount_due' => 3035,
         ], $overrides));
     }
 
@@ -77,10 +77,10 @@ class AdminExportTest extends TestCase
         $this->assertSame('rofikul@example.com', $row['Email']);
         $this->assertSame('XL', $row['T-Shirt']);
         $this->assertSame('A1B2C3D4E5', $row['Transaction ID']);
-        $this->assertSame('5535', $row['Amount Paid']);
-        $this->assertSame('5535', $row['Amount Due']);
+        $this->assertSame('3035', $row['Amount Paid']);
+        $this->assertSame('3035', $row['Amount Due']);
         $this->assertSame('2535', $row['Category Fee']);
-        $this->assertSame('3000', $row['Guest Fee (each)']);
+        $this->assertSame('500', $row['Guest Fee (each)']);
         $this->assertSame('1', $row['Guests']);
         $this->assertStringContainsString('Shirin Akter', $row['Guest Details']);
     }

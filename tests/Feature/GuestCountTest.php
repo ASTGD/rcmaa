@@ -76,14 +76,14 @@ class GuestCountTest extends TestCase
         $this->post(route('register.store'), $this->payload([
             'guest_count' => '1',
             'guests' => [['name' => 'Shirin Akter', 'relation' => 'Spouse', 'occupation' => 'Teacher']],
-            'amount_paid' => 5535,
+            'amount_paid' => 3035,
         ]))->assertRedirect()->assertSessionHasNoErrors();
 
         $r = Registration::firstOrFail();
         $this->assertSame('1', $r->guest_count);
         $this->assertCount(1, $r->guests);
         $this->assertSame('Shirin Akter', $r->guests[0]['name']);
-        $this->assertSame(5535, $r->amount_due);
+        $this->assertSame(3035, $r->amount_due);
     }
 
     #[Test]
@@ -95,11 +95,11 @@ class GuestCountTest extends TestCase
                 ['name' => 'Shirin Akter', 'relation' => 'Spouse', 'occupation' => 'Teacher'],
                 ['name' => 'Rafi Alam', 'relation' => 'Son', 'occupation' => 'Student'],
             ],
-            'amount_paid' => 8535,
+            'amount_paid' => 3535,
         ]))->assertRedirect()->assertSessionHasNoErrors();
 
         $r = Registration::firstOrFail();
-        $this->assertSame(2535 + 2 * 3000, $r->amount_due);
+        $this->assertSame(2535 + 2 * 500, $r->amount_due);
         $this->assertSame(0, $r->balance, 'Paying the exact total must not read as a discrepancy.');
     }
 
@@ -143,7 +143,7 @@ class GuestCountTest extends TestCase
             'employment_status' => 'student_other',
             'guest_count' => '1',
             'guests' => [['name' => 'Someone', 'relation' => 'Friend', 'occupation' => 'None']],
-            'amount_paid' => 4015,
+            'amount_paid' => 1515,
         ]))->assertSessionHasErrors('guest_count');
 
         $this->assertSame(0, Registration::count());

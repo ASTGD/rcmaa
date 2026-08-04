@@ -21,7 +21,7 @@ class DirectoryBatchTest extends TestCase
     private function alumnus(string $name, string $session, array $overrides = []): Registration
     {
         return Registration::create(array_merge([
-            'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 3000,
+            'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
             'full_name_en' => $name, 'mobile' => '01712345678',
             'email' => Str()->slug($name).'@example.test', 'present_address' => 'Rajshahi',
             'session' => $session, 'degree' => 'bsc',

@@ -24,7 +24,7 @@ class AlumniPortalTest extends TestCase
         return Registration::create(array_merge([
             'category' => 'alumni',
             'category_fee' => 2535,
-            'guest_fee' => 3000,
+            'guest_fee' => 500,
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
