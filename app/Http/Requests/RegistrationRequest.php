@@ -37,20 +37,24 @@ class RegistrationRequest extends FormRequest
             'permanent_address' => ['nullable', 'string', 'max:500'],
 
             // Part 2 — Academic
-            'session' => ['required', Rule::in(array_keys(config('rcmaa.options.sessions')))],
+            // Teachers are staff, not graduates of the department — they are never
+            // shown the academic or professional steps, so nothing there is required
+            // of them.
+            'session' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
             // Only somebody who did both degrees here has a second session.
             'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
-            'degree' => ['required', Rule::in(array_keys($options['degrees']))],
+            'degree' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys($options['degrees']))],
             'class_roll' => ['nullable', 'string', 'max:64'],
             'registration_no' => ['nullable', 'string', 'max:64'],
             // Current students have not passed yet, so there is nothing to give.
             'passing_year' => [
-                'required_unless:category,current_student', 'nullable', 'integer',
+                // Neither a current student nor a teacher has a passing year to give.
+                'required_unless:category,current_student,teacher', 'nullable', 'integer',
                 'min:'.config('rcmaa.college_founded'), 'max:'.($currentYear + 1),
             ],
 
             // Part 3 — Professional
-            'employment_status' => ['required', Rule::in(array_keys($options['employment_statuses']))],
+            'employment_status' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys($options['employment_statuses']))],
             'profession' => ['nullable', 'required_if:employment_status,employed,self_employed', 'string', 'max:120'],
             'designation' => ['nullable', 'string', 'max:120'],
             'organization' => ['nullable', 'required_if:employment_status,employed,self_employed', 'string', 'max:180'],
@@ -100,6 +104,11 @@ class RegistrationRequest extends FormRequest
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
             'transaction_id.unique' => 'This transaction ID has already been used for a registration. If you believe this is an error, contact the helpdesk.',
             'terms.accepted' => 'Please confirm that the information you provided is correct.',
+            'passing_year.required_unless' => 'Please give the year you passed.',
+            'session.required_unless' => 'Please choose your session.',
+            'degree.required_unless' => 'Please choose the degree you completed here.',
+            'employment_status.required_unless' => 'Please tell us your current status.',
+            'masters_session.required_if' => 'Please choose your Masters session as well.',
             'photo.max' => 'The passport photo must not be larger than 1 MB.',
             'photo.dimensions' => 'The photo is too small — please upload an image at least 200×200 pixels.',
             'payment_receipt.mimes' => 'The receipt must be a JPG, PNG, WebP or PDF file.',

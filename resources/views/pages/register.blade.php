@@ -77,7 +77,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                     <div class="mb-8">
                         <div class="flex items-center justify-between text-xs text-ink-500">
                             <span class="font-mono uppercase tracking-[0.16em]">
-                                Step <span x-text="step"></span> of <span x-text="totalSteps"></span>
+                                Step <span x-text="stepNumber"></span> of <span x-text="totalSteps"></span>
                             </span>
                             <span x-text="progress + '% complete'"></span>
                         </div>
@@ -89,7 +89,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                         <ol class="mt-6 hidden flex-wrap gap-x-1 gap-y-2 md:flex">
                             @foreach ($steps as $number => [$en, $bnLabel])
-                                <li>
+                                <li x-show="activeSteps.includes({{ $number }})" x-cloak>
                                     <button type="button" @click="goTo({{ $number }})"
                                             class="flex items-center gap-2 rounded-full px-3 py-1.5 text-[0.72rem] font-medium transition-colors"
                                             :class="step === {{ $number }}
@@ -100,7 +100,9 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                             <template x-if="step > {{ $number }}">
                                                 <svg viewBox="0 0 24 24" class="h-2.5 w-2.5" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4.5 4.5L19 7"/></svg>
                                             </template>
-                                            <template x-if="step <= {{ $number }}"><span>{{ $number }}</span></template>
+                                            <template x-if="step <= {{ $number }}">
+                                                <span x-text="activeSteps.indexOf({{ $number }}) + 1">{{ $number }}</span>
+                                            </template>
                                         </span>
                                         {{ $en }}
                                     </button>
@@ -653,19 +655,19 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                              On phones this is replaced by the fixed bar below, so
                              Continue is always in reach. --}}
                         <div class="mt-10 hidden items-center justify-between gap-4 border-t border-ink-900/8 pt-7 md:flex">
-                            <button type="button" @click="previous()" x-show="step > 1"
+                            <button type="button" @click="previous()" x-show="! isFirstStep"
                                     class="btn btn-outline btn-sm">
                                 <x-icon name="chevron-left" class="h-3.5 w-3.5"/>
                                 Back
                             </button>
                             <span x-show="step === 2"></span>
 
-                            <button type="button" @click="next()" x-show="step < totalSteps" class="btn btn-ink">
+                            <button type="button" @click="next()" x-show="! isLastStep" class="btn btn-ink">
                                 Continue
                                 <x-icon name="arrow-right" class="h-4 w-4"/>
                             </button>
 
-                            <button type="submit" x-show="step === totalSteps" :disabled="submitting"
+                            <button type="submit" x-show="isLastStep" :disabled="submitting"
                                     class="btn btn-primary">
                                 <span x-show="!submitting">Complete Registration</span>
                                 <span x-show="submitting" x-cloak>Submitting…</span>
@@ -740,7 +742,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                 <div class="fixed inset-x-0 bottom-0 z-40 border-t border-ink-900/10 bg-white/95 backdrop-blur-sm md:hidden"
                      style="padding-bottom: env(safe-area-inset-bottom)">
                     <div class="flex items-center gap-3 px-4 py-3">
-                        <button type="button" @click="previous()" x-show="step > 1"
+                        <button type="button" @click="previous()" x-show="! isFirstStep"
                                 class="grid h-12 w-12 flex-none place-items-center rounded-xl border border-ink-900/15 text-ink-700"
                                 aria-label="Back to the previous step">
                             <x-icon name="chevron-left" class="h-5 w-5"/>
@@ -748,7 +750,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                         <div class="min-w-0 flex-1 leading-tight">
                             <p class="font-mono text-[0.55rem] uppercase tracking-[0.16em] text-ink-400">
-                                Step <span x-text="step"></span> of <span x-text="totalSteps"></span>
+                                Step <span x-text="stepNumber"></span> of <span x-text="totalSteps"></span>
                             </p>
                             {{-- Before a category is picked the fee is genuinely
                                  unknown; "BDT 0" would read as free. --}}
@@ -756,13 +758,13 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                x-text="form.category ? 'BDT ' + formattedFee : 'Choose your category'"></p>
                         </div>
 
-                        <button type="button" @click="next()" x-show="step < totalSteps"
+                        <button type="button" @click="next()" x-show="! isLastStep"
                                 class="btn btn-ink !h-12 flex-none !px-5">
                             Continue
                             <x-icon name="arrow-right" class="h-4 w-4"/>
                         </button>
 
-                        <button type="submit" x-show="step === totalSteps" :disabled="submitting"
+                        <button type="submit" x-show="isLastStep" :disabled="submitting"
                                 class="btn btn-primary !h-12 flex-none !px-5">
                             <span x-show="!submitting">Complete</span>
                             <span x-show="submitting" x-cloak>Sending…</span>

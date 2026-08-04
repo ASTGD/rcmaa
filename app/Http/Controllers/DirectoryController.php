@@ -24,6 +24,9 @@ class DirectoryController extends Controller
      */
     private const BATCHES_PER_PAGE = 6;
 
+    /** Group key for registrants with no session — the teaching staff. */
+    public const FACULTY = 'faculty';
+
     public function __invoke(Request $request): View
     {
         $filters = array_filter([
@@ -34,36 +37,52 @@ class DirectoryController extends Controller
 
         $matching = fn () => Registration::listed()
             ->when($filters['q'] ?? null, fn ($q, $term) => $q->search($term))
-            ->when($filters['session'] ?? null, fn ($q, $session) => $q->where('session', $session))
-            ->when($filters['degree'] ?? null, fn ($q, $degree) => $q->where('degree', $degree));
+            ->when($filters['degree'] ?? null, fn ($q, $degree) => $q->where('degree', $degree))
+            ->when($filters['session'] ?? null, fn ($q, $session) => $session === self::FACULTY
+                ? $q->whereNull('session')
+                : $q->where('session', $session));
 
-        // Newest batch first — most registrants are recent graduates looking
-        // for their own year.
-        $sessions = $matching()->distinct()->orderByDesc('session')->pluck('session');
+        // Teachers register as staff and have no session, so they would
+        // otherwise collect under a nameless empty batch. They get a group of
+        // their own, shown first.
+        $sessions = $matching()->whereNotNull('session')
+            ->distinct()->orderByDesc('session')->pluck('session');
+
+        $groups = $matching()->whereNull('session')->exists()
+            ? $sessions->prepend(self::FACULTY)
+            : $sessions;
 
         $page = LengthAwarePaginator::resolveCurrentPage();
-        $visible = $sessions->forPage($page, self::BATCHES_PER_PAGE)->values();
+        $visible = $groups->forPage($page, self::BATCHES_PER_PAGE)->values();
 
-        $batches = $matching()
-            ->whereIn('session', $visible)
+        $people = $matching()
+            ->where(fn ($q) => $q
+                ->whereIn('session', $visible->reject(fn ($g) => $g === self::FACULTY))
+                ->when($visible->contains(self::FACULTY), fn ($q) => $q->orWhereNull('session')))
             ->orderBy('full_name_en')
             ->get()
-            ->groupBy('session')
-            ->sortKeysDesc();
+            ->groupBy(fn ($r) => $r->session ?: self::FACULTY);
+
+        // Keep the page's own order rather than whatever groupBy produced.
+        $batches = $visible->mapWithKeys(fn ($key) => [$key => $people->get($key, collect())])
+            ->reject(fn ($rows) => $rows->isEmpty());
 
         return view('pages.directory', [
             'title' => 'Alumni Directory',
             'description' => 'Verified alumni of the Department of Mathematics, Rajshahi College, listed batch by batch.',
             'batches' => $batches,
+            'facultyKey' => self::FACULTY,
             'paginator' => new LengthAwarePaginator(
-                $visible, $sessions->count(), self::BATCHES_PER_PAGE, $page,
+                $visible, $groups->count(), self::BATCHES_PER_PAGE, $page,
                 ['path' => route('directory'), 'query' => $request->query()]
             ),
             'total' => $matching()->count(),
-            'batchCount' => $sessions->count(),
-            // Every batch on record, so the jump list still offers batches that
-            // the current search happens to exclude.
-            'allSessions' => Registration::listed()->distinct()->orderByDesc('session')->pluck('session'),
+            'batchCount' => $groups->count(),
+            // Every group on record, so the jump list still offers ones that the
+            // current search happens to exclude.
+            'allSessions' => Registration::listed()->whereNotNull('session')
+                ->distinct()->orderByDesc('session')->pluck('session'),
+            'hasFaculty' => Registration::listed()->whereNull('session')->exists(),
             'filters' => $filters,
         ]);
     }

@@ -18,7 +18,6 @@ const STORAGE_KEY = 'rcmaa.registration.draft';
 
 export default (config = {}) => ({
     step: 1,
-    totalSteps: 7,
     submitting: false,
     errors: {},
 
@@ -88,9 +87,47 @@ export default (config = {}) => ({
         });
         this.$watch('step', () => this.animateStep());
         // Changing away from "both" must not leave a stale Masters session behind.
+        this.$watch('form.category', () => {
+            if (! this.activeSteps.includes(this.step)) {
+                this.step = this.activeSteps.find((s) => s > this.step) ?? this.activeSteps[0];
+            }
+        });
         this.$watch('form.degree', () => {
             if (! this.needsMastersSession) this.form.masters_session = '';
         });
+    },
+
+    // --- Which steps this registrant walks through ------------------------
+
+    /**
+     * Teachers register as staff, so the academic and professional steps do not
+     * apply to them and are skipped entirely.
+     *
+     * The step identities stay 1–7 — every panel, validation rule and error
+     * mapping is keyed on them — and only the path through them changes. What
+     * the reader sees is a form of five steps, numbered one to five.
+     */
+    get activeSteps() {
+        return this.form.category === 'teacher'
+            ? [1, 2, 5, 6, 7]
+            : [1, 2, 3, 4, 5, 6, 7];
+    },
+
+    get totalSteps() {
+        return this.activeSteps.length;
+    },
+
+    /** Position in the walk, which is what the counter and the rail show. */
+    get stepNumber() {
+        return this.activeSteps.indexOf(this.step) + 1;
+    },
+
+    get isFirstStep() {
+        return this.step === this.activeSteps[0];
+    },
+
+    get isLastStep() {
+        return this.step === this.activeSteps[this.activeSteps.length - 1];
     },
 
     // --- Academic ---------------------------------------------------------
@@ -310,6 +347,9 @@ export default (config = {}) => ({
     validateStep() {
         this.errors = {};
 
+        // A step this category never sees has nothing to answer for.
+        if (! this.activeSteps.includes(this.step)) return true;
+
         this.required(this.step).forEach((field) => {
             const value = this.form[field];
             if (value === '' || value === null || value === false || value === undefined) {
@@ -352,17 +392,20 @@ export default (config = {}) => ({
 
     next() {
         if (! this.validateStep()) return this.focusFirstError();
-        if (this.step < this.totalSteps) this.step += 1;
+        const at = this.activeSteps.indexOf(this.step);
+        if (at > -1 && at < this.activeSteps.length - 1) this.step = this.activeSteps[at + 1];
         this.toTop();
     },
 
     previous() {
         this.errors = {};
-        if (this.step > 1) this.step -= 1;
+        const at = this.activeSteps.indexOf(this.step);
+        if (at > 0) this.step = this.activeSteps[at - 1];
         this.toTop();
     },
 
     goTo(step) {
+        if (! this.activeSteps.includes(step)) return;
         if (step > this.step && ! this.validateStep()) return this.focusFirstError();
         this.step = step;
         this.toTop();
@@ -412,6 +455,6 @@ export default (config = {}) => ({
     },
 
     get progress() {
-        return Math.round(((this.step - 1) / (this.totalSteps - 1)) * 100);
+        return Math.round(((this.stepNumber - 1) / (this.totalSteps - 1)) * 100);
     },
 });

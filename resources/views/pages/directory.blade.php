@@ -22,6 +22,11 @@
                         </label>
                         <select id="session" name="session" class="input">
                             <option value="">All batches</option>
+                            @if ($hasFaculty)
+                                <option value="{{ $facultyKey }}" @selected(($filters['session'] ?? null) === $facultyKey)>
+                                    Teachers &amp; Staff
+                                </option>
+                            @endif
                             @foreach ($allSessions as $session)
                                 <option value="{{ $session }}" @selected(($filters['session'] ?? null) === $session)>
                                     {{ $session }}
@@ -52,10 +57,20 @@
             </form>
 
             {{-- Jump straight to a batch --}}
-            @if ($allSessions->count() > 1)
+            @if ($allSessions->count() + ($hasFaculty ? 1 : 0) > 1)
                 <nav class="mt-8" aria-label="Jump to a batch" data-reveal>
                     <p class="font-mono text-[0.6rem] uppercase tracking-[0.16em] text-ink-400">Jump to batch</p>
                     <ul class="mt-3 flex flex-wrap gap-1.5">
+                        @if ($hasFaculty)
+                            <li>
+                                <a href="{{ route('directory', ['session' => $facultyKey]) }}"
+                                   @class([
+                                       'inline-block rounded-lg border px-2.5 py-1 font-mono text-[0.72rem] transition',
+                                       'border-brass-500 bg-brass-500 text-ink-950' => ($filters['session'] ?? null) === $facultyKey,
+                                       'border-ink-900/12 text-ink-600 hover:border-brass-500 hover:text-brass-700' => ($filters['session'] ?? null) !== $facultyKey,
+                                   ])>Teachers</a>
+                            </li>
+                        @endif
                         @foreach ($allSessions as $session)
                             <li>
                                 <a href="{{ route('directory', ['session' => $session]) }}"
@@ -71,7 +86,7 @@
             @endif
 
             <p class="mt-8 text-sm text-ink-500" data-reveal>
-                {{ number_format($total) }} {{ Str::plural('graduate', $total) }} across {{ number_format($batchCount) }} {{ Str::plural('batch', $batchCount) }}@if ($filters) matching your search @endif
+                {{ number_format($total) }} {{ Str::plural('member', $total) }} across {{ number_format($batchCount) }} {{ Str::plural('group', $batchCount) }}@if ($filters) matching your search @endif
             </p>
 
             @if ($batches->isNotEmpty())
@@ -80,10 +95,15 @@
                         <section id="batch-{{ Str::slug($session) }}" class="scroll-mt-28" data-reveal>
                             {{-- Batch heading --}}
                             <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-ink-900/10 pb-3">
-                                <h2 class="heading-display text-2xl text-ink-950">Session {{ $session }}</h2>
-                                <p lang="bn" class="font-bangla text-sm text-ink-500">সেশন {{ $session }}</p>
+                                @if ($session === $facultyKey)
+                                    <h2 class="heading-display text-2xl text-ink-950">Teachers &amp; Staff</h2>
+                                    <p lang="bn" class="font-bangla text-sm text-ink-500">শিক্ষকমণ্ডলী</p>
+                                @else
+                                    <h2 class="heading-display text-2xl text-ink-950">Session {{ $session }}</h2>
+                                    <p lang="bn" class="font-bangla text-sm text-ink-500">সেশন {{ $session }}</p>
+                                @endif
                                 <span class="ml-auto font-mono text-[0.68rem] uppercase tracking-[0.14em] text-brass-700">
-                                    {{ $people->count() }} {{ Str::plural('graduate', $people->count()) }}
+                                    {{ $people->count() }} {{ Str::plural($session === $facultyKey ? 'member' : 'graduate', $people->count()) }}
                                 </span>
                             </div>
 
@@ -109,7 +129,11 @@
 
                                             <p class="mt-2 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
                                                 <x-icon name="graduation" class="h-3.5 w-3.5 flex-none text-brass-600"/>
-                                                {{ $person->passing_year ? 'Passed '.$person->passing_year : 'Currently studying' }}
+                                                @if ($person->category === 'teacher')
+                                                    Department of Mathematics
+                                                @else
+                                                    {{ $person->passing_year ? 'Passed '.$person->passing_year : 'Currently studying' }}
+                                                @endif
                                             </p>
 
                                             @if ($person->profession)

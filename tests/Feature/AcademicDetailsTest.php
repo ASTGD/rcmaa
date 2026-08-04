@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Registration;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -169,5 +170,104 @@ class AcademicDetailsTest extends TestCase
             ->assertOk()
             ->assertSee('01990168773')
             ->assertSee('tel:01990168773', false);
+    }
+
+    // --- Teachers skip the academic and professional steps ----------------
+
+    /**
+     * Category 1 is the teaching staff. They are not graduates of the
+     * department, so parts 3 and 4 do not apply and are never shown to them —
+     * which means nothing in those parts can be required of them either.
+     */
+    #[Test]
+    public function a_teacher_registers_without_academic_or_professional_details(): void
+    {
+        $this->post(route('register.store'), $this->payload([
+            'category' => 'teacher',
+            'session' => null,
+            'degree' => null,
+            'passing_year' => null,
+            'employment_status' => null,
+            'profession' => null,
+            'organization' => null,
+        ]))->assertRedirect()->assertSessionHasNoErrors();
+
+        $r = Registration::firstOrFail();
+        $this->assertSame('teacher', $r->category);
+        foreach (['session', 'degree', 'passing_year', 'employment_status'] as $field) {
+            $this->assertNull($r->{$field}, "{$field} should be empty for a teacher");
+        }
+    }
+
+    #[Test]
+    public function everybody_else_must_still_give_a_session_and_degree(): void
+    {
+        $this->post(route('register.store'), $this->payload(['session' => null, 'degree' => null]))
+            ->assertSessionHasErrors(['session', 'degree']);
+
+        $this->post(route('register.store'), $this->payload(['employment_status' => null]))
+            ->assertSessionHasErrors('employment_status');
+
+        $this->assertSame(0, Registration::count());
+    }
+
+    #[Test]
+    public function the_form_knows_which_steps_a_teacher_walks_through(): void
+    {
+        $body = $this->get(route('register.create'))->assertOk()->getContent();
+
+        // Steps 3 and 4 are dropped from the rail and the walk for teachers.
+        $this->assertStringContainsString("'teacher'", $body);
+        $this->assertStringContainsString('activeSteps', $body);
+        $this->assertStringContainsString('x-text="stepNumber"', $body);
+        $this->assertStringContainsString('x-show="! isLastStep"', $body);
+    }
+
+    /** A teacher has no session, so they group under Teachers & Staff. */
+    #[Test]
+    public function teachers_are_listed_separately_in_the_directory(): void
+    {
+        $teacher = Registration::create($this->stored([
+            'category' => 'teacher', 'full_name_en' => 'Prof. Saiful Islam',
+            'email' => 'prof@example.test', 'session' => null, 'degree' => null,
+            'passing_year' => null, 'employment_status' => null,
+        ]));
+        $alumnus = Registration::create($this->stored([
+            'full_name_en' => 'Md. Rofikul Islam', 'email' => 'alum@example.test',
+            'session' => '2008-09', 'transaction_id' => 'ALUM000001',
+        ]));
+
+        $page = $this->actingAs(User::factory()->create(['is_admin' => true]))
+            ->get(route('directory'))->assertOk();
+
+        $page->assertSee('Teachers &amp; Staff', false)
+            ->assertSee('Prof. Saiful Islam')
+            ->assertSee('Session 2008-09')
+            ->assertSee('Md. Rofikul Islam')
+            ->assertSee('2 members across 2 groups');
+
+        // And they can be filtered on their own.
+        $this->actingAs(User::factory()->create(['is_admin' => true]))
+            ->get(route('directory', ['session' => 'faculty']))
+            ->assertOk()
+            ->assertSee('Prof. Saiful Islam')
+            ->assertDontSee('Md. Rofikul Islam');
+    }
+
+    private function stored(array $overrides = []): array
+    {
+        return array_merge([
+            'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
+            'full_name_en' => 'Someone', 'mobile' => '01712345678',
+            'email' => 'someone@example.test', 'present_address' => 'Rajshahi',
+            'session' => '2008-09', 'degree' => 'bsc', 'passing_year' => 2012,
+            'employment_status' => 'employed', 'profession' => 'Education',
+            'tshirt_size' => 'L', 'cultural_program' => false,
+            'guest_count' => '0', 'guests' => [], 'payment_method' => 'bkash',
+            'transaction_id' => 'TEACHERDIR', 'sender_number' => '01712345678',
+            'amount_paid' => 2535, 'amount_due' => 2535,
+            'payment_status' => Registration::STATUS_VERIFIED,
+            'listed_in_directory' => true,
+        ], $overrides);
     }
 }

@@ -72,7 +72,7 @@ class DirectoryBatchTest extends TestCase
             ->assertSee('Session 2014-15')
             ->assertSee('2 graduates')
             ->assertSee('1 graduate')
-            ->assertSee('3 graduates across 2 batches')
+            ->assertSee('3 members across 2 groups')
             ->assertSee('Alpha One')
             ->assertSee('Charlie Three');
     }
@@ -102,7 +102,7 @@ class DirectoryBatchTest extends TestCase
             ->assertOk()
             ->assertSee('Alpha One')
             ->assertDontSee('Charlie Three')
-            ->assertSee('1 graduate across 1 batch');
+            ->assertSee('1 member across 1 group');
     }
 
     /** Pagination counts batches, so a batch is never split across pages. */

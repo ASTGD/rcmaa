@@ -77,19 +77,19 @@ class RegistrationController extends Controller
             'permanent_address' => ['nullable', 'string', 'max:500'],
             // Canonical list, or whatever this record already holds — a legacy
             // import must stay editable.
-            'session' => ['required', Rule::in(array_merge(
+            'session' => ['required_unless:category,teacher', 'nullable', Rule::in(array_merge(
                 array_keys(config('rcmaa.options.sessions')),
                 array_filter([$registration->session])
             ))],
             'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
-            'degree' => ['required', Rule::in(array_keys($options['degrees']))],
+            'degree' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys($options['degrees']))],
             'class_roll' => ['nullable', 'string', 'max:64'],
             'registration_no' => ['nullable', 'string', 'max:64'],
             'passing_year' => [
                 'required_unless:category,current_student', 'nullable', 'integer',
                 'min:'.config('rcmaa.college_founded'), 'max:'.(date('Y') + 1),
             ],
-            'employment_status' => ['required', Rule::in(array_keys($options['employment_statuses']))],
+            'employment_status' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys($options['employment_statuses']))],
             'profession' => ['nullable', 'string', 'max:120'],
             'designation' => ['nullable', 'string', 'max:120'],
             'organization' => ['nullable', 'string', 'max:180'],
