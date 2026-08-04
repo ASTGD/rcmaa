@@ -1,0 +1,183 @@
+# Deployment
+
+Two audiences: whoever is **checking the build locally** before it ships, and
+whoever is **putting it on the server**. Do them in that order.
+
+---
+
+## Part 1 — Check it on your own machine
+
+Everything the site needs is in this repository apart from the two things that
+cannot be committed: `.env` (secrets) and `vendor/` + `node_modules/`
+(dependencies). The commands below rebuild all of it.
+
+```bash
+git clone https://github.com/ASTGD/rcmaa.git
+cd rcmaa
+
+composer install
+npm install
+
+cp .env.example .env
+php artisan key:generate
+
+touch database/database.sqlite
+php artisan migrate --seed
+php artisan storage:link
+
+npm run build
+php artisan serve
+```
+
+Open <http://127.0.0.1:8000>.
+
+**Sign in to the admin** at `/login` with the values from `.env`:
+`RCMAA_ADMIN_EMAIL` (default `admin@rcmaa.bd`) and `RCMAA_ADMIN_PASSWORD`
+(default `change-me`). If you change `RCMAA_ADMIN_PASSWORD`, re-run
+`php artisan db:seed` to apply it.
+
+### What you should see
+
+| Page | Expect |
+| --- | --- |
+| `/` | Video hero, countdown, "Join the Association" and "View Directory" |
+| `/committee` | 48 members across 4 committees, with portraits |
+| `/gallery` | 10 images |
+| `/heritage` | 28 milestones, 1873–2026 |
+| `/register` | 7-step form, category pricing, session dropdown |
+| `/directory` | Empty until somebody registers — this is correct |
+| `/faqs` | 14 questions |
+
+The directory and the home page's "Recently joined" panel are **empty on a fresh
+install**. Both are built from verified registrations, and there are none. To see
+them populated, register through the form, then verify the payment in
+`/admin/registrations`.
+
+### Run the tests
+
+```bash
+php artisan test
+./vendor/bin/pint --test
+```
+
+175 tests should pass. If any fail, stop and report before deploying.
+
+---
+
+## Part 2 — Put it on the server
+
+### Blocking prerequisites
+
+The application is finished, but **it will not function correctly until these are
+set**. Do not skip them.
+
+| Setting | Must become | Why |
+| --- | --- | --- |
+| `RCMAA_BKASH_NUMBER` | the committee's real number | Until then the payment step shows "Not configured — do not send money" and **no money can be collected** |
+| `MAIL_MAILER` | `smtp` (with host/user/pass) | On `log`, no email leaves the server: no confirmations, and the alumni portal's magic link never arrives, so that whole area is unusable |
+| `APP_ENV` | `production` | |
+| `APP_DEBUG` | `false` | Otherwise stack traces with database credentials are shown publicly on any error |
+| `APP_URL` | `https://rcmaa.bd` | Magic links and email URLs are built from this; on `http://localhost` they point nowhere |
+| `MAIL_FROM_ADDRESS` | a real address on the domain | |
+| `RCMAA_ADMIN_PASSWORD` | something strong | |
+
+`RCMAA_NAGAD_NUMBER`, `RCMAA_ROCKET_NUMBER` and `RCMAA_BANK_ACCOUNT` behave the
+same way as bKash — set them, or the client should confirm those methods are not
+being used so they can be removed from `config/rcmaa.php`.
+
+### Requirements
+
+PHP 8.4 with `pdo_mysql`, `mbstring`, `gd` (or `imagick`), `fileinfo`, `zip`;
+Composer; Node 20+ for the asset build; MySQL 8 / MariaDB 10.6+.
+
+Uploads are capped at 4 MB (payment receipts), so PHP needs at least
+`upload_max_filesize = 8M` and `post_max_size = 16M`.
+
+### Steps
+
+```bash
+git clone https://github.com/ASTGD/rcmaa.git
+cd rcmaa
+
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build          # build assets, then Node is no longer needed
+
+cp .env.example .env
+php artisan key:generate
+# ...now edit .env per the table above, and set DB_* for MySQL
+
+php artisan migrate --force --seed
+php artisan storage:link
+
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Point the web root at `public/`, never at the project root.
+
+Ownership and permissions:
+
+```bash
+chown -R www-data:www-data storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache
+```
+
+### Database
+
+`php artisan migrate --seed` builds everything: schema, 48 committee members, 28
+heritage milestones, events, gallery, notices, FAQs and the admin user. That is
+the canonical path — you do not need the dump.
+
+`database/dumps/rcmaa-seed.sql` is the same content as a portable SQL file, kept
+as a reference and a safety net. It contains **no registrations and no user
+accounts**. Only use it if you specifically want to inspect or restore content
+without running the seeders.
+
+### Images
+
+Committee portraits, gallery and event images are committed under
+`storage/app/public/`, and `php artisan storage:link` exposes them at `/storage`.
+If images 404 after deploying, the symlink is missing or the web root is wrong.
+
+`storage/app/public/registrations/` holds registrant photos and payment receipts.
+It is **deliberately excluded from git** — personal data. It is created on first
+upload; just make sure the directory is writable.
+
+---
+
+## After deploying — check these before announcing
+
+1. `/register` — the payment step shows the **real bKash number**, with no red
+   "Not configured" warning.
+2. Complete one real registration. The confirmation email must **arrive in an
+   inbox**, not the log.
+3. `/my` — request a link with that email; the magic link must arrive and open.
+4. `/admin/registrations` — the registration is listed; verify it; the receipt
+   thumbnail opens.
+5. `/registration-status` — look it up by reference + mobile; it reads "Verified".
+6. `/directory` — the person now appears under their batch heading.
+7. Delete that test registration from the admin before announcing.
+
+---
+
+## Things worth knowing
+
+**Registration is priced by category** and only teachers and alumni may bring
+guests. All of it lives in `config/rcmaa.php`; `app/Support/RegistrationPricing.php`
+is the single source of truth for money. Fees are snapshotted onto each
+registration, so changing a price later never rewrites what somebody was charged.
+
+**Sessions are a fixed dropdown** (`2025-26` back to `1950-51`), because the
+directory groups people by batch and free text produced `2008-09`, `2008-2009`
+and `২০০৮-০৯` for one cohort. The range is two constants in
+`config/rcmaa.php` (`session_newest`, `session_oldest`).
+
+**The alumni portal has no passwords.** Registrants get a signed link valid for
+one hour, which lets them correct their details, print an entry pass, attach a
+payment receipt and opt out of the public directory. It depends entirely on
+working email.
+
+**Phone numbers are published** in the alumni directory at the association's
+instruction. Registrants can withdraw from their portal, and committee members'
+private numbers are never published.

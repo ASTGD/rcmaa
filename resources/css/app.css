@@ -1,0 +1,538 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* ============================================================================
+   RCMAA design tokens
+   Palette: midnight-blackboard navy + brass/heritage gold + parchment.
+   The department is Mathematics and the college dates to 1873 — the system
+   reads as "brass instrument on a chalkboard", not generic edu-template.
+   ========================================================================== */
+@theme {
+    /* Type */
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --font-bangla: 'Hind Siliguri', 'Instrument Sans', ui-sans-serif, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    /* Ink — the blackboard */
+    --color-ink-950: #04080f;
+    --color-ink-900: #070e1b;
+    --color-ink-800: #0c1729;
+    --color-ink-700: #132340;
+    --color-ink-600: #1d3159;
+    --color-ink-500: #2b4372;
+    --color-ink-400: #4a638f;
+    --color-ink-300: #7b90b3;
+    --color-ink-200: #b3c1d6;
+    --color-ink-100: #dbe3ee;
+
+    /* Brass — the heritage accent */
+    --color-brass-900: #4a3711;
+    --color-brass-800: #6d5119;
+    --color-brass-700: #937027;
+    --color-brass-600: #b18c3a;
+    --color-brass-500: #c8a863;
+    --color-brass-400: #d9c08c;
+    --color-brass-300: #e7d5b0;
+    --color-brass-200: #f1e6d1;
+    --color-brass-100: #f8f2e6;
+
+    /* Parchment — the page */
+    --color-parchment: #f7f4ec;
+    --color-parchment-dim: #ebe6d9;
+
+    /* Chalk — a cool secondary used sparingly for "working" marks */
+    --color-chalk: #a8d5d8;
+
+    /* Motion */
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+    /* Layout */
+    --breakpoint-3xl: 112rem;
+}
+
+@layer base {
+    :root {
+        color-scheme: light;
+    }
+
+    /* Alpine strips this attribute once it boots; without the rule, every
+       x-show element flashes visible on first paint. */
+    [x-cloak] {
+        display: none !important;
+    }
+
+    html {
+        /* Lenis drives scrolling; native smooth-scroll would fight it. */
+        scroll-behavior: auto;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        background-color: var(--color-parchment);
+        color: var(--color-ink-900);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* Bangla copy needs its own face — Instrument Sans has no Bengali glyphs. */
+    :lang(bn),
+    .font-bangla {
+        font-family: var(--font-bangla);
+        line-height: 1.75;
+    }
+
+    ::selection {
+        background-color: var(--color-brass-500);
+        color: var(--color-ink-950);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-brass-600);
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+
+    /* Lenis: while smooth scroll is active the wrapper must not clip. */
+    html.lenis,
+    html.lenis body {
+        height: auto;
+    }
+
+    .lenis.lenis-smooth {
+        scroll-behavior: auto !important;
+    }
+
+    .lenis.lenis-stopped {
+        overflow: hidden;
+    }
+}
+
+/* ============================================================================
+   Components
+   ========================================================================== */
+@layer components {
+    .container-rc {
+        width: 100%;
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+        max-width: 82rem;
+    }
+
+    .container-narrow {
+        width: 100%;
+        margin-inline: auto;
+        padding-inline: 1.5rem;
+        max-width: 52rem;
+    }
+
+    /* Small caps eyebrow used above every section heading */
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--color-brass-700);
+    }
+
+    .eyebrow::before {
+        content: '';
+        width: 1.75rem;
+        height: 1px;
+        background: currentColor;
+        opacity: 0.6;
+    }
+
+    .eyebrow-light {
+        color: var(--color-brass-400);
+    }
+
+    .heading-display {
+        font-family: var(--font-display);
+        font-weight: 500;
+        font-optical-sizing: auto;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        text-wrap: balance;
+    }
+
+    .prose-rc {
+        line-height: 1.75;
+        color: var(--color-ink-600);
+        text-wrap: pretty;
+    }
+
+    .prose-rc p + p {
+        margin-top: 1.15em;
+    }
+
+    /* --- Buttons ---------------------------------------------------------- */
+    .btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        padding: 0.95rem 1.9rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        isolation: isolate;
+        transition: color 0.45s var(--ease-smooth), border-color 0.45s var(--ease-smooth),
+            transform 0.35s var(--ease-smooth), box-shadow 0.45s var(--ease-smooth);
+    }
+
+    .btn:active {
+        transform: scale(0.975);
+    }
+
+    /* The wipe: a panel that slides up from the baseline on hover. */
+    .btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        transform: translateY(101%);
+        transition: transform 0.55s var(--ease-smooth);
+    }
+
+    .btn:hover::after,
+    .btn:focus-visible::after {
+        transform: translateY(0);
+    }
+
+    .btn-primary {
+        background: var(--color-brass-500);
+        color: var(--color-ink-950);
+        box-shadow: 0 1px 0 rgb(255 255 255 / 0.25) inset;
+    }
+
+    .btn-primary::after {
+        background: var(--color-ink-900);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+        color: var(--color-brass-300);
+    }
+
+    .btn-ink {
+        background: var(--color-ink-900);
+        color: var(--color-parchment);
+    }
+
+    .btn-ink::after {
+        background: var(--color-brass-500);
+    }
+
+    .btn-ink:hover,
+    .btn-ink:focus-visible {
+        color: var(--color-ink-950);
+    }
+
+    .btn-outline {
+        border: 1px solid color-mix(in oklab, var(--color-ink-900) 25%, transparent);
+        color: var(--color-ink-900);
+    }
+
+    .btn-outline::after {
+        background: var(--color-ink-900);
+    }
+
+    .btn-outline:hover,
+    .btn-outline:focus-visible {
+        color: var(--color-parchment);
+        border-color: var(--color-ink-900);
+    }
+
+    .btn-outline-light {
+        border: 1px solid color-mix(in oklab, var(--color-parchment) 40%, transparent);
+        color: var(--color-parchment);
+    }
+
+    .btn-outline-light::after {
+        background: var(--color-parchment);
+    }
+
+    .btn-outline-light:hover,
+    .btn-outline-light:focus-visible {
+        color: var(--color-ink-950);
+        border-color: var(--color-parchment);
+    }
+
+    .btn-sm {
+        padding: 0.7rem 1.35rem;
+        font-size: 0.6875rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+    /* --- Cards ------------------------------------------------------------ */
+    .card {
+        position: relative;
+        background: #fff;
+        border: 1px solid color-mix(in oklab, var(--color-ink-900) 8%, transparent);
+        border-radius: 1.25rem;
+        transition: transform 0.5s var(--ease-smooth), box-shadow 0.5s var(--ease-smooth),
+            border-color 0.5s var(--ease-smooth);
+    }
+
+    .card-hover:hover {
+        transform: translateY(-6px);
+        border-color: color-mix(in oklab, var(--color-brass-500) 55%, transparent);
+        box-shadow: 0 24px 60px -28px rgb(7 14 27 / 0.35);
+    }
+
+    /* --- Forms ------------------------------------------------------------ */
+    .field-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: var(--color-ink-800);
+        margin-bottom: 0.5rem;
+    }
+
+    .field-label-bn {
+        font-family: var(--font-bangla);
+        font-weight: 500;
+        color: var(--color-ink-400);
+    }
+
+    .field-hint {
+        margin-top: 0.4rem;
+        font-size: 0.75rem;
+        color: var(--color-ink-400);
+    }
+
+    .field-error {
+        margin-top: 0.4rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #b42318;
+    }
+
+    .input {
+        width: 100%;
+        border: 1px solid color-mix(in oklab, var(--color-ink-900) 15%, transparent);
+        background: #fff;
+        border-radius: 0.75rem;
+        padding: 0.8rem 1rem;
+        font-size: 0.9375rem;
+        color: var(--color-ink-900);
+        transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
+    }
+
+    .input::placeholder {
+        color: color-mix(in oklab, var(--color-ink-400) 75%, transparent);
+    }
+
+    .input:hover {
+        border-color: color-mix(in oklab, var(--color-ink-900) 28%, transparent);
+    }
+
+    .input:focus {
+        outline: none;
+        border-color: var(--color-brass-600);
+        box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brass-500) 22%, transparent);
+    }
+
+    .input[aria-invalid='true'] {
+        border-color: #d92d20;
+    }
+
+    .input[aria-invalid='true']:focus {
+        box-shadow: 0 0 0 4px rgb(217 45 32 / 0.15);
+    }
+
+    textarea.input {
+        min-height: 8rem;
+        resize: vertical;
+        line-height: 1.65;
+    }
+
+    select.input {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 7.5 10 12l4.5-4.5' stroke='%232b4372' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.85rem center;
+        background-size: 1.15rem;
+        padding-right: 2.6rem;
+    }
+
+    /* Radio / checkbox rendered as selectable chips — matches the paper form's
+       [ ] boxes far better than default controls. */
+    .choice {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1.1rem;
+        border: 1px solid color-mix(in oklab, var(--color-ink-900) 15%, transparent);
+        border-radius: 0.75rem;
+        background: #fff;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--color-ink-700);
+        transition: all 0.25s var(--ease-smooth);
+    }
+
+    .choice:hover {
+        border-color: var(--color-brass-500);
+        background: var(--color-brass-100);
+    }
+
+    .choice input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .choice-box {
+        flex: none;
+        width: 1.05rem;
+        height: 1.05rem;
+        border: 1.5px solid color-mix(in oklab, var(--color-ink-900) 30%, transparent);
+        border-radius: 0.3rem;
+        display: grid;
+        place-items: center;
+        transition: all 0.2s var(--ease-smooth);
+    }
+
+    .choice input[type='radio'] ~ .choice-box {
+        border-radius: 999px;
+    }
+
+    .choice-box::after {
+        content: '';
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 0.1rem;
+        background: var(--color-ink-950);
+        transform: scale(0);
+        transition: transform 0.2s var(--ease-smooth);
+    }
+
+    .choice input[type='radio'] ~ .choice-box::after {
+        border-radius: 999px;
+    }
+
+    .choice:has(input:checked) {
+        border-color: var(--color-ink-900);
+        background: var(--color-brass-200);
+        color: var(--color-ink-950);
+    }
+
+    .choice:has(input:checked) .choice-box {
+        border-color: var(--color-ink-900);
+        background: var(--color-brass-500);
+    }
+
+    .choice:has(input:checked) .choice-box::after {
+        transform: scale(1);
+    }
+
+    .choice:has(input:focus-visible) {
+        outline: 2px solid var(--color-brass-600);
+        outline-offset: 2px;
+    }
+
+    /* --- Decorative ------------------------------------------------------- */
+    .rule-brass {
+        height: 1px;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in oklab, var(--color-brass-500) 70%, transparent),
+            transparent
+        );
+    }
+
+    /* Faint graph-paper grid — the "mathematics" texture. */
+    .bg-grid {
+        background-image: linear-gradient(
+                to right,
+                color-mix(in oklab, var(--color-ink-900) 5%, transparent) 1px,
+                transparent 1px
+            ),
+            linear-gradient(
+                to bottom,
+                color-mix(in oklab, var(--color-ink-900) 5%, transparent) 1px,
+                transparent 1px
+            );
+        background-size: 56px 56px;
+    }
+
+    .bg-grid-light {
+        background-image: linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+            linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+        background-size: 56px 56px;
+    }
+
+    .mask-fade-b {
+        -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+        mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    }
+}
+
+/* ============================================================================
+   Animation primitives
+   ========================================================================== */
+
+/* Split-text animation primitives. JS wraps lines/words in these. */
+.split-line {
+    display: block;
+    overflow: hidden;
+}
+
+.split-inner {
+    display: block;
+    will-change: transform;
+}
+
+/* Elements marked for reveal start hidden so there is no flash before GSAP
+   takes over. `.js-ready` is set on <html> as soon as app.js boots; without JS
+   the guard never applies and everything renders normally. */
+.js-ready [data-reveal] {
+    opacity: 0;
+}
+
+.js-ready [data-hero-mask] {
+    clip-path: inset(100% 0 0 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-ready [data-reveal],
+    .js-ready [data-hero-mask] {
+        opacity: 1 !important;
+        clip-path: none !important;
+        transform: none !important;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

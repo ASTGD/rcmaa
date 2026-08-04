@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080" role="img" aria-label="Placeholder hero backdrop">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#0c1729"/>
+      <stop offset="0.55" stop-color="#070e1b"/>
+      <stop offset="1" stop-color="#04080f"/>
+    </linearGradient>
+    <radialGradient id="glowA" cx="0.22" cy="0.28" r="0.55">
+      <stop offset="0" stop-color="#2b4372" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#2b4372" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="0.82" cy="0.72" r="0.5">
+      <stop offset="0" stop-color="#c8a863" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#c8a863" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="graph" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0H0V60" fill="none" stroke="#ffffff" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <rect width="1920" height="1080" fill="url(#graph)"/>
+  <rect width="1920" height="1080" fill="url(#glowA)"/>
+  <rect width="1920" height="1080" fill="url(#glowB)"/>
+
+  <!-- Chalked working: a Gaussian curve and its axes -->
+  <g stroke="#a8d5d8" stroke-opacity="0.28" fill="none" stroke-width="2" stroke-linecap="round">
+    <path d="M240 780h700"/>
+    <path d="M300 860V420"/>
+    <path d="M300 780c110 0 120-300 290-300s180 300 290 300" stroke="#c8a863" stroke-opacity="0.5" stroke-width="3"/>
+  </g>
+
+  <g fill="#c8a863" fill-opacity="0.22" font-family="Georgia, serif" font-style="italic">
+    <text x="1180" y="360" font-size="120">&#8747;</text>
+    <text x="1260" y="360" font-size="66">f(x)&#8201;dx</text>
+    <text x="1180" y="520" font-size="66">&#928; &#8901; &#963; &#8901; &#8734;</text>
+    <text x="1180" y="660" font-size="52">e</text>
+    <text x="1212" y="632" font-size="34">i&#960;</text>
+    <text x="1256" y="660" font-size="52">+ 1 = 0</text>
+  </g>
+
+  <g fill="#ffffff" fill-opacity="0.06">
+    <circle cx="1560" cy="880" r="180"/>
+    <circle cx="380" cy="220" r="120"/>
+  </g>
+
+  <text x="960" y="1010" text-anchor="middle" fill="#ffffff" fill-opacity="0.14"
+        font-family="ui-monospace, monospace" font-size="22" letter-spacing="10">
+    PLACEHOLDER — REPLACE WITH CAMPUS FOOTAGE
+  </text>
+</svg>

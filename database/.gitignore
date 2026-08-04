@@ -1,0 +1,8 @@
+# The working SQLite database is a local artefact — it will hold real
+# registrant data the moment the site is live. Rebuild it instead:
+#   touch database/database.sqlite && php artisan migrate --seed
+# A portable dump of the seeded content lives in database/dumps/.
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal

@@ -1,0 +1,173 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Support\RegistrationPricing;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
+
+class RegistrationRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return (bool) config('rcmaa.registration.open');
+    }
+
+    public function rules(): array
+    {
+        $options = config('rcmaa.options');
+        $currentYear = (int) date('Y');
+
+        return [
+            // Which price band the registrant falls into — drives the fee and
+            // whether guests are permitted at all.
+            'category' => ['required', Rule::in(RegistrationPricing::keys())],
+
+            // Part 1 — Personal
+            'full_name_en' => ['required', 'string', 'max:120'],
+            'full_name_bn' => ['nullable', 'string', 'max:120'],
+            'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
+            'mobile' => ['required', 'string', 'max:32', 'regex:/^(\+?88)?01[3-9]\d{8}$/'],
+            'whatsapp' => ['nullable', 'string', 'max:32', 'regex:/^(\+?\d{1,3})?[\d\s-]{6,18}$/'],
+            // Deliberately not `dns` — it makes a submission depend on a live DNS
+            // lookup and rejects otherwise-valid domains that publish no MX record.
+            'email' => ['required', 'email:rfc', 'max:190'],
+            'present_address' => ['required', 'string', 'max:500'],
+            'permanent_address' => ['nullable', 'string', 'max:500'],
+
+            // Part 2 — Academic
+            'session' => ['required', Rule::in(array_keys(config('rcmaa.options.sessions')))],
+            'degree' => ['required', Rule::in(array_keys($options['degrees']))],
+            'class_roll' => ['nullable', 'string', 'max:64'],
+            'registration_no' => ['nullable', 'string', 'max:64'],
+            'passing_year' => ['required', 'integer', 'min:'.config('rcmaa.college_founded'), 'max:'.($currentYear + 1)],
+
+            // Part 3 — Professional
+            'employment_status' => ['required', Rule::in(array_keys($options['employment_statuses']))],
+            'profession' => ['nullable', 'required_if:employment_status,employed,self_employed', 'string', 'max:120'],
+            'designation' => ['nullable', 'string', 'max:120'],
+            'organization' => ['nullable', 'required_if:employment_status,employed,self_employed', 'string', 'max:180'],
+
+            // Part 4 — Reunion & event
+            'tshirt_size' => ['required', Rule::in($options['tshirt_sizes'])],
+            'cultural_program' => ['required', 'boolean'],
+            'guest_count' => ['required', Rule::in(array_keys($options['guest_counts']))],
+            'guests' => ['array', 'max:8'],
+            'guests.*.name' => ['required', 'string', 'max:120'],
+            'guests.*.relation' => ['nullable', 'string', 'max:60'],
+            'guests.*.occupation' => ['nullable', 'string', 'max:120'],
+
+            // Part 5 — Memories
+            'memories' => ['nullable', 'string', 'max:4000'],
+
+            // Part 6 — Photo
+            'photo' => [
+                'nullable', 'image', 'mimes:jpg,jpeg,png,webp',
+                'max:'.config('rcmaa.registration.photo_max_kb'),
+                'dimensions:min_width=200,min_height=200',
+            ],
+
+            // Part 7 — Payment
+            'payment_method' => ['required', Rule::in(array_keys(config('rcmaa.payment.methods')))],
+            'transaction_id' => [
+                'required', 'string', 'max:64', 'alpha_num',
+                Rule::unique('registrations')->where(
+                    fn ($query) => $query->where('payment_method', $this->input('payment_method'))
+                ),
+            ],
+            'sender_number' => ['required', 'string', 'max:32'],
+            'payment_receipt' => [
+                'nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf',
+                'max:'.config('rcmaa.registration.receipt_max_kb'),
+            ],
+            'amount_paid' => ['required', 'integer', 'min:1', 'max:1000000'],
+            'terms' => ['accepted'],
+
+            'website' => ['prohibited'], // honeypot
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
+            'transaction_id.unique' => 'This transaction ID has already been used for a registration. If you believe this is an error, contact the helpdesk.',
+            'terms.accepted' => 'Please confirm that the information you provided is correct.',
+            'photo.max' => 'The passport photo must not be larger than 1 MB.',
+            'photo.dimensions' => 'The photo is too small — please upload an image at least 200×200 pixels.',
+            'payment_receipt.mimes' => 'The receipt must be a JPG, PNG, WebP or PDF file.',
+            'payment_receipt.max' => 'The receipt must not be larger than 4 MB.',
+            'website.prohibited' => 'Your submission could not be processed.',
+            'guests.*.name.required' => 'Please provide a name for each accompanying guest.',
+            'profession.required_if' => 'Please tell us your profession or sector.',
+            'organization.required_if' => 'Please tell us where you work.',
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'mobile' => preg_replace('/[\s-]/', '', (string) $this->input('mobile')),
+            'cultural_program' => filter_var($this->input('cultural_program'), FILTER_VALIDATE_BOOL),
+            // Drop rows the repeater left blank so an empty extra slot isn't an error.
+            'guests' => collect($this->input('guests', []))
+                ->filter(fn ($guest) => filled($guest['name'] ?? null))
+                ->values()
+                ->all(),
+        ]);
+    }
+
+    public function after(): array
+    {
+        return [
+            function (Validator $validator) {
+                // Guests declared vs guests actually supplied must agree, otherwise
+                // the fee we charge and the seats we reserve drift apart.
+                $category = $this->input('category');
+                $declared = $this->input('guest_count');
+                $supplied = count($this->input('guests', []));
+
+                // Categories 3 and 4 are individual registrations only.
+                if (! RegistrationPricing::allowsGuests($category) && ($supplied > 0 || $declared !== '0')) {
+                    $validator->errors()->add(
+                        'guest_count',
+                        'The '.RegistrationPricing::label($category).' category cannot include accompanying guests.'
+                    );
+
+                    return;
+                }
+
+                if ($declared !== '3+' && (int) $declared !== $supplied) {
+                    $validator->errors()->add(
+                        'guests',
+                        "You selected {$declared} guest(s) but provided details for {$supplied}."
+                    );
+                }
+
+                if ($declared === '3+' && $supplied < 3) {
+                    $validator->errors()->add('guests', 'Please provide details for at least three guests.');
+                }
+
+                // Underpayment is a hard stop; overpayment is allowed and refunded
+                // at the desk, so it only fails when short.
+                $expected = $this->expectedFee($supplied);
+
+                if ((int) $this->input('amount_paid') < $expected) {
+                    $validator->errors()->add(
+                        'amount_paid',
+                        "The total for you plus {$supplied} guest(s) is BDT ".number_format($expected).
+                        '. Please pay the full amount and enter it here.'
+                    );
+                }
+            },
+        ];
+    }
+
+    public function expectedFee(?int $guests = null): int
+    {
+        $guests ??= count($this->input('guests', []));
+
+        return RegistrationPricing::total($this->input('category'), $guests);
+    }
+}

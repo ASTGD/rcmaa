@@ -1,0 +1,15 @@
+# The parent storage/app/.gitignore excludes everything with a bare `*`, and a
+# re-included directory does not re-include what is inside it — so each content
+# folder needs its contents named explicitly.
+#
+# These are site content: the seeders reference these exact filenames and the
+# site renders broken images without them.
+!committee/
+!committee/**
+!events/
+!events/**
+!gallery/
+!gallery/**
+
+# Anything a registrant uploads is personal data and never goes to git.
+registrations/
