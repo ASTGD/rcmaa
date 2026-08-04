@@ -78,7 +78,7 @@ set**. Do not skip them.
 
 | Setting | Must become | Why |
 | --- | --- | --- |
-| `RCMAA_BKASH_NUMBER` | the committee's real number | Until then the payment step shows "Not configured — do not send money" and **no money can be collected** |
+| `RCMAA_BKASH_NUMBER` | already set to `01400366369` | The association's bKash **Merchant** account. Confirm it is still correct before launch |
 | `MAIL_MAILER` | `smtp` (with host/user/pass) | On `log`, no email leaves the server: no confirmations, and the alumni portal's magic link never arrives, so that whole area is unusable |
 | `APP_ENV` | `production` | |
 | `APP_DEBUG` | `false` | Otherwise stack traces with database credentials are shown publicly on any error |
@@ -86,9 +86,11 @@ set**. Do not skip them.
 | `MAIL_FROM_ADDRESS` | a real address on the domain | |
 | `RCMAA_ADMIN_PASSWORD` | something strong | |
 
-`RCMAA_NAGAD_NUMBER`, `RCMAA_ROCKET_NUMBER` and `RCMAA_BANK_ACCOUNT` behave the
-same way as bKash — set them, or the client should confirm those methods are not
-being used so they can be removed from `config/rcmaa.php`.
+bKash is the **only** payment method — the association confirmed on 4 August 2026
+that Nagad, Rocket and bank transfer are not used, and they have been removed.
+Because it is a **Merchant** account, the form, FAQ and help pages all tell people
+to use the bKash app's "Payment" option rather than "Send Money"; money sent the
+wrong way does not reach a Merchant account correctly.
 
 ### Requirements
 

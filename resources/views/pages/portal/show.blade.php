@@ -134,7 +134,7 @@
                             </p>
                         @else
                             <p class="text-sm text-ink-500">
-                                Nothing attached yet. A screenshot of your bKash or Nagad confirmation
+                                Nothing attached yet. A screenshot of your bKash confirmation
                                 helps the committee verify you without telephoning.
                             </p>
                         @endif

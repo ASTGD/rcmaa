@@ -26,7 +26,7 @@
             'Committee members with administrator access can see your full record in order to verify payments and organise events.',
         ],
         'Payment information' => [
-            'We do not process card payments and we never ask for a PIN, OTP or password. You send money directly to the association through bKash, Nagad, Rocket or a bank transfer, and then tell us the transaction reference so a committee member can match it against the account. We store only that reference, the sending number and the amount.',
+            'We do not process card payments and we never ask for a PIN, OTP or password. You pay the association directly through its bKash Merchant account, and then tell us the transaction reference so a committee member can match it against the account. We store only that reference, the sending number, the amount and, if you upload one, the receipt you attach.',
         ],
         'How long we keep it' => [
             'Registration records are kept for as long as you remain a member of the association, and are used to maintain the historical record of who attended which reunion. You may ask us to remove your entry from the public directory, or to delete your record entirely, at any time.',

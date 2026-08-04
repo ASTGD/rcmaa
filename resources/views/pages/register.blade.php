@@ -491,8 +491,15 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                         </div>
                                     @endforeach
                                 </div>
+                                {{-- The association's bKash is a Merchant account, so the
+                                     customer journey is "Payment" — "Send Money" is for
+                                     personal numbers and will not reach it correctly. --}}
                                 <p class="field-hint">
-                                    Use the &ldquo;Send Money&rdquo; option, not &ldquo;Payment&rdquo;, for the mobile financial services above.
+                                    This is a bKash <strong>Merchant</strong> account &mdash; choose
+                                    <strong>&ldquo;Payment&rdquo;</strong> in your bKash app, not
+                                    &ldquo;Send Money&rdquo;.
+                                    <span lang="bn" class="font-bangla">বিকাশ অ্যাপে &ldquo;Payment&rdquo; অপশন
+                                    ব্যবহার করুন, &ldquo;Send Money&rdquo; নয়।</span>
                                 </p>
                             </div>
 
@@ -533,7 +540,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                         </span>
                                         <span class="min-w-0">
                                             <span class="block text-sm font-semibold text-ink-800"
-                                                  x-text="receiptName || 'Attach your bKash / Nagad confirmation'"></span>
+                                                  x-text="receiptName || 'Attach your bKash confirmation'"></span>
                                             <span class="block text-xs text-ink-400">
                                                 Screenshot of the confirmation SMS, or a bank slip &middot;
                                                 JPG, PNG, WebP or PDF &middot; maximum 4 MB

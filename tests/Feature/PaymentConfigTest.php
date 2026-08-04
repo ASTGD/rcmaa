@@ -47,4 +47,61 @@ class PaymentConfigTest extends TestCase
         $this->get(route('contact'))->assertOk()->assertSee('+880 1643-740416');
         $this->get(route('home'))->assertOk()->assertSee('+880 1643-740416');
     }
+
+    /**
+     * The association collects through one bKash Merchant account. Two details
+     * matter and both are easy to get wrong: the number itself, and the fact
+     * that a Merchant account needs "Payment" rather than "Send Money" — money
+     * sent the wrong way does not arrive correctly.
+     */
+    #[Test]
+    public function bkash_is_the_only_method_and_it_is_a_merchant_account(): void
+    {
+        $methods = config('rcmaa.payment.methods');
+
+        $this->assertSame(['bkash'], array_keys($methods));
+        $this->assertSame('01400366369', $methods['bkash']['number']);
+        $this->assertSame('Merchant', $methods['bkash']['type']);
+    }
+
+    #[Test]
+    public function the_form_tells_people_to_use_payment_not_send_money(): void
+    {
+        $body = $this->get(route('register.create'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('01400366369', $body);
+        $this->assertStringContainsString('Merchant', $body);
+        $this->assertStringContainsString('&ldquo;Payment&rdquo;', $body);
+        $this->assertStringNotContainsString(
+            'Use the &ldquo;Send Money&rdquo; option', $body,
+            'The old Personal-account instruction must be gone.'
+        );
+
+        // The retired methods must not be offered anywhere on the form.
+        foreach (['Nagad', 'Rocket', 'Bank Transfer'] as $gone) {
+            $this->assertStringNotContainsString($gone, $body, "{$gone} should no longer be offered.");
+        }
+    }
+
+    #[Test]
+    public function a_registration_can_only_be_paid_by_bkash(): void
+    {
+        $payload = [
+            'category' => 'alumni', 'full_name_en' => 'Payment Method Check',
+            'mobile' => '01712345678', 'email' => 'pm@example.test',
+            'present_address' => 'Rajshahi', 'session' => '2008-09',
+            'degree' => 'bsc', 'passing_year' => 2012,
+            'employment_status' => 'employed', 'profession' => 'Education',
+            'organization' => 'Rajshahi College', 'tshirt_size' => 'L',
+            'cultural_program' => '0', 'guest_count' => '0',
+            'transaction_id' => 'BKASHONLY1', 'sender_number' => '01712345678',
+            'amount_paid' => 2535, 'terms' => '1',
+        ];
+
+        $this->post(route('register.store'), ['payment_method' => 'nagad'] + $payload)
+            ->assertSessionHasErrors('payment_method');
+
+        $this->post(route('register.store'), ['payment_method' => 'bkash'] + $payload)
+            ->assertRedirect()->assertSessionHasNoErrors();
+    }
 }

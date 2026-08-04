@@ -38,7 +38,7 @@
                         ['user', 'Your details', 'Name in English and Bangla, mobile number, email, and your present address.'],
                         ['graduation', 'Academic record', 'Your session and passing year. Roll and registration numbers are optional.'],
                         ['camera', 'A passport photo', 'JPG, PNG or WebP, no larger than 1 MB. Used on your reunion identity card.'],
-                        ['heart', 'Payment ready', 'A bKash, Nagad, Rocket or bank transfer, and the transaction ID from the confirmation SMS.'],
+                        ['heart', 'Payment ready', 'A bKash Payment to the association&rsquo;s Merchant account, and the transaction ID from the confirmation SMS.'],
                     ] as [$icon, $heading, $body])
                         <article class="card p-7" data-reveal-item>
                             <span class="grid h-12 w-12 place-items-center rounded-xl bg-ink-900 text-brass-500">

@@ -205,29 +205,15 @@ return [
 
     'payment' => [
         'methods' => [
+            // The association collects through one bKash Merchant account. It is
+            // a Merchant, not Personal, account — customers must use "Payment",
+            // not "Send Money", or the transfer will not reach it correctly.
             'bkash' => [
                 'label' => 'bKash',
-                'number' => env('RCMAA_BKASH_NUMBER', '01XXX-XXXXXX'),
-                'type' => 'Personal',
+                'number' => env('RCMAA_BKASH_NUMBER', '01400366369'),
+                'type' => 'Merchant',
+                'instruction' => 'Payment',
                 'colour' => '#e2136e',
-            ],
-            'nagad' => [
-                'label' => 'Nagad',
-                'number' => env('RCMAA_NAGAD_NUMBER', '01XXX-XXXXXX'),
-                'type' => 'Personal',
-                'colour' => '#f6921e',
-            ],
-            'rocket' => [
-                'label' => 'Rocket',
-                'number' => env('RCMAA_ROCKET_NUMBER', '01XXX-XXXXXX'),
-                'type' => 'Personal',
-                'colour' => '#8c3494',
-            ],
-            'bank' => [
-                'label' => 'Bank Transfer',
-                'number' => env('RCMAA_BANK_ACCOUNT', 'A/C 0000 0000 0000 — Sonali Bank, Rajshahi College Branch'),
-                'type' => 'Account',
-                'colour' => '#1d3159',
             ],
         ],
     ],
