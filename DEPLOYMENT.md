@@ -151,6 +151,18 @@ If images 404 after deploying, the symlink is missing or the web root is wrong.
 It is **deliberately excluded from git** — personal data. It is created on first
 upload; just make sure the directory is writable.
 
+**Replacing a photo in place is safe.** Media URLs carry the file's modification
+time (`?v=…`, see `Publishable::diskUrl`), so keeping the filename — same person,
+better crop — still busts every visitor's cache. Before that existed, two
+re-cropped portraits deployed correctly and the site went on showing the old
+ones. If a replacement does not appear, check the `?v=` actually changed.
+
+**The cards crop to 4:5, so framing decides how big a face lands.** A wide
+environmental shot centre-crops to a tiny head next to a tight headshot, however
+many pixels it has. Aim for roughly 800×1000 head-and-shoulders; anything under
+about 800px wide is upscaled into the card and looks soft. Several portraits on
+`/committee` are still well under that and want better originals.
+
 ---
 
 ## After deploying — check these before announcing
@@ -210,7 +222,9 @@ below is confined to this one site.
 
 ```bash
 cd /home/rcmalumni.astgd.com/rcmaa      # the app root, not public_html
-sudo -u rcmal8475 git pull
+sudo -u rcmal8475 env HOME=/home/rcmalumni.astgd.com \
+  GIT_SSH_COMMAND='ssh -i /home/rcmalumni.astgd.com/.ssh/rcmaa_deploy -o IdentitiesOnly=yes' \
+  git pull --ff-only
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php /usr/bin/composer install --no-dev --optimize-autoloader
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan migrate --force
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan optimize:clear
@@ -219,7 +233,14 @@ sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan route:cache
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan view:cache
 ```
 
-### Four things that will bite you
+### Five things that will bite you
+
+**The deploy key is not wired into ssh.** There is no `~/.ssh/config` for the
+site user, so a bare `sudo -u rcmal8475 git pull` offers no key and fails with
+`Permission denied (publickey)` — hence the `GIT_SSH_COMMAND` above. Running it
+as root instead fails differently, on git's `dubious ownership` guard. Writing
+the ssh config once would let the short command work; it has not been done.
+
 
 **Work in `rcmaa/`, not `public_html/`.** `public_html` is a symlink to
 `rcmaa/public`. Running npm or git through the symlink half-works — npm walks up
