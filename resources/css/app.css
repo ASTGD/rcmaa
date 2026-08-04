@@ -45,6 +45,10 @@
 
     /* Chalk — a cool secondary used sparingly for "working" marks */
     --color-chalk: #a8d5d8;
+    /* The countdown has to carry across a moving video, where gold sits too
+       close to the footage in both hue and value. This is the chalk colour
+       pushed to something that reads instantly on a dark ground. */
+    --color-chalk-bright: #5fe3d3;
 
     /* Motion */
     --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);

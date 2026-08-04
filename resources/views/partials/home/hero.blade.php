@@ -81,43 +81,42 @@
             <a href="{{ route('directory') }}" class="btn btn-outline-light">View Directory</a>
         </div>
 
-        {{-- Countdown — days, hours and minutes, as the specification asks. --}}
+        {{-- Countdown.
+             It carries its own dark ground rather than trusting the video
+             behind it: the footage moves, and a panel that reads over one frame
+             can be illegible over the next. Gold sat too close to the footage
+             in both hue and value, so the digits use the brighter chalk. --}}
         @php
             $eventDate = \Carbon\Carbon::parse(config('rcmaa.registration.event_date'));
             $hasNotPassed = $eventDate->isFuture();
         @endphp
         @if ($hasNotPassed)
-            <div class="mt-14 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-white/12 pt-8"
+            <div class="mt-12 inline-flex flex-col gap-5 rounded-2xl border border-white/12 bg-ink-950/85 px-5 py-5 shadow-[0_24px_60px_-30px_rgba(0,0,0,.9)] backdrop-blur-md sm:px-7 lg:flex-row lg:items-center lg:gap-8"
                  data-hero-fade x-data="countdown('{{ $eventDate->toIso8601String() }}')">
 
-                <div class="flex items-start gap-5">
-                    @foreach ([['days', 'Days'], ['hours', 'Hours'], ['minutes', 'Minutes']] as [$unit, $label])
-                        <div class="text-center">
-                            <span class="heading-display block text-4xl leading-none text-brass-500 tabular-nums"
-                                  x-text="{{ $unit === 'days' ? 'days' : "pad({$unit})" }}">0</span>
-                            <span class="mt-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.18em] text-ink-400">
+                <div class="flex items-start gap-3 sm:gap-4">
+                    @foreach ([['days', 'Days'], ['hours', 'Hours'], ['minutes', 'Minutes'], ['seconds', 'Seconds']] as [$unit, $label])
+                        <div class="min-w-[3.1rem] text-center sm:min-w-[3.6rem]">
+                            <span class="heading-display block text-[2.1rem] font-semibold leading-none text-chalk-bright tabular-nums [text-shadow:0_0_24px_rgba(95,227,211,.35)] sm:text-[2.6rem]"
+                                  x-text="{{ $unit === 'days' ? 'days' : "pad({$unit})" }}">00</span>
+                            <span class="mt-2 block font-mono text-[0.58rem] uppercase tracking-[0.18em] text-ink-300">
                                 {{ $label }}
                             </span>
                         </div>
                         @unless ($loop->last)
-                            <span class="heading-display pt-0.5 text-3xl leading-none text-ink-600">:</span>
+                            <span class="heading-display pt-0.5 text-2xl leading-none text-chalk-bright/40 sm:text-3xl" aria-hidden="true">:</span>
                         @endunless
                     @endforeach
-
-                    <span class="self-center pl-2 font-mono text-[0.66rem] uppercase leading-relaxed tracking-[0.2em] text-ink-300">
-                        to the<br>Grand Reunion
-                    </span>
                 </div>
 
-                <span class="hidden h-10 w-px bg-white/12 sm:block"></span>
-                <div class="flex items-center gap-3 text-sm text-ink-200">
-                    <x-icon name="calendar" class="h-4 w-4 text-brass-500"/>
-                    {{ $eventDate->format('l, j F Y') }}
-                </div>
-                <span class="hidden h-10 w-px bg-white/12 sm:block"></span>
-                <div class="flex items-center gap-3 text-sm text-ink-200">
-                    <x-icon name="map-pin" class="h-4 w-4 text-brass-500"/>
-                    Rajshahi College Campus
+                <div class="border-t border-white/10 pt-4 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                    <p class="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.2em] text-chalk-bright">
+                        To the Grand Reunion
+                    </p>
+                    <p class="mt-2 flex items-center gap-2 text-sm text-ink-200">
+                        <x-icon name="calendar" class="h-4 w-4 flex-none text-chalk-bright"/>
+                        {{ $eventDate->format('l, j F Y') }}
+                    </p>
                 </div>
             </div>
         @endif
