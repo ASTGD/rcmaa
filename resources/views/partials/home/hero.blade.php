@@ -84,8 +84,9 @@
         {{-- Countdown.
              It carries its own dark ground rather than trusting the video
              behind it: the footage moves, and a panel that reads over one frame
-             can be illegible over the next. Gold sat too close to the footage
-             in both hue and value, so the digits use the brighter chalk. --}}
+             can be illegible over the next. With a ground of its own the brass
+             carries perfectly well — it was the video underneath it, not the
+             colour, that made it hard to read. --}}
         @php
             $eventDate = \Carbon\Carbon::parse(config('rcmaa.registration.event_date'));
             $hasNotPassed = $eventDate->isFuture();
@@ -97,24 +98,24 @@
                 <div class="flex items-start gap-3 sm:gap-4">
                     @foreach ([['days', 'Days'], ['hours', 'Hours'], ['minutes', 'Minutes'], ['seconds', 'Seconds']] as [$unit, $label])
                         <div class="min-w-[3.1rem] text-center sm:min-w-[3.6rem]">
-                            <span class="heading-display block text-[2.1rem] font-semibold leading-none text-chalk-bright tabular-nums [text-shadow:0_0_24px_rgba(95,227,211,.35)] sm:text-[2.6rem]"
+                            <span class="heading-display block text-[2.1rem] font-semibold leading-none text-brass-500 tabular-nums [text-shadow:0_2px_18px_rgba(0,0,0,.55)] sm:text-[2.6rem]"
                                   x-text="{{ $unit === 'days' ? 'days' : "pad({$unit})" }}">00</span>
                             <span class="mt-2 block font-mono text-[0.58rem] uppercase tracking-[0.18em] text-ink-300">
                                 {{ $label }}
                             </span>
                         </div>
                         @unless ($loop->last)
-                            <span class="heading-display pt-0.5 text-2xl leading-none text-chalk-bright/40 sm:text-3xl" aria-hidden="true">:</span>
+                            <span class="heading-display pt-0.5 text-2xl leading-none text-brass-500/35 sm:text-3xl" aria-hidden="true">:</span>
                         @endunless
                     @endforeach
                 </div>
 
                 <div class="border-t border-white/10 pt-4 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-                    <p class="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.2em] text-chalk-bright">
+                    <p class="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.2em] text-brass-400">
                         To the Grand Reunion
                     </p>
                     <p class="mt-2 flex items-center gap-2 text-sm text-ink-200">
-                        <x-icon name="calendar" class="h-4 w-4 flex-none text-chalk-bright"/>
+                        <x-icon name="calendar" class="h-4 w-4 flex-none text-brass-500"/>
                         {{ $eventDate->format('l, j F Y') }}
                     </p>
                 </div>
