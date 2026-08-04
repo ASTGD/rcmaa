@@ -108,6 +108,12 @@ export function initHeaderTheme() {
         },
     });
 
-    // The header no longer changes treatment over dark sections — it is white
-    // throughout — so nothing needs to watch for them.
+    document.querySelectorAll('[data-theme="dark"]').forEach((section) => {
+        ScrollTrigger.create({
+            trigger: section,
+            start: 'top 72px',
+            end: 'bottom 72px',
+            onToggle: (self) => header.classList.toggle('is-over-dark', self.isActive),
+        });
+    });
 }
