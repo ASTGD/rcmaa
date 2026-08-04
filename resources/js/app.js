@@ -2,7 +2,14 @@ import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse';
 
 import { initSmoothScroll, scrollTo, ScrollTrigger, prefersReducedMotion } from './lib/motion';
-import { initReveals, initParallax, initCounters, initMarquees } from './lib/reveals';
+import {
+    initReveals,
+    initParallax,
+    initCounters,
+    initMarquees,
+    refreshOnMediaLoad,
+    revealStranded,
+} from './lib/reveals';
 import { initHero, initHeaderTheme } from './lib/hero';
 import { initMathFigure } from './lib/figure';
 import registrationForm from './components/registration-form';
@@ -41,6 +48,25 @@ function boot() {
 
     // Fonts land after first paint and reflow every measured line.
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+    // Lazy images land later still, and move everything below them.
+    refreshOnMediaLoad();
+
+    // Last resort: nothing marked for reveal may stay invisible just because a
+    // trigger missed. Cheap — it only reads opacity for what is actually on screen.
+    let sweep;
+    window.addEventListener(
+        'scroll',
+        () => {
+            window.clearTimeout(sweep);
+            sweep = window.setTimeout(revealStranded, 300);
+        },
+        { passive: true }
+    );
+    window.addEventListener('load', () => {
+        ScrollTrigger.refresh();
+        revealStranded();
+    });
 
     // Background tabs suspend requestAnimationFrame, so a page opened in one
     // never runs its reveals. Recompute once it is actually looked at.

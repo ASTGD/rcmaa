@@ -111,6 +111,59 @@ export function initReveals(scope = document) {
     });
 }
 
+/**
+ * Lazy images finish loading long after `load` — that is the whole point of
+ * them — and each one that lands can change the page height. Every ScrollTrigger
+ * below it is then measuring against a stale position, and a trigger that never
+ * fires leaves its section stuck at the `opacity: 0` the CSS guard applied. The
+ * images had loaded; the section around them simply never became visible.
+ *
+ * Refresh once a burst of loads settles rather than once per image.
+ */
+export function refreshOnMediaLoad(scope = document) {
+    let pending;
+
+    const schedule = () => {
+        window.clearTimeout(pending);
+        pending = window.setTimeout(() => {
+            ScrollTrigger.refresh();
+            revealStranded(scope);
+        }, 200);
+    };
+
+    scope.querySelectorAll('img').forEach((img) => {
+        if (img.complete) return;
+        img.addEventListener('load', schedule, { once: true });
+        img.addEventListener('error', schedule, { once: true });
+    });
+}
+
+/**
+ * The reveal is decoration; the content under it is not. Because the CSS guard
+ * hides every [data-reveal] the moment JS boots, anything whose trigger fails to
+ * fire would stay invisible for good — a worse outcome than no animation at all.
+ * Show whatever is on screen and still hidden, and let the rest animate normally.
+ */
+export function revealStranded(scope = document) {
+    if (prefersReducedMotion) return;
+
+    scope.querySelectorAll('[data-reveal]').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        const onScreen = rect.top < window.innerHeight && rect.bottom > 0;
+        if (! onScreen) return;
+        if (getComputedStyle(el).opacity !== '0') return;
+
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
+        gsap.to(el.querySelectorAll('[data-reveal-item]'), {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto',
+        });
+    });
+}
+
 /** Elements with data-parallax="0.2" drift against the scroll direction. */
 export function initParallax(scope = document) {
     if (prefersReducedMotion) return;
