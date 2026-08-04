@@ -117,27 +117,31 @@ class PublicPagesTest extends TestCase
     }
 
     /**
-     * The header sits over a dark hero at the top of a page and over light
-     * content once scrolled, and swaps its palette with an .is-over-dark class.
+     * The header is white at every scroll position, so nothing in the
+     * navigation may resolve to a light colour.
      *
-     * Writing [.is-over-dark_&]:{{ 'text-ink-200 hover:text-white' }} scoped only
-     * the first class, so hover:text-white leaked out and applied on the light
-     * header as well — hovering a nav item turned it white on a near-white bar
-     * and it disappeared. Every dark-mode utility must carry its own variant.
+     * It used to flip to a dark treatment over dark sections, with light text
+     * to match. A stray hover:text-white escaped its variant once and turned
+     * the links invisible on the light bar; when the dark treatment was dropped
+     * the whole light palette had to go with it, or every link would read white
+     * on white.
      */
     #[Test]
-    public function the_navigation_never_carries_an_unscoped_light_hover(): void
+    public function the_navigation_carries_no_light_colours(): void
     {
         $body = $this->get(route('faqs'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('[.is-over-dark_&]:hover:text-white', $body);
-        $this->assertDoesNotMatchRegularExpression(
-            '/class="[^"]*(?<!_&\]:)hover:text-white/',
-            $body,
-            'hover:text-white must always be scoped to .is-over-dark.'
-        );
+        $nav = substr($body, strpos($body, '<header'), strpos($body, '</header>') - strpos($body, '<header'));
 
-        // And the light-header hover is still present.
-        $this->assertStringContainsString('hover:text-ink-950', $body);
+        foreach (['text-white', 'text-parchment', 'is-over-dark'] as $forbidden) {
+            $this->assertStringNotContainsString(
+                $forbidden, $nav, "The header must not carry {$forbidden} — the bar is white."
+            );
+        }
+
+        // The dark palette it does use.
+        $this->assertStringContainsString('text-ink-700', $nav);
+        $this->assertStringContainsString('hover:text-ink-950', $nav);
+        $this->assertStringContainsString('bg-white', $nav);
     }
 }

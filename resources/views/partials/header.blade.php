@@ -31,9 +31,12 @@
     data-header
     x-data="{ open: false, submenu: null }"
     @keydown.escape.window="open = false; submenu = null"
-    class="sticky top-0 z-50 border-b border-ink-900/8 bg-parchment/85 backdrop-blur-xl transition-[transform,background-color,border-color] duration-500
-           [&.is-stuck]:shadow-[0_10px_40px_-24px_rgba(7,14,27,.4)]
-           [&.is-over-dark]:border-white/10 [&.is-over-dark]:bg-ink-900/80">
+    {{-- Solid white throughout. It was translucent parchment that flipped to a
+         dark treatment over dark sections; with a fixed white bar the light-text
+         variants that went with it have to go too, or the links would be white
+         on white — which is exactly how they once disappeared. --}}
+    class="sticky top-0 z-50 border-b border-ink-900/8 bg-white transition-[transform,border-color] duration-500
+           [&.is-stuck]:shadow-[0_10px_40px_-24px_rgba(7,14,27,.4)]">
     <nav class="container-rc flex h-[4.6rem] items-center justify-between gap-6" aria-label="Primary">
         <a href="{{ route('home') }}" class="group flex-none" aria-label="{{ config('rcmaa.name') }} — home">
             <x-logo size="h-10 w-10" class="transition-transform duration-500 group-hover:rotate-[-8deg]"/>
@@ -64,15 +67,13 @@
                 <li class="relative"
                     @isset($item['children']) @mouseenter="submenu = '{{ $item['label'] }}'" @mouseleave="submenu = null" @endisset>
                     <a href="{{ route($item['route']) }}"
-                       {{-- Each utility carries its own variant. Writing
-                            [.is-over-dark_&]:{{ '...' }} around a two-class string
-                            scoped only the first one, so `hover:text-white` escaped
-                            and applied on the light header too — hovering a nav item
-                            turned it white on near-white and it vanished. --}}
+                       {{-- One palette now the bar is always white. Nothing here
+                            may resolve to a light colour: a stray hover:text-white
+                            once escaped its variant and turned these invisible. --}}
                        @class([
                            'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] font-medium transition-colors duration-300',
-                           'text-brass-700 [.is-over-dark_&]:text-brass-400' => $isActive,
-                           'text-ink-700 hover:text-ink-950 [.is-over-dark_&]:text-ink-200 [.is-over-dark_&]:hover:text-white' => ! $isActive,
+                           'text-brass-700' => $isActive,
+                           'text-ink-700 hover:text-ink-950' => ! $isActive,
                        ])>
                         {{ $item['label'] }}
                         @isset($item['children'])
@@ -121,7 +122,7 @@
 
         <div class="flex flex-none items-center gap-3">
             <a href="{{ route('portal.request') }}"
-               class="hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block [.is-over-dark_&]:text-ink-200 [.is-over-dark_&]:hover:text-white">
+               class="hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block">
                 Login
             </a>
             <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">
@@ -129,15 +130,15 @@
             </a>
 
             <button type="button" @click="open = !open"
-                    class="relative grid h-11 w-11 place-items-center rounded-full border border-ink-900/12 transition hover:border-ink-900/30 xl:hidden [.is-over-dark_&]:border-white/20"
+                    class="relative grid h-11 w-11 place-items-center rounded-full border border-ink-900/12 transition hover:border-ink-900/30 xl:hidden"
                     :aria-expanded="open" aria-controls="mobile-nav" aria-label="Toggle navigation">
                 <span class="sr-only">Menu</span>
                 <span class="flex h-3 w-4 flex-col justify-between">
-                    <span class="h-px w-full bg-current transition-transform duration-300 [.is-over-dark_&]:bg-parchment"
+                    <span class="h-px w-full bg-current transition-transform duration-300"
                           :class="open && 'translate-y-[5.5px] rotate-45'"></span>
-                    <span class="h-px w-full bg-current transition-opacity duration-200 [.is-over-dark_&]:bg-parchment"
+                    <span class="h-px w-full bg-current transition-opacity duration-200"
                           :class="open && 'opacity-0'"></span>
-                    <span class="h-px w-full bg-current transition-transform duration-300 [.is-over-dark_&]:bg-parchment"
+                    <span class="h-px w-full bg-current transition-transform duration-300"
                           :class="open && '-translate-y-[5.5px] -rotate-45'"></span>
                 </span>
             </button>
