@@ -115,4 +115,29 @@ class PublicPagesTest extends TestCase
 
         $this->assertDatabaseCount('contact_messages', 0);
     }
+
+    /**
+     * The header sits over a dark hero at the top of a page and over light
+     * content once scrolled, and swaps its palette with an .is-over-dark class.
+     *
+     * Writing [.is-over-dark_&]:{{ 'text-ink-200 hover:text-white' }} scoped only
+     * the first class, so hover:text-white leaked out and applied on the light
+     * header as well — hovering a nav item turned it white on a near-white bar
+     * and it disappeared. Every dark-mode utility must carry its own variant.
+     */
+    #[Test]
+    public function the_navigation_never_carries_an_unscoped_light_hover(): void
+    {
+        $body = $this->get(route('faqs'))->assertOk()->getContent();
+
+        $this->assertStringContainsString('[.is-over-dark_&]:hover:text-white', $body);
+        $this->assertDoesNotMatchRegularExpression(
+            '/class="[^"]*(?<!_&\]:)hover:text-white/',
+            $body,
+            'hover:text-white must always be scoped to .is-over-dark.'
+        );
+
+        // And the light-header hover is still present.
+        $this->assertStringContainsString('hover:text-ink-950', $body);
+    }
 }

@@ -64,9 +64,16 @@
                 <li class="relative"
                     @isset($item['children']) @mouseenter="submenu = '{{ $item['label'] }}'" @mouseleave="submenu = null" @endisset>
                     <a href="{{ route($item['route']) }}"
-                       class="relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] font-medium transition-colors duration-300
-                              {{ $isActive ? 'text-brass-700' : 'text-ink-700 hover:text-ink-950' }}
-                              [.is-over-dark_&]:{{ $isActive ? 'text-brass-400' : 'text-ink-200 hover:text-white' }}">
+                       {{-- Each utility carries its own variant. Writing
+                            [.is-over-dark_&]:{{ '...' }} around a two-class string
+                            scoped only the first one, so `hover:text-white` escaped
+                            and applied on the light header too — hovering a nav item
+                            turned it white on near-white and it vanished. --}}
+                       @class([
+                           'relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8rem] font-medium transition-colors duration-300',
+                           'text-brass-700 [.is-over-dark_&]:text-brass-400' => $isActive,
+                           'text-ink-700 hover:text-ink-950 [.is-over-dark_&]:text-ink-200 [.is-over-dark_&]:hover:text-white' => ! $isActive,
+                       ])>
                         {{ $item['label'] }}
                         @isset($item['children'])
                             <x-icon name="chevron-down" class="h-3 w-3 opacity-50"/>
