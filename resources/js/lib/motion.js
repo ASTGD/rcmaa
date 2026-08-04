@@ -7,8 +7,13 @@ gsap.registerPlugin(ScrollTrigger);
 export const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // Lenis is set up with syncTouch: false, so on a touch screen the browser keeps
-// its own momentum scrolling and Lenis is not the thing moving the page.
-const nativeScrolling = window.matchMedia('(pointer: coarse)').matches;
+// its own momentum scrolling and Lenis is not the thing moving the page. The
+// test is deliberately broad — a phone that reports itself unusually still must
+// not end up on the branch that cannot scroll it.
+const nativeScrolling =
+    window.matchMedia('(hover: none), (pointer: coarse)').matches ||
+    navigator.maxTouchPoints > 0 ||
+    'ontouchstart' in window;
 
 let lenis = null;
 
@@ -48,22 +53,38 @@ export function scrollTo(target, options = {}) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
     if (!el) return;
 
-    // Only hand this to Lenis where Lenis actually drives the scroll. On touch
-    // it does not, and lenis.scrollTo() there simply never moves the page —
-    // which left every "Continue" on the registration form stranded halfway
-    // down the previous step on a phone.
-    if (lenis && !nativeScrolling) {
-        lenis.scrollTo(el, { offset: -90, duration: 1.2, ...options });
-        return;
-    }
-
-    // scrollIntoView cannot express the offset that clears the sticky header,
-    // so the position is worked out directly.
     const offset = options.offset ?? -90;
-    window.scrollTo({
+
+    // Deliberately not routed through Lenis, and deliberately not branching on
+    // whether the device looks like a phone.
+    //
+    // Lenis is configured with syncTouch: false, so on touch the browser keeps
+    // its own scrolling and lenis.scrollTo() moves nothing at all — which left
+    // every "Continue" on the registration form stranded at the bottom of the
+    // step just finished. Guessing which devices those are got it wrong twice.
+    // The native call works everywhere, and `smooth` is smooth; Lenis still
+    // eases ordinary wheel scrolling, it just is not asked to make the jumps.
+    //
+    // scrollIntoView cannot express the offset that clears the sticky header,
+    // so the position is computed — and recomputed, because opening a step
+    // changes the page height and the browser clamps the scroll while that
+    // settles, silently undoing the jump. Arrival is judged by where the
+    // element ended up, never by whether scrollY changed: the clamp moves the
+    // page on its own, so a change in scrollY proves nothing.
+    const go = (behavior) => window.scrollTo({
         top: Math.max(0, window.scrollY + el.getBoundingClientRect().top + offset),
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        behavior,
     });
+
+    go(prefersReducedMotion ? 'auto' : 'smooth');
+
+    // The correction is instant, not smooth, and that is the point: a smooth
+    // scroll is an animation, and an animation that never runs leaves the
+    // reader exactly where they were. Landing abruptly is a far smaller cost
+    // than not landing at all.
+    window.setTimeout(() => {
+        if (Math.abs(el.getBoundingClientRect().top + offset) > 12) go('auto');
+    }, 320);
 }
 
 export function stopScroll() {

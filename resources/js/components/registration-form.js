@@ -337,15 +337,27 @@ export default (config = {}) => ({
     },
 
     focusFirstError() {
-        this.$nextTick(() => {
+        const run = () => {
             const el = this.$el.querySelector('[aria-invalid="true"]');
-            el?.focus({ preventScroll: true });
-            if (el) scrollTo(el, { offset: -160, duration: 0.8 });
-        });
+            if (!el) return;
+            el.focus({ preventScroll: true });
+            scrollTo(el, { offset: -160, duration: 0.8 });
+        };
+
+        this.$nextTick(run);
+        window.setTimeout(run, 80);
     },
 
     toTop() {
-        this.$nextTick(() => scrollTo(this.$el, { offset: -110 }));
+        const run = () => scrollTo(this.$el, { offset: -110 });
+
+        // $nextTick is built on requestAnimationFrame, which browsers throttle
+        // or suspend — a backgrounded tab, low-power mode. If it never fires,
+        // the reader is left at the bottom of the step they just finished with
+        // no idea the form moved on. A timer is not subject to that, so the
+        // scroll is scheduled both ways; arriving twice is harmless.
+        this.$nextTick(run);
+        window.setTimeout(run, 80);
     },
 
     animateStep() {
