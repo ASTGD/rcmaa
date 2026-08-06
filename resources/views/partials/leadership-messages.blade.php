@@ -53,16 +53,17 @@
 
 @php
     /*
-     * Two layouts for the same two messages.
+     * The same two messages, laid out two ways.
      *
-     * columns=1 (default, /committee): full width, the portrait standing beside
-     * the text. There is room for both.
+     * columns=1 (/committee): full width, portrait standing beside the text from
+     * md up. There is room for both.
      *
-     * columns=2 (home page): the pair sit in one row. A tall 4:5 portrait beside
-     * text in a half-width column squeezes the message into a gutter, and laying
-     * it across the top as a banner crops these headshots through the face. So
-     * at this width the portrait becomes an avatar in the card's header, which
-     * crops nothing and keeps the card short enough to sit on a home page.
+     * columns=2 (home): the pair share a row from lg up. A tall 4:5 portrait
+     * beside text in a half-width column squeezes the message into a gutter, so
+     * once they are side by side the portrait shrinks to an avatar in the card
+     * header. Below lg the cards stack to full width and the big portrait comes
+     * back on top, matching /committee — the switch is by breakpoint, not by
+     * variant, because on a phone both layouts are the same shape.
      */
     $columns = $columns ?? 1;
     $twoUp = $columns === 2;
@@ -97,39 +98,47 @@
                 <article @class(['card overflow-hidden', 'flex flex-col' => $twoUp]) data-reveal>
                     <div @class(['grid gap-0', 'md:grid-cols-[15rem_1fr]' => ! $twoUp, 'h-full' => $twoUp])>
 
-                        {{-- Portrait — a full-height column when there is room for one. --}}
-                        @unless ($twoUp)
-                            <div class="relative aspect-4/5 bg-ink-800 md:aspect-auto md:min-h-full">
-                                @if ($src)
-                                    <img src="{{ $src }}" alt="{{ $m['name'] }}"
-                                         class="h-full w-full object-cover object-top" loading="lazy">
-                                @else
-                                    <div class="bg-grid-light grid h-full place-items-center">
-                                        <span class="heading-display text-5xl text-brass-500/70">{{ $initials($m['name']) }}</span>
-                                    </div>
-                                @endif
-                                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-4 md:hidden">
-                                    <p class="text-sm font-semibold text-parchment">{{ $m['name'] }}</p>
-                                    <p class="text-xs text-brass-400">{{ $m['role'] }}</p>
+                        {{-- The large portrait. Its own column from md up on /committee;
+                             on the home page it shows only while the cards are stacked. --}}
+                        <div @class([
+                                'relative aspect-4/5 bg-ink-800',
+                                'md:aspect-auto md:min-h-full' => ! $twoUp,
+                                'lg:hidden' => $twoUp,
+                            ])>
+                            @if ($src)
+                                <img src="{{ $src }}" alt="{{ $m['name'] }}"
+                                     class="h-full w-full object-cover object-top" loading="lazy">
+                            @else
+                                <div class="bg-grid-light grid h-full place-items-center">
+                                    <span class="heading-display text-5xl text-brass-500/70">{{ $initials($m['name']) }}</span>
                                 </div>
+                            @endif
+
+                            {{-- Who it is, over the portrait — shown wherever the portrait
+                                 sits above the words rather than beside them. --}}
+                            <div @class([
+                                    'absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-4',
+                                    'md:hidden' => ! $twoUp,
+                                 ])>
+                                <p class="text-sm font-semibold text-parchment">{{ $m['name'] }}</p>
+                                <p class="text-xs text-brass-400">{{ $m['role'] }}</p>
                             </div>
-                        @endunless
+                        </div>
 
                         {{-- Message --}}
                         <div @class(['flex flex-col p-7 md:p-9', 'h-full' => $twoUp])>
 
                             @if ($twoUp)
-                                {{-- Header: avatar, then who is speaking. --}}
-                                <div class="flex items-center gap-4 border-b border-ink-900/8 pb-5">
-                                    {{-- The size is on the image itself, not h-full. Inside a
-                                         `place-items-center` grid the item is sized to content,
-                                         so height:100% has no definite parent to resolve
-                                         against and the portrait's own 4:5 wins — a 64x80
-                                         avatar in a 64x64 hole. --}}
+                                {{-- Avatar header, for when the cards are side by side and
+                                     the large portrait above has been hidden. The size is on
+                                     the image itself, not h-full: inside a place-items-center
+                                     grid the item is sized to content, so height:100% has no
+                                     definite parent to resolve against and the portrait's own
+                                     4:5 wins — a 64x80 avatar in a 64x64 hole. --}}
+                                <div class="hidden items-center gap-4 border-b border-ink-900/8 pb-5 lg:flex">
                                     <span class="grid h-16 w-16 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
                                         @if ($src)
-                                            <img src="{{ $src }}" alt="{{ $m['name'] }}"
-                                                 class="h-16 w-16 object-cover object-top" loading="lazy">
+                                            <img src="{{ $src }}" alt="" class="h-16 w-16 object-cover object-top" loading="lazy">
                                         @else
                                             <span class="heading-display text-xl">{{ $initials($m['name']) }}</span>
                                         @endif
@@ -142,32 +151,33 @@
                                     </div>
                                     <x-icon name="quote" class="ml-auto h-6 w-6 flex-none self-start text-brass-500/50"/>
                                 </div>
-                            @else
-                                <div class="flex items-start justify-between gap-4">
-                                    <div>
-                                        <p lang="bn" class="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brass-700">
-                                            {{ $m['eyebrow'] }}
-                                        </p>
-                                        <h3 class="heading-display mt-2 text-xl text-ink-950">{{ $m['title'] }}</h3>
-                                    </div>
-                                    <x-icon name="quote" class="h-7 w-7 flex-none text-brass-500/50"/>
-                                </div>
                             @endif
+
+                            {{-- Plain header, used wherever the portrait carries the name. --}}
+                            <div @class(['flex items-start justify-between gap-4', 'lg:hidden' => $twoUp])>
+                                <div>
+                                    <p lang="bn" class="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brass-700">
+                                        {{ $m['eyebrow'] }}
+                                    </p>
+                                    <h3 class="heading-display mt-2 text-xl text-ink-950">{{ $m['title'] }}</h3>
+                                </div>
+                                <x-icon name="quote" class="h-7 w-7 flex-none text-brass-500/50"/>
+                            </div>
 
                             {{-- Bangla is the original; shown first and in full. --}}
                             <div lang="bn" @class([
-                                    'space-y-3.5 font-bangla leading-[1.9] text-ink-700',
-                                    'mt-5 text-[0.9rem]' => $twoUp,
-                                    'mt-6 text-[0.95rem]' => ! $twoUp,
+                                    'mt-6 space-y-3.5 font-bangla leading-[1.9] text-ink-700',
+                                    'text-[0.95rem] lg:mt-5 lg:text-[0.9rem]' => $twoUp,
+                                    'text-[0.95rem]' => ! $twoUp,
                                  ])>
                                 @foreach ($m['bn'] as $p)
                                     <p>{{ $p }}</p>
                                 @endforeach
                             </div>
 
-                            {{-- mt-auto keeps the two cards' signatures on the same line
-                                 when one message is shorter than the other. --}}
-                            <div @class(['border-t border-ink-900/8 pt-5', 'mt-auto' => $twoUp, 'mt-6' => ! $twoUp])>
+                            {{-- mt-auto keeps both signatures on one line when the cards sit
+                                 side by side and one message runs shorter than the other. --}}
+                            <div @class(['mt-6 border-t border-ink-900/8 pt-5', 'lg:mt-auto' => $twoUp])>
                                 <button type="button" @click="open = open === {{ $i }} ? null : {{ $i }}"
                                         class="inline-flex items-center gap-2 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-brass-700 transition hover:text-ink-950"
                                         :aria-expanded="open === {{ $i }}">
