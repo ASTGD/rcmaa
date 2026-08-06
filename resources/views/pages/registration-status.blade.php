@@ -21,7 +21,7 @@
                     <div>
                         <label for="mobile" class="field-label">Mobile number</label>
                         <input id="mobile" name="mobile" type="tel" class="input" inputmode="tel"
-                               placeholder="01712345678" value="{{ old('mobile') }}"
+                               placeholder="017******28" value="{{ old('mobile') }}"
                                @error('mobile') aria-invalid="true" @enderror required>
                         @error('mobile')<p class="field-error">{{ $message }}</p>@enderror
                     </div>

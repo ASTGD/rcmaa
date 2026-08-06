@@ -14,15 +14,44 @@ class HeritageTest extends TestCase
     #[Test]
     public function it_renders_every_milestone_from_the_association_document(): void
     {
-        $milestones = config('heritage');
+        $timeline = config('heritage.timeline');
 
-        $this->assertCount(28, $milestones, 'The association supplied 28 milestones.');
+        $this->assertCount(11, $timeline, 'The association supplied 11 timeline entries.');
 
         $body = $this->get(route('heritage'))->assertOk()->getContent();
 
-        foreach ($milestones as $m) {
-            $this->assertStringContainsString($m['heading_bn'], $body, "Missing: {$m['year']} {$m['heading_bn']}");
+        // Escaped, because several entries carry apostrophes Blade turns into
+        // entities — 'Math Nexus Reunion 2026' among them.
+        foreach ($timeline as $m) {
+            $this->assertStringContainsString(e($m['heading_bn']), $body, "Missing: {$m['year']} {$m['heading_bn']}");
+            $this->assertStringContainsString(e($m['body_bn']), $body, "Missing body: {$m['year']}");
         }
+    }
+
+    /**
+     * The association interleaves each mathematics milestone with the college
+     * background around it. Rendering must not quietly sort that back into date
+     * order — 1878 deliberately precedes 1873.
+     */
+    #[Test]
+    public function it_keeps_the_order_the_association_gave(): void
+    {
+        $body = $this->get(route('heritage'))->assertOk()->getContent();
+
+        $positions = array_map(
+            fn ($m) => strpos($body, e($m['heading_bn'])),
+            config('heritage.timeline')
+        );
+
+        $sorted = $positions;
+        sort($sorted);
+
+        $this->assertSame($sorted, $positions, 'The timeline was reordered.');
+        $this->assertLessThan(
+            strpos($body, 'ব্যাকগ্রাউন্ড: ইন্টারমিডিয়েট ও ডিগ্রি কোর্স চালু'),
+            strpos($body, 'গণিত বিভাগের ঐতিহাসিক সূচনালগ্ন'),
+            '1878 must come before the 1873–1877 background, as supplied.'
+        );
     }
 
     #[Test]
@@ -30,10 +59,12 @@ class HeritageTest extends TestCase
     {
         $this->get(route('heritage'))
             ->assertOk()
-            ->assertSee('1873')   // raised to intermediate college
-            ->assertSee('1971')   // the Liberation War
+            ->assertSee('1873')   // the college's own beginnings, as background
+            ->assertSee('1878')   // the department is founded
             ->assertSee('2026')   // RCMAA formed
-            ->assertSee('আমাদের ঐতিহ্য', false);
+            ->assertSee('আমাদের ঐতিহ্য', false)
+            // The spelling the association asked for, in their own wording.
+            ->assertSee('২৮ ফেব্রুয়ারি ২০২৬', false);
     }
 
     /**

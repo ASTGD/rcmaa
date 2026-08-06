@@ -2,212 +2,159 @@
 
 /*
 |--------------------------------------------------------------------------
-| আমাদের ঐতিহ্য · Our Heritage — historical milestones
+| আমাদের ঐতিহ্য · Our Heritage — the department's timeline
 |--------------------------------------------------------------------------
 |
-| Supplied by the association in "1. Home page / 1. Banner / 1. Nav Bar links".
-| The Bangla is verbatim and authoritative; the English beneath each entry is a
-| translation for non-Bangla readers. 1909 carries two separate events.
+| Replaced wholesale in the association's review document ("About section এর
+| আমাদের ঐতিহ্য পুরোটাই চেঞ্জ করে দিতে হবে"). The earlier list was the
+| college's general history; this one is the Department of Mathematics, with
+| the college's story kept alongside it as context.
+|
+| The Bangla is the association's own and is authoritative — including the
+| ordering, which deliberately puts each mathematics milestone before the
+| college background that surrounds it, rather than running in strict date
+| order. Do not sort this array. The English is a translation for readers
+| without Bangla, in the same manner as every other page.
+|
+| `kind` drives the styling only:
+|   math       ⭐️ a milestone of the department itself
+|   background 🏛️ college and national context around it
+|   grand      🌟 the association's own formation
 |
 */
 
 return [
 
-    [
-        'year' => '1873',
-        'heading_bn' => 'ইন্টারমিডিয়েট কলেজের মর্যাদা লাভ',
-        'heading' => 'Raised to intermediate college',
-        'body_bn' => 'স্থানীয় জনগণের দাবির পর জেলা স্কুলটি ইন্টারমিডিয়েট কলেজে উন্নীত হয়। দুবলহাটির রাজা হারালাল রায় বাহাদুরের আর্থিক সহায়তায় মাত্র ছয়জন শিক্ষার্থী নিয়ে ১ এপ্রিল ১৮৭৩ সালে এফ.এ. কোর্সের যাত্রা শুরু হয়।',
-        'body' => 'After demands from local people the district school was raised to an intermediate college. With financial help from Raja Haralal Roy Bahadur of Dubalhati, the F.A. course began on 1 April 1873 with just six students.',
-    ],
-    [
-        'year' => '1875',
-        'heading_bn' => 'প্রথম এফ.এ. পরীক্ষার ব্যাচ',
-        'heading' => 'The first F.A. examination batch',
-        'body_bn' => 'প্রথম ব্যাচের পরীক্ষার্থীদের মধ্যে মাত্র দুজন উত্তীর্ণ হওয়ায় সরকার কলেজটি বন্ধ করার সিদ্ধান্ত নিতে উদ্যত হয়। পরে রাজশাহী অ্যাসোসিয়েশনের হস্তক্ষেপে সেই সিদ্ধান্ত থেকে সরে আসে।',
-        'body' => 'Only two of the first batch passed, and the government moved to close the college. It stepped back after the intervention of the Rajshahi Association.',
-    ],
-    [
-        'year' => '1877',
-        'heading_bn' => 'ডিগ্রি কোর্সের অনুমোদন',
-        'heading' => 'Degree course approved',
-        'body_bn' => 'ধিগপাথিয়ার রাজা প্রমোদনাথ রায় বাহাদুরের ১,৫০,০০০ টাকার অনুদান এবং রাজশাহী অ্যাসোসিয়েশনের উদ্যোগে কলেজটি ডিগ্রি কোর্স চালুর অনুমোদন লাভ করে।',
-        'body' => 'A grant of 1,50,000 taka from Raja Promodanath Roy Bahadur of Dighapatia, together with the efforts of the Rajshahi Association, won approval to begin degree courses.',
-    ],
-    [
-        'year' => '1878',
-        'heading_bn' => 'প্রথম শ্রেণির কলেজের মর্যাদা ও সরকারি নামকরণ',
-        'heading' => 'First-class status and its official name',
-        'body_bn' => 'কলেজটি প্রথম শ্রেণির কলেজের মর্যাদা অর্জন করে এবং কলকাতা বিশ্ববিদ্যালয়ের অধিভুক্ত হয়ে বি.এ. কোর্স চালু করে। একই সঙ্গে প্রতিষ্ঠানটির সরকারি নামকরণ হয় \'রাজশাহী কলেজ\'।',
-        'body' => 'The college attained first-class status, affiliated to the University of Calcutta and began the B.A. course. It was at this point officially named \'Rajshahi College\'.',
-    ],
-    [
-        'year' => '1881',
-        'heading_bn' => 'এম.এ. কোর্স চালু',
-        'heading' => 'M.A. teaching begins',
-        'body_bn' => 'কলেজে স্নাতকোত্তর এম.এ. কোর্সের পাঠদান শুরু হয়।',
-        'body' => 'Postgraduate teaching at M.A. level began at the college.',
-    ],
-    [
-        'year' => '1883',
-        'heading_bn' => 'বি.এল. কোর্স চালু',
-        'heading' => 'B.L. course begins',
-        'body_bn' => 'আইন বিষয়ে বি.এল. কোর্স চালুর মাধ্যমে কলেজের শিক্ষা কার্যক্রম আরও সম্প্রসারিত হয়।',
-        'body' => 'Teaching widened further with the introduction of the B.L. course in law.',
-    ],
-    [
-        'year' => '1884',
-        'heading_bn' => 'প্রথম কলেজ ভবন নির্মাণ',
-        'heading' => 'The first college building',
-        'body_bn' => '৬৭,৭০০ টাকা ব্যয়ে একজন ব্রিটিশ প্রকৌশলীর নকশায় উপনিবেশিক স্থাপত্যশৈলীতে কলেজের প্রথম ভবন নির্মিত হয়।',
-        'body' => 'The college\'s first building was raised in colonial style to a British engineer\'s design, at a cost of 67,700 taka.',
-    ],
-    [
-        'year' => '1888',
-        'heading_bn' => 'হাজী মোহাম্মদ মোহসিন ভবন নির্মাণ',
-        'heading' => 'Haji Mohammad Mohsin Building',
-        'body_bn' => 'দানবীর হাজী মোহাম্মদ মোহসিনের আর্থিক সহায়তায় কলেজ প্রাঙ্গণে একটি গ্যালারি ভবন নির্মাণ করা হয়।',
-        'body' => 'A gallery building was constructed on the campus through the philanthropy of Haji Mohammad Mohsin.',
-    ],
-    [
-        'year' => '1894',
-        'heading_bn' => 'প্রথম হোস্টেল প্রতিষ্ঠা',
-        'heading' => 'The first hostel',
-        'body_bn' => 'রাজশাহী অ্যাসোসিয়েশনের উদ্যোগে কলেজের প্রথম আবাসিক হল \'পি.এন. হোস্টেল\' প্রতিষ্ঠিত হয়।',
-        'body' => 'The college\'s first residential hall, \'P.N. Hostel\', was established at the initiative of the Rajshahi Association.',
-    ],
-    [
-        'year' => '1902',
-        'heading_bn' => 'হেমন্তকুমারী হোস্টেল নির্মাণ',
-        'heading' => 'Hemantakumari Hostel',
-        'body_bn' => 'পুঠিয়ার রানি হেমন্তকুমারীর অর্থায়নে হেমন্তকুমারী হোস্টেল নির্মিত হয়।',
-        'body' => 'Hemantakumari Hostel was built with funding from Rani Hemantakumari of Puthia.',
-    ],
-    [
-        'year' => '1904',
-        'heading_bn' => 'মহারানি হেমন্তকুমারী সংস্কৃত কলেজ প্রতিষ্ঠা',
-        'heading' => 'Maharani Hemantakumari Sanskrit College',
-        'body_bn' => 'রাজশাহী কলেজের তত্ত্বাবধানে বিনামূল্যে সংস্কৃত শিক্ষা প্রদানের উদ্দেশ্যে মহারানি হেমন্তকুমারী সংস্কৃত কলেজ প্রতিষ্ঠিত হয়।',
-        'body' => 'Founded under the supervision of Rajshahi College to provide Sanskrit education free of charge.',
-    ],
-    [
-        'year' => '1909',
-        'heading_bn' => 'এম.এ. ও বি.এল. কোর্স বন্ধ',
-        'heading' => 'M.A. and B.L. courses suspended',
-        'body_bn' => 'নতুন কলকাতা বিশ্ববিদ্যালয়ের নির্ধারিত শর্ত পূরণ করতে না পারায় এম.এ. ও বি.এল. কোর্স সাময়িকভাবে বন্ধ করে দেওয়া হয়।',
-        'body' => 'Unable to meet the conditions set by the reorganised University of Calcutta, the M.A. and B.L. courses were suspended.',
-    ],
-    [
-        'year' => '1909',
-        'heading_bn' => 'ফুলার হোস্টেল নির্মাণ',
-        'heading' => 'Fuller Hostel',
-        'body_bn' => 'বাংলার গভর্নর মি. ফুলারের সহায়তায় ফুলার হোস্টেল নির্মিত হয়। ১৯৩০ সালে এটি সম্পূর্ণভাবে কলেজের অধীনে আসে।',
-        'body' => 'Fuller Hostel was built with the help of Mr Fuller, Governor of Bengal. It passed fully to the college in 1930.',
-    ],
-    [
-        'year' => '1910',
-        'heading_bn' => 'রাজা কৃষ্ণানন্দ হল নির্মাণ',
-        'heading' => 'Raja Krishnananda Hall',
-        'body_bn' => 'বালিহারের কুমার শরদিন্দু রায়ের অর্থায়নে রাজা কৃষ্ণানন্দ হল নির্মিত হয়।',
-        'body' => 'Built with funding from Kumar Sharadindu Roy of Balihar.',
-    ],
-    [
-        'year' => '1915',
-        'heading_bn' => 'পদার্থবিজ্ঞান বিভাগের ভবন নির্মাণ',
-        'heading' => 'A building for physics',
-        'body_bn' => '৫৭,১৪৫ টাকা ব্যয়ে পদার্থবিজ্ঞান বিভাগের জন্য নতুন ভবন নির্মাণ করা হয়।',
-        'body' => 'A new building for the Department of Physics was constructed at a cost of 57,145 taka.',
-    ],
-    [
-        'year' => '1922',
-        'heading_bn' => 'পাঁচটি হোস্টেল নির্মাণ',
-        'heading' => 'Five hostels built',
-        'body_bn' => 'রাজশাহী অ্যাসোসিয়েশন এবং অধ্যক্ষ কুমুদিনীকান্ত বন্দ্যোপাধ্যায়ের উদ্যোগে মোট ৩,৫৩,৮৬৩ টাকা ব্যয়ে পাঁচটি হোস্টেল নির্মিত হয়।',
-        'body' => 'Five hostels were built at a total cost of 3,53,863 taka, at the initiative of the Rajshahi Association and Principal Kumudinikanta Bandyopadhyay.',
-    ],
-    [
-        'year' => '1925',
-        'heading_bn' => 'কলা ভবন নির্মাণ',
-        'heading' => 'The Arts Building',
-        'body_bn' => '১৯২৫–২৬ শিক্ষাবর্ষে ৮৬,৮০৯ টাকা ব্যয়ে কলা ভবন নির্মাণ করা হয়।',
-        'body' => 'The Arts Building was constructed in the 1925–26 academic year at a cost of 86,809 taka.',
-    ],
-    [
-        'year' => '1927',
-        'heading_bn' => 'অধ্যক্ষের বাসভবন নির্মাণ',
-        'heading' => 'The Principal\'s residence',
-        'body_bn' => 'পদ্মা নদীর তীরে অধ্যক্ষের জন্য একটি দৃষ্টিনন্দন আবাসিক ভবন নির্মাণ করা হয়।',
-        'body' => 'A handsome residence for the Principal was built on the bank of the Padma.',
-    ],
-    [
-        'year' => '1930',
-        'heading_bn' => 'শিক্ষার্থী সংখ্যা প্রায় এক হাজারে পৌঁছায়',
-        'heading' => 'Enrolment approaches one thousand',
-        'body_bn' => 'এই সময় কলেজে শিক্ষার্থীর সংখ্যা প্রায় এক হাজারে পৌঁছে। পরের বছর প্রথমবারের মতো নারী শিক্ষার্থী ভর্তি শুরু হয়।',
-        'body' => 'Student numbers reached around a thousand. The following year women were admitted for the first time.',
-    ],
-    [
-        'year' => '1936',
-        'heading_bn' => 'বসন্তকুমার কৃষি প্রতিষ্ঠান প্রতিষ্ঠা',
-        'heading' => 'Basantakumar Agricultural Institute',
-        'body_bn' => 'ধিগপাথিয়ার বসন্তকুমার রায়ের অর্থায়নে রাজশাহী কলেজের তত্ত্বাবধানে বসন্তকুমার কৃষি প্রতিষ্ঠান প্রতিষ্ঠিত হয়। প্রতিষ্ঠানটি ১৯৫২ সালে বন্ধ হয়ে যায়।',
-        'body' => 'Founded under the college\'s supervision with funding from Basantakumar Roy of Dighapatia. The institute closed in 1952.',
-    ],
-    [
-        'year' => '1952',
-        'heading_bn' => 'ভাষা আন্দোলনের প্রথম শহীদ স্মৃতিস্তম্ভ নির্মাণ',
-        'heading' => 'The Language Movement\'s first martyrs\' memorial',
-        'body_bn' => '২১ ফেব্রুয়ারির ভাষা আন্দোলনে শহীদদের স্মরণে শিক্ষক ও শিক্ষার্থীদের উদ্যোগে একটি স্মৃতিস্তম্ভ নির্মিত হয়, যা ভাষা আন্দোলনের প্রথম শহীদ স্মৃতিস্তম্ভ হিসেবে পরিচিত।',
-        'body' => 'Teachers and students raised a memorial to those martyred in the Language Movement of 21 February — known as the first such memorial of the movement.',
-    ],
-    [
-        'year' => '1953',
-        'heading_bn' => 'রাজশাহী বিশ্ববিদ্যালয়ের অধিভুক্তি',
-        'heading' => 'Affiliation to Rajshahi University',
-        'body_bn' => 'সদ্য প্রতিষ্ঠিত রাজশাহী বিশ্ববিদ্যালয়ের অধিভুক্ত শিক্ষা প্রতিষ্ঠান হিসেবে রাজশাহী কলেজ নতুন যাত্রা শুরু করে।',
-        'body' => 'Rajshahi College began afresh as an institution affiliated to the newly founded University of Rajshahi.',
-    ],
-    [
-        'year' => '1969',
-        'heading_bn' => 'ভাষা আন্দোলনের স্মৃতিস্তম্ভ পুনর্নির্মাণ',
-        'heading' => 'The memorial rebuilt',
-        'body_bn' => 'পুরোনো স্মৃতিস্তম্ভের পরিবর্তে নতুন স্মৃতিস্তম্ভ নির্মাণ করা হয়। ১৯৭১ সালে পাকিস্তানি বাহিনী এটি ধ্বংস করে দেয়।',
-        'body' => 'A new memorial replaced the old one. Pakistani forces destroyed it in 1971.',
-    ],
-    [
-        'year' => '1971',
-        'heading_bn' => 'বাংলাদেশের মহান মুক্তিযুদ্ধ',
-        'heading' => 'The Liberation War of Bangladesh',
-        'body_bn' => 'মহান মুক্তিযুদ্ধে রাজশাহী কলেজের শিক্ষক ও শিক্ষার্থীরা সক্রিয়ভাবে অংশগ্রহণ করে এবং দেশের স্বাধীনতা সংগ্রামে গুরুত্বপূর্ণ ভূমিকা রাখেন।',
-        'body' => 'Teachers and students of Rajshahi College took an active part in the Liberation War and played an important role in the struggle for independence.',
-    ],
-    [
-        'year' => '1973',
-        'heading_bn' => 'বর্তমান ভাষা আন্দোলন স্মৃতিস্তম্ভ নির্মাণ',
-        'heading' => 'The present Shaheed Minar',
-        'body_bn' => 'মুক্তিযুদ্ধের সময় ধ্বংস হয়ে যাওয়া স্মৃতিস্তম্ভের স্থানে বর্তমান শহীদ স্মৃতিস্তম্ভ নির্মাণ করা হয়।',
-        'body' => 'The present martyrs\' memorial was built where the one destroyed during the war had stood.',
-    ],
-    [
-        'year' => '1993',
-        'heading_bn' => 'মাস্টার্স কোর্স চালু',
-        'heading' => 'Masters teaching resumes',
-        'body_bn' => 'কলেজে পুনরায় মাস্টার্স পর্যায়ের শিক্ষা কার্যক্রম চালু হয়।',
-        'body' => 'Masters-level teaching resumed at the college.',
-    ],
-    [
-        'year' => '1994',
-        'heading_bn' => 'জাতীয় বিশ্ববিদ্যালয়ের অধীনে মাস্টার্স কোর্স পুনরায় চালু',
-        'heading' => 'Masters under the National University',
-        'body_bn' => 'সদ্য প্রতিষ্ঠিত জাতীয় বিশ্ববিদ্যালয়ের অধীনে মাস্টার্স কোর্স পুনরায় অনুমোদন ও চালু করা হয়।',
-        'body' => 'The Masters course was approved and restarted under the newly established National University.',
-    ],
-    [
-        'year' => '2026',
-        'heading_bn' => '২৮ শে ফেব্রুয়ার Rajshahi College Mathematics Alumni Association গঠন',
-        'heading' => 'RCMAA is formed — 28 February',
-        'body_bn' => 'Rajshahi College Mathematics Alumni Association (RCMAA) এর পক্ষ থেকে Math Nexus - RCMAA Reunion  2026 এর উদ্যোগ গ্রহণ',
-        'body' => 'The Rajshahi College Mathematics Alumni Association is constituted, and takes up Math Nexus — RCMAA Reunion 2026.',
+    'title_bn' => 'রাজশাহী কলেজ গণিত বিভাগ: গৌরবোজ্জ্বল পথচলা ও ইতিহাস',
+    'title' => 'The Department of Mathematics: a history',
+
+    'subtitle_bn' => '১৮৭৮ থেকে ২০২৬ — দেড় শতাব্দীর গণিত সাধনা, ঐতিহ্য এবং সর্বপ্রজন্মের এক অনন্য বন্ধন',
+    'subtitle' => 'From 1878 to 2026 — a century and a half of mathematics, and a bond across every generation.',
+
+    'timeline' => [
+
+        [
+            'kind' => 'math',
+            'year' => '1878',
+            'year_bn' => '১৮৭৮',
+            'heading_bn' => 'গণিত বিভাগের ঐতিহাসিক সূচনালগ্ন',
+            'heading' => 'The department begins',
+            'category_bn' => 'গণিত বিভাগ (প্রতিষ্ঠা)',
+            'category' => 'Department of Mathematics · founding',
+            'body_bn' => 'রাজশাহী কলেজ প্রথম শ্রেণির মর্যাদা পাওয়ার সাথে সাথেই মাত্র ২ জন নিবেদিতপ্রাণ গণিতসাধক শিক্ষককে নিয়ে গণিত বিভাগের ঐতিহাসিক যাত্রা শুরু হয়। এটি ছিল এই অঞ্চলে আধুনিক বিজ্ঞান ও গণিত চর্চার ভিত্তিপ্রস্তর।',
+            'body' => 'The moment Rajshahi College attained first-class status, the Department of Mathematics began its journey with just two dedicated teachers of the subject. It was the foundation stone of modern science and mathematics in this region.',
+        ],
+        [
+            'kind' => 'background',
+            'year' => '1873–1877',
+            'year_bn' => '১৮৭৩–১৮৭৭',
+            'heading_bn' => 'ব্যাকগ্রাউন্ড: ইন্টারমিডিয়েট ও ডিগ্রি কোর্স চালু',
+            'heading' => 'Background: intermediate and degree courses',
+            'category_bn' => 'রাজশাহী কলেজ ঐতিহ্য',
+            'category' => 'Rajshahi College heritage',
+            'body_bn' => '১৮৭৩ সালে রাজা হারালাল রায় বাহাদুরের সহায়তায় ইন্টারমিডিয়েট এবং ১৮৭৭ সালে দিঘাপতিয়ার রাজা প্রমোদনাথ রায় বাহাদুরের অনুদানে কলেজে ডিগ্রি কোর্স চালুর অনুমোদন লাভ করে।',
+            'body' => 'In 1873, with the help of Raja Haralal Roy Bahadur, the college began intermediate teaching. In 1877 a grant from Raja Promodanath Roy Bahadur of Dighapatia won approval for degree courses.',
+        ],
+        [
+            'kind' => 'math',
+            'year' => '1881',
+            'year_bn' => '১৮৮১',
+            'heading_bn' => 'গণিত বিভাগে অনার্স (সম্মান) প্রবর্তন',
+            'heading' => 'Honours introduced',
+            'category_bn' => 'গণিত বিভাগ (উচ্চশিক্ষা)',
+            'category' => 'Department of Mathematics · higher study',
+            'body_bn' => 'উত্তরবঙ্গে উচ্চতর গণিত চর্চাকে ছড়িয়ে দিতে গণিত বিভাগে প্রথমবারের মতো ৩ বছর মেয়াদী অনার্স (সম্মান) কোর্স চালু করা হয়, যা বিভাগে মেধা চর্চার নতুন দিগন্ত উন্মোচন করে।',
+            'body' => 'To carry advanced mathematics through northern Bengal, a three-year honours course was introduced in the department for the first time, opening a new horizon for serious study.',
+        ],
+        [
+            'kind' => 'background',
+            'year' => '1883–1888',
+            'year_bn' => '১৮৮৩–১৮৮৮',
+            'heading_bn' => 'ব্যাকগ্রাউন্ড: বি.এল. কোর্স ও প্রারম্ভিক ভবন',
+            'heading' => 'Background: the B.L. course and the first buildings',
+            'category_bn' => 'ক্যাম্পাস ও অবকাঠামো',
+            'category' => 'Campus and infrastructure',
+            'body_bn' => '১৮৮৩ সালে আইন বিষয়ে বি.এল. কোর্স চালু হয়। ১৮৮৪ সালে মূল কলেজ ভবন এবং ১৮৮৮ সালে দানবীর হাজী মোহাম্মদ মোহসিনের অনুদানে গ্যালারি ভবন নির্মিত হয়।',
+            'body' => 'The B.L. course in law began in 1883. The main college building followed in 1884, and in 1888 the gallery building was raised on a grant from the philanthropist Haji Mohammad Mohsin.',
+        ],
+        [
+            'kind' => 'math',
+            'year' => '1893',
+            'year_bn' => '১৮৯৩',
+            'heading_bn' => 'গণিত বিভাগে মাস্টার্স (স্নাতকোত্তর) প্রবর্তন',
+            'heading' => 'Masters introduced',
+            'category_bn' => 'গণিত বিভাগ (উচ্চতর গবেষণা)',
+            'category' => 'Department of Mathematics · research',
+            'body_bn' => 'অনার্স চালুর ঠিক এক দশকের মাথায় গণিত বিভাগে মাস্টার্স (স্নাতকোত্তর) প্রোগ্রাম শুরু হয়। এর মাধ্যমে বিভাগটি পূর্ণাঙ্গ স্নাতকোত্তর গবেষণা ও উচ্চশিক্ষার কেন্দ্রে পরিণত হয়।',
+            'body' => 'A decade after honours began, the department opened its masters programme, becoming a full centre of postgraduate research and higher study.',
+        ],
+        [
+            'kind' => 'background',
+            'year' => '1894–1915',
+            'year_bn' => '১৮৯৪–১৯১৫',
+            'heading_bn' => 'ব্যাকগ্রাউন্ড: হোস্টেল ও বিজ্ঞান ভবনের বিস্তার',
+            'heading' => 'Background: hostels and the science buildings',
+            'category_bn' => 'ক্যাম্পাস ও অবকাঠামো',
+            'category' => 'Campus and infrastructure',
+            'body_bn' => '১৮৯৪ সালে প্রথম পি.এন. হোস্টেল, ১৯০২ সালে হেমন্তকুমারী হোস্টেল, ১৯০৪ সালে সংস্কৃত কলেজ, ১৯০৯ সালে ফুলার হোস্টেল এবং ১৯১৫ সালে পদার্থবিজ্ঞান ভবন নির্মিত হয়।',
+            'body' => 'P.N. Hostel came first in 1894, then Hemantakumari Hostel in 1902, the Sanskrit College in 1904, Fuller Hostel in 1909, and the physics building in 1915.',
+        ],
+        [
+            'kind' => 'math',
+            'year' => '1920s',
+            'year_bn' => '১৯২০-এর দশক',
+            'heading_bn' => 'গণিত বিভাগের অনুষদ বিস্তার',
+            'heading' => 'The faculty widens',
+            'category_bn' => 'গণিত বিভাগ (একাডেমিক বৃদ্ধি)',
+            'category' => 'Department of Mathematics · academic growth',
+            'body_bn' => 'বিংশ শতাব্দীর শুরুতে শিক্ষার্থীর সংখ্যা ও একাডেমিক ব্যাপ্তি বাড়ায় গণিত বিভাগের শিক্ষক পদসংখ্যা বাড়িয়ে ৪ জনে (২ জন অধ্যাপক ও ২ জন প্রভাষক) উন্নীত করা হয়, যা মানসম্মত গণিত শিক্ষার ভিত মজবুত করে।',
+            'body' => 'As student numbers and academic range grew early in the twentieth century, the department was raised to four teaching posts — two professors and two lecturers — strengthening the foundation of a rigorous mathematics education.',
+        ],
+        [
+            'kind' => 'background',
+            'year' => '1922–1973',
+            'year_bn' => '১৯২২–১৯৭৩',
+            'heading_bn' => 'ব্যাকগ্রাউন্ড: ঐতিহ্য, সহশিক্ষা ও স্বাধীনতা সংগ্রাম',
+            'heading' => 'Background: co-education, language and liberation',
+            'category_bn' => 'জাতীয় ইতিহাস ও ক্যাম্পাস',
+            'category' => 'National history and campus',
+            'body_bn' => '১৯৩১ সালে নারী শিক্ষার্থী ভর্তি, ১৯৫২ সালে ক্যাম্পাসে প্রথম ভাষা শহীদ স্মৃতিস্তম্ভ নির্মাণ, ১৯৫৩ সালে রাবি অধিভুক্তি এবং ১৯৭১ সালের মুক্তিযুদ্ধে শিক্ষক-শিক্ষার্থীদের বীরত্বপূর্ণ অবদান।',
+            'body' => 'Women were admitted in 1931. The first Language Martyrs\' memorial on any campus was raised here in 1952, affiliation to Rajshahi University followed in 1953, and teachers and students alike gave courageous service in the Liberation War of 1971.',
+        ],
+        [
+            'kind' => 'math',
+            'year' => '1981',
+            'year_bn' => '১৯৮১',
+            'heading_bn' => 'গণিত বিভাগের শিক্ষক পদসংখ্যা বৃদ্ধি',
+            'heading' => 'Teaching posts raised to seven',
+            'category_bn' => 'গণিত বিভাগ (আধুনিকায়ন)',
+            'category' => 'Department of Mathematics · modernisation',
+            'body_bn' => 'আধুনিক গণিত চর্চা ও ক্রমবর্ধমান শিক্ষার্থীদের পাঠদানের সুবিধার্থে গণিত বিভাগে শিক্ষকের পদসংখ্যা বাড়িয়ে ৭ জনে উন্নীত করা হয়।',
+            'body' => 'To support modern mathematical practice and a growing body of students, the department\'s teaching posts were raised to seven.',
+        ],
+        [
+            'kind' => 'background',
+            'year' => '1993–1994',
+            'year_bn' => '১৯৯৩–১৯৯৪',
+            'heading_bn' => 'ব্যাকগ্রাউন্ড: জাতীয় বিশ্ববিদ্যালয়ের অধীনে মাস্টার্স',
+            'heading' => 'Background: masters under the National University',
+            'category_bn' => 'প্রাতিষ্ঠানিক পুনর্গঠন',
+            'category' => 'Institutional reorganisation',
+            'body_bn' => 'জাতীয় বিশ্ববিদ্যালয় প্রতিষ্ঠার পর ১৯৯৪ সালে পুনরায় নিয়মিত মাস্টার্স কোর্স অনুমোদন পায়।',
+            'body' => 'After the National University was established, regular masters teaching was approved once again in 1994.',
+        ],
+        [
+            'kind' => 'grand',
+            'year' => '2026',
+            'year_bn' => '২০২৬',
+            'heading_bn' => 'RCMAA গঠন ও \'Math Nexus Reunion 2026\'',
+            'heading' => 'RCMAA is formed, and Math Nexus — Reunion 2026',
+            'category_bn' => 'গণিত বিভাগ অ্যালামনাই (RCMAA)',
+            'category' => 'Mathematics alumni · RCMAA',
+            'body_bn' => '২৮ ফেব্রুয়ারি ২০২৬ তারিখে Rajshahi College Mathematics Alumni Association (RCMAA) আনুষ্ঠানিকভাবে আত্মপ্রকাশ করে। এরই ধারাবাহিকতায় সকল প্রজন্মের গণিতবিদ ও শিক্ষার্থীদের এক ছাতার নিচে আনতে \'Math Nexus – Reunion 2026\'-এর ঐতিহাসিক উদ্যোগ গ্রহণ করা হয়।',
+            'body' => 'On 28 February 2026 the Rajshahi College Mathematics Alumni Association was formally constituted. From it came the historic undertaking of Math Nexus — Reunion 2026, to bring mathematicians and students of every generation under one roof.',
+        ],
+
     ],
 
 ];

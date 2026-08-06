@@ -227,7 +227,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          placeholder="মোঃ রফিকুল ইসলাম"/>
 
                                 <x-field name="mobile" autocomplete="tel" label="Mobile / Contact No" bn="মোবাইল" type="tel" required
-                                         placeholder="01712345678"/>
+                                         placeholder="017******28"/>
                                 <x-field name="whatsapp" autocomplete="tel" label="WhatsApp Number" type="tel"
                                          placeholder="Leave blank if same as mobile"/>
 
@@ -592,7 +592,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          placeholder="e.g. 9F2K4L8MZQ"
                                          hint="Copy it exactly from the confirmation SMS."/>
                                 <x-field name="sender_number" label="Number / account you sent from" type="tel" required
-                                         placeholder="01712345678"/>
+                                         placeholder="017******28"/>
                                 <x-field name="amount_paid" label="Total Paid Amount (BDT)" type="number" required
                                          class="sm:col-span-2"
                                          placeholder="Enter the exact amount you sent"/>

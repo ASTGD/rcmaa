@@ -12,7 +12,7 @@
             'name' => 'Md. Rofikul Islam',
             'name_bn' => 'মো. রফিকুল ইসলাম',
             'role' => 'Convenor, RCMAA',
-            'photo' => 'committee/md-rofikul-islam.png',
+            'photo' => 'committee/md-rofikul-islam.jpg',
             'bn' => [
                 'রাজশাহী কলেজের গণিত বিভাগের সকল প্রাক্তন ও বর্তমান শিক্ষার্থী, সম্মানিত শিক্ষকবৃন্দ এবং শুভানুধ্যায়ীদের আন্তরিক শুভেচ্ছা ও অভিনন্দন।',
                 'রাজশাহী কলেজের গণিত বিভাগের প্রকৃত শক্তি কেবল তার অবকাঠামো নয় বরং তার প্রাক্তন শিক্ষার্থীরা জ্ঞানচর্চা, গবেষণা, নৈতিক মূল্যবোধ এবং দক্ষ মানবসম্পদ তৈরিতে গুরুত্বপূর্ণ ভূমিকা পালন করে আসছে। এই বিভাগের প্রাক্তন শিক্ষার্থীরা আজ দেশ-বিদেশের বিভিন্ন শিক্ষা প্রতিষ্ঠান, গবেষণা সংস্থা, প্রশাসন, শিল্প ও প্রযুক্তিসহ নানা ক্ষেত্রে কৃতিত্বের স্বাক্ষর রেখে চললেও গণিত বিভাগের প্রতি তাদের ভালোবাসা অটুট রয়েছে।',
@@ -34,7 +34,7 @@
             'name' => 'Md. Mahbub Khan Murad',
             'name_bn' => 'মোঃ মাহবুব খান মুরাদ',
             'role' => 'Member Secretary, RCMAA Reunion 2026',
-            'photo' => 'committee/md-mahbub-khan-murad.png',
+            'photo' => 'committee/md-mahbub-khan-murad.jpg',
             'bn' => [
                 'সম্মানিত অ্যালামনাইবৃন্দ, আন্তরিক শুভেচ্ছা ও ভালোবাসা। রাজশাহী কলেজ গণিত বিভাগের দীর্ঘ পথচলায় আপনিও একটি অবিচ্ছেদ্য অংশ।',
                 'শিকড়ের টানে প্রাক্তনের এই মিলনমেলা আমাদের পুরনো স্মৃতি রোমন্থনের পাশাপাশি বর্তমান ও ভবিষ্যতের সেতুবন্ধনের এক মঞ্চ। আপনারা আজ দেশ ও বিদেশে বিভিন্ন ক্ষেত্রে স্বমহিমায় উজ্জ্বল। এই বিশাল নেটওয়ার্ক ও অভিজ্ঞতা আমাদের বর্তমান শিক্ষার্থীদের অনুপ্রাণিত করবে।',
@@ -65,9 +65,25 @@
                     <div class="grid gap-0 md:grid-cols-[15rem_1fr]">
                         {{-- Portrait --}}
                         <div class="relative aspect-4/5 bg-ink-800 md:aspect-auto md:min-h-full">
-                            @php $src = Storage::disk('public')->url($m['photo']); @endphp
-                            <img src="{{ $src }}" alt="{{ $m['name'] }}"
-                                 class="h-full w-full object-cover object-top" loading="lazy">
+                            {{-- These paths are written by hand, and a typo in one used to
+                                 render as a broken image on the page rather than failing
+                                 anywhere a developer would see it. Check the file is
+                                 actually there and fall back to initials if it is not. --}}
+                            @php
+                                $disk = Storage::disk('public');
+                                $src = $disk->exists($m['photo']) ? $disk->url($m['photo']) : null;
+                            @endphp
+                            @if ($src)
+                                <img src="{{ $src }}" alt="{{ $m['name'] }}"
+                                     class="h-full w-full object-cover object-top" loading="lazy">
+                            @else
+                                <div class="bg-grid-light grid h-full place-items-center">
+                                    <span class="heading-display text-5xl text-brass-500/70">
+                                        {{ collect(explode(' ', preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $m['name'])))
+                                            ->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('') }}
+                                    </span>
+                                </div>
+                            @endif
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-4 md:hidden">
                                 <p class="text-sm font-semibold text-parchment">{{ $m['name'] }}</p>
                                 <p class="text-xs text-brass-400">{{ $m['role'] }}</p>

@@ -17,9 +17,12 @@
     <section class="bg-grid bg-parchment py-20 md:py-28" data-parallax-scope>
         <div class="container-rc grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-20">
             <div class="relative overflow-hidden rounded-3xl" data-reveal="mask">
-                <img src="{{ Storage::disk('public')->url('gallery/classroom.jpg') }}"
-                     alt="A teacher of the Department of Mathematics addressing a meeting in the classroom"
-                     class="aspect-4/5 w-full object-cover" data-parallax="-0.05" loading="lazy">
+                {{-- Supplied by the association to replace the classroom photo that
+                     was here. It is a wide architectural shot, so it takes a 4:3
+                     frame — cropped to the old 4:5 the building lost both wings. --}}
+                <img src="{{ Storage::disk('public')->url('gallery/department-building.jpg') }}"
+                     alt="The science building at Rajshahi College, its frontage carrying the Department of Mathematics sign"
+                     class="aspect-4/3 w-full object-cover" data-parallax="-0.05" loading="lazy">
                 <div class="absolute inset-0 bg-gradient-to-t from-ink-950/45 to-transparent"></div>
             </div>
 
