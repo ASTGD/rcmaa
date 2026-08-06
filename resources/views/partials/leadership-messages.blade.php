@@ -51,6 +51,26 @@
     ];
 @endphp
 
+@php
+    /*
+     * Two layouts for the same two messages.
+     *
+     * columns=1 (default, /committee): full width, the portrait standing beside
+     * the text. There is room for both.
+     *
+     * columns=2 (home page): the pair sit in one row. A tall 4:5 portrait beside
+     * text in a half-width column squeezes the message into a gutter, and laying
+     * it across the top as a banner crops these headshots through the face. So
+     * at this width the portrait becomes an avatar in the card's header, which
+     * crops nothing and keeps the card short enough to sit on a home page.
+     */
+    $columns = $columns ?? 1;
+    $twoUp = $columns === 2;
+
+    $initials = fn ($name) => collect(explode(' ', preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $name)))
+        ->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('');
+@endphp
+
 <section class="bg-parchment-dim py-20 md:py-28">
     <div class="container-rc">
         <x-section-heading
@@ -59,57 +79,95 @@
             title="From the leadership"
             lead="Messages from the Convenor and the Member Secretary of the Grand Reunion 2026."/>
 
-        <div class="mt-16 space-y-6" x-data="{ open: null }">
+        <div @class([
+                 'mt-16',
+                 'grid gap-6 lg:grid-cols-2 lg:items-stretch' => $twoUp,
+                 'space-y-6' => ! $twoUp,
+             ])
+             x-data="{ open: null }">
             @foreach ($messages as $i => $m)
-                <article class="card overflow-hidden" data-reveal>
-                    <div class="grid gap-0 md:grid-cols-[15rem_1fr]">
-                        {{-- Portrait --}}
-                        <div class="relative aspect-4/5 bg-ink-800 md:aspect-auto md:min-h-full">
-                            {{-- These paths are written by hand, and a typo in one used to
-                                 render as a broken image on the page rather than failing
-                                 anywhere a developer would see it. Check the file is
-                                 actually there and fall back to initials if it is not. --}}
-                            @php
-                                $disk = Storage::disk('public');
-                                $src = $disk->exists($m['photo']) ? $disk->url($m['photo']) : null;
-                            @endphp
-                            @if ($src)
-                                <img src="{{ $src }}" alt="{{ $m['name'] }}"
-                                     class="h-full w-full object-cover object-top" loading="lazy">
-                            @else
-                                <div class="bg-grid-light grid h-full place-items-center">
-                                    <span class="heading-display text-5xl text-brass-500/70">
-                                        {{ collect(explode(' ', preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $m['name'])))
-                                            ->take(2)->map(fn ($w) => mb_substr($w, 0, 1))->implode('') }}
-                                    </span>
+                @php
+                    // Written by hand, and a typo in one used to render as a broken
+                    // image on the page rather than failing anywhere a developer
+                    // would see it. Check the file is there; fall back to initials.
+                    $disk = Storage::disk('public');
+                    $src = $disk->exists($m['photo']) ? $disk->url($m['photo']) : null;
+                @endphp
+
+                <article @class(['card overflow-hidden', 'flex flex-col' => $twoUp]) data-reveal>
+                    <div @class(['grid gap-0', 'md:grid-cols-[15rem_1fr]' => ! $twoUp, 'h-full' => $twoUp])>
+
+                        {{-- Portrait — a full-height column when there is room for one. --}}
+                        @unless ($twoUp)
+                            <div class="relative aspect-4/5 bg-ink-800 md:aspect-auto md:min-h-full">
+                                @if ($src)
+                                    <img src="{{ $src }}" alt="{{ $m['name'] }}"
+                                         class="h-full w-full object-cover object-top" loading="lazy">
+                                @else
+                                    <div class="bg-grid-light grid h-full place-items-center">
+                                        <span class="heading-display text-5xl text-brass-500/70">{{ $initials($m['name']) }}</span>
+                                    </div>
+                                @endif
+                                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-4 md:hidden">
+                                    <p class="text-sm font-semibold text-parchment">{{ $m['name'] }}</p>
+                                    <p class="text-xs text-brass-400">{{ $m['role'] }}</p>
                                 </div>
-                            @endif
-                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-4 md:hidden">
-                                <p class="text-sm font-semibold text-parchment">{{ $m['name'] }}</p>
-                                <p class="text-xs text-brass-400">{{ $m['role'] }}</p>
                             </div>
-                        </div>
+                        @endunless
 
                         {{-- Message --}}
-                        <div class="p-7 md:p-9">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <p lang="bn" class="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brass-700">
-                                        {{ $m['eyebrow'] }}
-                                    </p>
-                                    <h3 class="heading-display mt-2 text-xl text-ink-950">{{ $m['title'] }}</h3>
+                        <div @class(['flex flex-col p-7 md:p-9', 'h-full' => $twoUp])>
+
+                            @if ($twoUp)
+                                {{-- Header: avatar, then who is speaking. --}}
+                                <div class="flex items-center gap-4 border-b border-ink-900/8 pb-5">
+                                    {{-- The size is on the image itself, not h-full. Inside a
+                                         `place-items-center` grid the item is sized to content,
+                                         so height:100% has no definite parent to resolve
+                                         against and the portrait's own 4:5 wins — a 64x80
+                                         avatar in a 64x64 hole. --}}
+                                    <span class="grid h-16 w-16 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
+                                        @if ($src)
+                                            <img src="{{ $src }}" alt="{{ $m['name'] }}"
+                                                 class="h-16 w-16 object-cover object-top" loading="lazy">
+                                        @else
+                                            <span class="heading-display text-xl">{{ $initials($m['name']) }}</span>
+                                        @endif
+                                    </span>
+                                    <div class="min-w-0">
+                                        <p lang="bn" class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">
+                                            {{ $m['eyebrow'] }}
+                                        </p>
+                                        <h3 class="heading-display mt-1.5 text-lg leading-tight text-ink-950">{{ $m['title'] }}</h3>
+                                    </div>
+                                    <x-icon name="quote" class="ml-auto h-6 w-6 flex-none self-start text-brass-500/50"/>
                                 </div>
-                                <x-icon name="quote" class="h-7 w-7 flex-none text-brass-500/50"/>
-                            </div>
+                            @else
+                                <div class="flex items-start justify-between gap-4">
+                                    <div>
+                                        <p lang="bn" class="font-mono text-[0.68rem] uppercase tracking-[0.16em] text-brass-700">
+                                            {{ $m['eyebrow'] }}
+                                        </p>
+                                        <h3 class="heading-display mt-2 text-xl text-ink-950">{{ $m['title'] }}</h3>
+                                    </div>
+                                    <x-icon name="quote" class="h-7 w-7 flex-none text-brass-500/50"/>
+                                </div>
+                            @endif
 
                             {{-- Bangla is the original; shown first and in full. --}}
-                            <div lang="bn" class="mt-6 space-y-3.5 font-bangla text-[0.95rem] leading-[1.9] text-ink-700">
+                            <div lang="bn" @class([
+                                    'space-y-3.5 font-bangla leading-[1.9] text-ink-700',
+                                    'mt-5 text-[0.9rem]' => $twoUp,
+                                    'mt-6 text-[0.95rem]' => ! $twoUp,
+                                 ])>
                                 @foreach ($m['bn'] as $p)
                                     <p>{{ $p }}</p>
                                 @endforeach
                             </div>
 
-                            <div class="mt-6 border-t border-ink-900/8 pt-5">
+                            {{-- mt-auto keeps the two cards' signatures on the same line
+                                 when one message is shorter than the other. --}}
+                            <div @class(['border-t border-ink-900/8 pt-5', 'mt-auto' => $twoUp, 'mt-6' => ! $twoUp])>
                                 <button type="button" @click="open = open === {{ $i }} ? null : {{ $i }}"
                                         class="inline-flex items-center gap-2 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-brass-700 transition hover:text-ink-950"
                                         :aria-expanded="open === {{ $i }}">

@@ -37,25 +37,33 @@
                                     <p lang="bn" class="truncate text-xs text-ink-400">{{ $person->full_name_bn }}</p>
                                 @endif
 
+                                {{-- Teachers register as staff and have no session, which read
+                                     as a bare "Session ·" with nothing after it. --}}
                                 <p class="mt-1.5 flex items-center gap-1.5 text-[0.76rem] text-ink-500">
                                     <x-icon name="graduation" class="h-3.5 w-3.5 flex-none text-brass-600"/>
                                     <span class="truncate">
-                                        Session {{ $person->session }}
+                                        {{ $person->session ? 'Session '.$person->session : 'Department of Mathematics' }}
                                         @if ($person->profession) &middot; {{ $person->profession }} @endif
                                     </span>
                                 </p>
                             </div>
 
-                            <a href="{{ route('directory', ['session' => $person->session]) }}"
+                            <a href="{{ $person->session
+                                          ? route('directory', ['session' => $person->session])
+                                          : route('directory') }}"
                                class="ml-auto flex-none text-ink-400 transition hover:text-brass-700"
-                               aria-label="See the {{ $person->session }} batch">
+                               aria-label="{{ $person->session ? 'See the '.$person->session.' batch' : 'Open the directory' }}">
                                 <x-icon name="arrow-up-right" class="h-4 w-4"/>
                             </a>
                         </article>
                     @endforeach
                 </div>
 
-                <div class="mt-6 text-center">
+                {{-- mt-10, not mt-6. The cards above reveal by sliding up from
+                     y+34px, and a 24px gap is less than that — so on the way in
+                     they travelled down across this button and covered it. The
+                     clearance has to exceed the animation's own offset. --}}
+                <div class="mt-10 text-center">
                     <a href="{{ route('directory') }}" class="btn btn-outline btn-sm">
                         View Directory
                         <x-icon name="arrow-right" class="h-3.5 w-3.5"/>

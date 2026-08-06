@@ -3,28 +3,13 @@
         <div class="grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-20">
 
             {{-- Image stack --}}
-            <figure class="relative">
+            <div class="relative">
                 <div class="relative overflow-hidden rounded-3xl" data-reveal="mask">
                     <div class="aspect-4/5 w-full" data-parallax="-0.06">
                         @include('partials.home.about-figure')
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-ink-950/50 to-transparent"></div>
                 </div>
-
-                {{-- The association asked what this figure is for. It is an
-                     illustration, not a control — so it now says what it is
-                     drawing instead of leaving people to wonder. --}}
-                {{-- mt-10 clears the seal, which hangs 2rem below the image. --}}
-                <figcaption class="mt-10 max-w-sm" data-reveal data-reveal-delay="0.3">
-                    <p lang="bn" class="font-bangla text-[0.85rem] leading-relaxed text-ink-600">
-                        বৃত্তের উপর ঘূর্ণায়মান একটি বিন্দু তার উচ্চতা দিয়ে সাইন বক্ররেখা আঁকে —
-                        গণিত বিভাগের নিজস্ব পরিচয়।
-                    </p>
-                    <p class="mt-1 text-[0.78rem] leading-relaxed text-ink-400">
-                        A point travelling the unit circle traces a sine wave — the definition
-                        of sine, drawn rather than stated.
-                    </p>
-                </figcaption>
 
                 {{-- Founding-year seal --}}
                 <div class="absolute -bottom-8 -right-4 w-44 rounded-2xl bg-ink-900 p-6 text-center shadow-[0_30px_70px_-30px_rgba(7,14,27,.6)] md:-right-10 md:w-52"
