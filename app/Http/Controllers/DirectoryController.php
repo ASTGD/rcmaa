@@ -29,15 +29,29 @@ class DirectoryController extends Controller
 
     public function __invoke(Request $request): View
     {
+        // A guest sees how many members there are and nothing else — the
+        // association asked for exactly that, so the count still gives people a
+        // reason to register without exposing anybody's details.
+        if (! $request->attributes->get('directory_unlocked')) {
+            return view('pages.directory-locked', [
+                'title' => 'Alumni Directory',
+                'description' => 'The RCMAA alumni directory is open to registered members.',
+                'total' => Registration::listed()->count(),
+                'batchCount' => Registration::listed()->whereNotNull('session')->distinct()->count('session'),
+            ]);
+        }
+
         $filters = array_filter([
             'q' => $request->string('q')->toString(),
             'session' => $request->string('session')->toString(),
             'degree' => $request->string('degree')->toString(),
+            'category' => $request->string('category')->toString(),
         ]);
 
         $matching = fn () => Registration::listed()
             ->when($filters['q'] ?? null, fn ($q, $term) => $q->search($term))
             ->when($filters['degree'] ?? null, fn ($q, $degree) => $q->where('degree', $degree))
+            ->when($filters['category'] ?? null, fn ($q, $category) => $q->where('category', $category))
             ->when($filters['session'] ?? null, fn ($q, $session) => $session === self::FACULTY
                 ? $q->whereNull('session')
                 : $q->where('session', $session));

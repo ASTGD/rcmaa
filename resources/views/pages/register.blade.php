@@ -244,6 +244,47 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                 <x-field name="permanent_address" label="Permanent Address" bn="স্থায়ী ঠিকানা"
                                          type="textarea" rows="3" class="sm:col-span-2"/>
                             </div>
+
+                            {{-- The account password, set here so a registrant leaves with a
+                                 working login rather than waiting on an email. Sits with the
+                                 email address because together they are the credentials. --}}
+                            <div class="mt-8 rounded-2xl border border-brass-600/25 bg-brass-100/40 p-5 md:p-6">
+                                <p class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">
+                                    Your member account
+                                </p>
+                                <h3 class="heading-display mt-2 text-lg text-ink-950">Choose a password</h3>
+                                <p lang="bn" class="mt-1 font-bangla text-[0.85rem] text-ink-600">
+                                    এই ইমেইল ও পাসওয়ার্ড দিয়ে পরে লগইন করে আপনার তথ্য দেখতে ও পরিবর্তন করতে পারবেন।
+                                </p>
+                                <p class="mt-1 text-[0.8rem] text-ink-500">
+                                    You will sign in with the email address above and this password to manage
+                                    your registration, download your slips and search the alumni directory.
+                                </p>
+
+                                <div class="mt-5 grid gap-6 sm:grid-cols-2">
+                                    <div>
+                                        <label for="password" class="field-label">
+                                            Password <span lang="bn" class="field-label-bn">&middot; পাসওয়ার্ড</span>
+                                            <span class="text-brass-700">*</span>
+                                        </label>
+                                        <input id="password" name="password" type="password" required
+                                               autocomplete="new-password" class="input mt-2"
+                                               x-model="form.password" @input="clearError('password')">
+                                        <p class="mt-1.5 text-xs text-ink-500">At least 8 characters, with letters and numbers.</p>
+                                        <p class="field-error" x-show="errors.password" x-text="errors.password" x-cloak></p>
+                                        @error('password')<p class="field-error">{{ $message }}</p>@enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="password_confirmation" class="field-label">
+                                            Confirm password <span class="text-brass-700">*</span>
+                                        </label>
+                                        <input id="password_confirmation" name="password_confirmation" type="password" required
+                                               autocomplete="new-password" class="input mt-2"
+                                               x-model="form.password_confirmation" @input="clearError('password')">
+                                    </div>
+                                </div>
+                            </div>
                             {{-- Publishing a mobile number is a decision the registrant should
                                  make knowingly, so it is stated at the point of entry. --}}
                             <x-alert type="info" title="Your mobile number will be published" class="mt-6">

@@ -28,6 +28,8 @@ class GuestCountTest extends TestCase
             'full_name_en' => 'Md. Shafiqul Alam',
             'mobile' => '01712345678',
             'email' => 'shafiqul@example.test',
+            'password' => 'reunion2026',
+            'password_confirmation' => 'reunion2026',
             'present_address' => 'Boalia, Rajshahi',
             'session' => '2008-09',
             'degree' => 'both',

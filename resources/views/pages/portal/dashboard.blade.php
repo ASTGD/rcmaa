@@ -21,10 +21,16 @@
             </span>
         </div>
         <div class="mt-7 flex flex-wrap gap-3" data-reveal data-reveal-delay="0.3">
-            <a href="{{ route('portal.pass') }}" class="btn btn-primary">
-                <x-icon name="download" class="h-4 w-4"/>My entry pass
+            <a href="{{ route('member.slip.registration') }}" class="btn btn-primary">
+                <x-icon name="download" class="h-4 w-4"/>Registration slip
             </a>
-            <form method="POST" action="{{ route('portal.close') }}">
+            <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
+                <x-icon name="download" class="h-4 w-4"/>Payment slip
+            </a>
+            <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
+                <x-icon name="download" class="h-4 w-4"/>Entry pass
+            </a>
+            <form method="POST" action="{{ route('member.logout') }}">
                 @csrf
                 <button type="submit" class="btn btn-outline-light">Sign out</button>
             </form>
@@ -41,16 +47,50 @@
                     <x-alert type="info" title="Note from the committee" class="mb-6">{{ $r->admin_note }}</x-alert>
                 @endif
 
-                <form method="POST" action="{{ route('portal.update') }}" class="card p-6 md:p-8">
+                <form method="POST" action="{{ route('member.profile.update') }}"
+                      enctype="multipart/form-data" class="card p-6 md:p-8">
                     @csrf @method('PATCH')
 
                     <h2 class="heading-display text-xl text-ink-950">Your details</h2>
                     <p class="prose-rc mt-1.5 text-sm">
-                        Change anything here yourself. Your name, session and payment can only be
-                        altered by the committee — call the helpdesk on {{ config('rcmaa.contact.helpline') }}.
+                        Change anything here yourself. Your session, degree, category and payment can
+                        only be altered by the committee — call the helpdesk on {{ config('rcmaa.contact.helpline') }}.
                     </p>
 
+                    {{-- Profile picture. Sits above the fields because it is the one
+                         thing here that is not a text box, and burying a file input
+                         among them is how people miss it. --}}
+                    <div class="mt-7 flex flex-wrap items-center gap-5 rounded-2xl bg-parchment-dim p-5">
+                        <span class="grid h-20 w-20 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
+                            @if ($r->photo_url)
+                                <img src="{{ $r->photo_url }}" alt="" class="h-full w-full object-cover">
+                            @else
+                                <span class="heading-display text-2xl">
+                                    {{ mb_strtoupper(mb_substr(preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $r->full_name_en), 0, 1)) }}
+                                </span>
+                            @endif
+                        </span>
+
+                        <div class="min-w-0 flex-1">
+                            <label for="member-photo" class="field-label">
+                                Profile picture <span lang="bn" class="field-label-bn">&middot; ছবি</span>
+                            </label>
+                            <input id="member-photo" type="file" name="photo"
+                                   accept="image/jpeg,image/png,image/webp"
+                                   class="mt-2 block w-full text-sm text-ink-600
+                                          file:mr-3 file:rounded-lg file:border-0 file:bg-brass-100 file:px-3.5 file:py-2
+                                          file:text-sm file:font-medium file:text-brass-800 hover:file:bg-brass-200">
+                            @error('photo')<p class="field-error">{{ $message }}</p>@enderror
+                            <p class="mt-1.5 text-xs text-ink-400">
+                                JPG, PNG or WebP &middot; maximum {{ round(config('rcmaa.registration.photo_max_kb') / 1024, 1) }} MB.
+                                Shown in the alumni directory if you are listed.
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="mt-7 grid gap-6 sm:grid-cols-2">
+                        <x-field name="full_name_en" autocomplete="name" :value="$r->full_name_en" label="Full name (English)" required :model="false"/>
+                        <x-field name="full_name_bn" :value="$r->full_name_bn" label="Full name" bn="বাংলায় নাম" :model="false"/>
                         <x-field name="mobile" autocomplete="tel" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
                         <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
                         <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
@@ -62,6 +102,8 @@
                                  type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
                         <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
                                  type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
+                        <x-field name="employment_status" :value="$r->employment_status" label="Employment status" type="select" :model="false"
+                                 :options="$opt['employment_statuses']" placeholder="Select your status"/>
                         <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
                         <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
                         <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
@@ -140,7 +182,7 @@
                             </p>
                         @endif
 
-                        <form method="POST" action="{{ route('portal.receipt') }}"
+                        <form method="POST" action="{{ route('member.receipt') }}"
                               enctype="multipart/form-data" class="mt-4">
                             @csrf
                             <label for="portal-receipt"
@@ -165,6 +207,21 @@
                             <p class="mt-2 text-xs text-ink-400">JPG, PNG, WebP or PDF &middot; maximum 4 MB</p>
                         </form>
                     </div>
+                </div>
+
+                <div class="card p-5">
+                    <p class="font-mono text-[0.62rem] uppercase tracking-[0.18em] text-brass-700">Your account</p>
+                    <p class="mt-2 truncate text-sm font-medium text-ink-900">{{ $r->email }}</p>
+                    <p class="mt-1 text-xs text-ink-400">
+                        @if ($r->hasPassword())
+                            You sign in with this address and your password.
+                        @else
+                            No password set yet — you are signing in by emailed link.
+                        @endif
+                    </p>
+                    <a href="{{ route('member.password.create') }}" class="btn btn-outline btn-sm mt-4 w-full">
+                        {{ $r->hasPassword() ? 'Change password' : 'Set a password' }}
+                    </a>
                 </div>
 
                 <div class="card p-5">

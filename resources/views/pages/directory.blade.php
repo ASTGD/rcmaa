@@ -10,7 +10,7 @@
 
             {{-- Filters --}}
             <form method="GET" action="{{ route('directory') }}" class="card p-5 md:p-6" data-reveal>
-                <div class="grid gap-4 md:grid-cols-[1fr_12rem_14rem_auto] md:items-end">
+                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_11rem_12rem_12rem_auto] xl:items-end">
                     <div>
                         <label for="q" class="field-label">Search by name</label>
                         <input id="q" name="q" type="search" class="input" placeholder="Name…"
@@ -34,6 +34,20 @@
                             @endforeach
                         </select>
                     </div>
+                    {{-- Category is one of the three the association asked members to
+                         be able to filter by: name, session and category. --}}
+                    <div>
+                        <label for="category" class="field-label">
+                            Category <span lang="bn" class="field-label-bn">&middot; ক্যাটাগরি</span>
+                        </label>
+                        <select id="category" name="category" class="input">
+                            <option value="">All categories</option>
+                            @foreach (config('rcmaa.registration.categories') as $key => $c)
+                                <option value="{{ $key }}" @selected(($filters['category'] ?? null) === $key)>{{ $c['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div>
                         <label for="degree" class="field-label">Degree</label>
                         <select id="degree" name="degree" class="input">

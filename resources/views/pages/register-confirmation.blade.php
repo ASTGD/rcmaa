@@ -35,7 +35,7 @@
             </div>
 
             <div class="mt-9 flex flex-wrap justify-center gap-3" data-reveal data-reveal-delay="0.3">
-                <a href="{{ route('portal.request') }}" class="btn btn-primary">Manage My Registration</a>
+                <a href="{{ route('member.login') }}" class="btn btn-primary">Manage My Registration</a>
                 <a href="{{ route('registration.status') }}" class="btn btn-outline-light">Check Status</a>
                 <button type="button" onclick="window.print()" class="btn btn-outline-light">Print This Page</button>
             </div>

@@ -39,18 +39,39 @@ class DirectoryAccessTest extends TestCase
     private function openPortal(Registration $r): void
     {
         $this->get(URL::temporarySignedRoute(
-            'portal.open', now()->addHour(), ['registration' => $r->reference]
+            'member.link.open', now()->addHour(), ['registration' => $r->reference]
         ));
     }
 
+    /**
+     * A guest is not turned away, but sees only how many members there are —
+     * the association asked for exactly that much and no more.
+     */
     #[Test]
-    public function a_stranger_is_sent_to_request_a_link(): void
+    public function a_stranger_sees_only_the_member_count(): void
     {
         $this->member();
 
         $this->get(route('directory'))
-            ->assertRedirect(route('portal.request'))
-            ->assertSessionHas('directory_gate');
+            ->assertOk()
+            ->assertSee('Members only')
+            ->assertSee('Sign in to view')
+            ->assertDontSee('Listed Alumnus');
+    }
+
+    #[Test]
+    public function the_count_a_guest_sees_is_the_real_one(): void
+    {
+        $this->member();
+        $this->member(['email' => 'second@example.test', 'transaction_id' => 'DIRTEST0002',
+            'full_name_en' => 'Another Alumnus', 'session' => '2010-11']);
+        // Unlisted people are not members of the public count either way.
+        $this->member(['email' => 'third@example.test', 'transaction_id' => 'DIRTEST0003',
+            'full_name_en' => 'Hidden Alumnus', 'listed_in_directory' => false]);
+
+        $this->get(route('directory'))
+            ->assertOk()
+            ->assertSee('data-count="2"', false);
     }
 
     /** The whole point: no mobile numbers leak to the public. */
@@ -96,30 +117,53 @@ class DirectoryAccessTest extends TestCase
 
         $this->actingAs(User::factory()->create(['is_admin' => false]))
             ->get(route('directory'))
-            ->assertRedirect(route('portal.request'));
+            ->assertOk()
+            ->assertDontSee('Listed Alumnus');
     }
 
     #[Test]
-    public function signing_out_of_the_portal_closes_the_directory_again(): void
+    public function signing_out_closes_the_directory_again(): void
     {
         $r = $this->member();
         $this->openPortal($r);
-        $this->get(route('directory'))->assertOk();
+        $this->get(route('directory'))->assertOk()->assertSee('Listed Alumnus');
 
-        $this->post(route('portal.close'));
+        $this->post(route('member.logout'));
 
-        $this->get(route('directory'))->assertRedirect(route('portal.request'));
+        $this->get(route('directory'))->assertOk()->assertDontSee('Listed Alumnus');
+    }
+
+    /** Members can narrow the directory the three ways the association asked for. */
+    #[Test]
+    public function a_signed_in_member_can_filter_by_name_session_and_category(): void
+    {
+        $r = $this->member();
+        $this->member([
+            'email' => 'teacher@example.test', 'transaction_id' => 'DIRTEST0009',
+            'full_name_en' => 'Departmental Teacher', 'category' => 'teacher',
+            'session' => null, 'degree' => null, 'passing_year' => null,
+        ]);
+        $this->openPortal($r);
+
+        $this->get(route('directory', ['q' => 'Departmental']))
+            ->assertOk()->assertSee('Departmental Teacher')->assertDontSee('Listed Alumnus');
+
+        $this->get(route('directory', ['session' => '2008-09']))
+            ->assertOk()->assertSee('Listed Alumnus')->assertDontSee('Departmental Teacher');
+
+        $this->get(route('directory', ['category' => 'teacher']))
+            ->assertOk()->assertSee('Departmental Teacher')->assertDontSee('Listed Alumnus');
     }
 
     #[Test]
-    public function the_redirect_explains_why(): void
+    public function the_locked_page_explains_why_and_offers_a_way_in(): void
     {
-        $this->get(route('directory'));
-
-        $this->followingRedirects()->get(route('directory'))
+        $this->get(route('directory'))
             ->assertOk()
             ->assertSee('Members only')
-            ->assertSee('অ্যালামনাই ডিরেক্টরি শুধুমাত্র RCMAA-এর নিবন্ধিত সদস্যদের জন্য', false);
+            ->assertSee('শুধুমাত্র RCMAA-এর নিবন্ধিত সদস্যরাই', false)
+            ->assertSee(route('member.login'), false)
+            ->assertSee(route('register.create'), false);
     }
 
     /**

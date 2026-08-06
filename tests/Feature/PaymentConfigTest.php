@@ -119,6 +119,7 @@ class PaymentConfigTest extends TestCase
         $payload = [
             'category' => 'alumni', 'full_name_en' => 'Payment Method Check',
             'mobile' => '01712345678', 'email' => 'pm@example.test',
+            'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
             'present_address' => 'Rajshahi', 'session' => '2008-09',
             'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',

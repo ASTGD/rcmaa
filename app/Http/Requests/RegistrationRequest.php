@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Controllers\Member\PasswordController;
 use App\Support\RegistrationPricing;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,7 +33,14 @@ class RegistrationRequest extends FormRequest
             'whatsapp' => ['nullable', 'string', 'max:32', 'regex:/^(\+?\d{1,3})?[\d\s-]{6,18}$/'],
             // Deliberately not `dns` — it makes a submission depend on a live DNS
             // lookup and rejects otherwise-valid domains that publish no MX record.
-            'email' => ['required', 'email:rfc', 'max:190'],
+            // Unique because it is now the thing they sign in with, and one
+            // address has to mean one member.
+            'email' => ['required', 'email:rfc', 'max:190', Rule::unique('registrations', 'email')],
+
+            // The member account's password, chosen during registration at the
+            // association's request.
+            'password' => PasswordController::rules(),
+
             'present_address' => ['required', 'string', 'max:500'],
             'permanent_address' => ['nullable', 'string', 'max:500'],
 
@@ -102,6 +110,8 @@ class RegistrationRequest extends FormRequest
     {
         return [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
+            'email.unique' => 'A registration already exists for this email address. Sign in to your member account instead, or use "Forgot password" if you cannot remember it.',
+            'password.confirmed' => 'The two passwords do not match.',
             'transaction_id.unique' => 'This transaction ID has already been used for a registration. If you believe this is an error, contact the helpdesk.',
             'terms.accepted' => 'Please confirm that the information you provided is correct.',
             'passing_year.required_unless' => 'Please give the year you passed.',

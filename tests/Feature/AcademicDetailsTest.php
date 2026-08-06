@@ -27,6 +27,8 @@ class AcademicDetailsTest extends TestCase
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.test',
+            'password' => 'reunion2026',
+            'password_confirmation' => 'reunion2026',
             'present_address' => 'Rajshahi',
             'session' => '2008-09',
             'degree' => 'bsc',

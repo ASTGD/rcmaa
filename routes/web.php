@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin;
-use App\Http\Controllers\AlumniPortalController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CommitteeController;
 use App\Http\Controllers\ContactController;
@@ -10,6 +9,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Member;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RegistrationController;
@@ -67,27 +67,57 @@ Route::prefix('register')->name('register.')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| The registrant's own area — reached by an emailed one-time link
+| The member's own area
 |--------------------------------------------------------------------------
+|
+| Members authenticate on the `alumni` guard, against their own registration.
+| The emailed one-time link the portal opened with is kept for anyone who
+| registered before passwords existed — it lands them on "set a password".
+|
 */
 
-Route::prefix('my')->name('portal.')->group(function () {
-    Route::get('/', [AlumniPortalController::class, 'request'])->name('request');
-    Route::post('/', [AlumniPortalController::class, 'sendLink'])
-        ->middleware('throttle:5,10')
-        ->name('send-link');
+Route::prefix('my')->name('member.')->group(function () {
+    Route::middleware('guest:alumni')->group(function () {
+        Route::get('/login', [Member\LoginController::class, 'show'])->name('login');
+        Route::post('/login', [Member\LoginController::class, 'store'])
+            ->middleware('throttle:6,1')
+            ->name('login.attempt');
+
+        Route::post('/link', [Member\LoginController::class, 'sendLink'])
+            ->middleware('throttle:5,10')
+            ->name('link.send');
+
+        Route::get('/forgot-password', [Member\PasswordController::class, 'requestForm'])->name('password.request');
+        Route::post('/forgot-password', [Member\PasswordController::class, 'sendResetLink'])
+            ->middleware('throttle:5,10')
+            ->name('password.email');
+
+        Route::get('/reset-password/{token}', [Member\PasswordController::class, 'resetForm'])->name('password.reset');
+        Route::post('/reset-password', [Member\PasswordController::class, 'reset'])
+            ->middleware('throttle:6,1')
+            ->name('password.update');
+    });
 
     // The signed link itself; exchanges the URL for a session.
-    Route::get('/open/{registration:reference}', [AlumniPortalController::class, 'open'])
+    Route::get('/open/{registration:reference}', [Member\LoginController::class, 'openLink'])
         ->middleware('signed')
-        ->name('open');
+        ->name('link.open');
 
-    Route::middleware('alumni')->group(function () {
-        Route::get('/registration', [AlumniPortalController::class, 'show'])->name('show');
-        Route::post('/receipt', [AlumniPortalController::class, 'uploadReceipt'])->name('receipt');
-        Route::patch('/registration', [AlumniPortalController::class, 'update'])->name('update');
-        Route::get('/pass', [AlumniPortalController::class, 'pass'])->name('pass');
-        Route::post('/close', [AlumniPortalController::class, 'close'])->name('close');
+    Route::middleware('auth:alumni')->group(function () {
+        Route::get('/', [Member\DashboardController::class, 'show'])->name('dashboard');
+
+        Route::patch('/profile', [Member\DashboardController::class, 'update'])->name('profile.update');
+
+        Route::post('/receipt', [Member\DashboardController::class, 'uploadReceipt'])->name('receipt');
+
+        Route::get('/slip/registration', [Member\DashboardController::class, 'registrationSlip'])->name('slip.registration');
+        Route::get('/slip/payment', [Member\DashboardController::class, 'paymentSlip'])->name('slip.payment');
+        Route::get('/pass', [Member\DashboardController::class, 'pass'])->name('pass');
+
+        Route::get('/password', [Member\PasswordController::class, 'createForm'])->name('password.create');
+        Route::post('/password', [Member\PasswordController::class, 'store'])->name('password.store');
+
+        Route::post('/logout', [Member\LoginController::class, 'destroy'])->name('logout');
     });
 });
 

@@ -24,6 +24,7 @@ class DirectoryBatchTest extends TestCase
             'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
             'full_name_en' => $name, 'mobile' => '01712345678',
             'email' => Str()->slug($name).'@example.test', 'present_address' => 'Rajshahi',
+            'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
             'session' => $session, 'degree' => 'bsc',
             'passing_year' => (int) substr($session, 0, 4) + 4,
             'employment_status' => 'employed', 'profession' => 'Education',
@@ -229,6 +230,7 @@ class DirectoryBatchTest extends TestCase
         $payload = [
             'category' => 'alumni', 'full_name_en' => 'Bad Session',
             'mobile' => '01712345678', 'email' => 'bad@example.test',
+            'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
             'present_address' => 'Rajshahi', 'session' => '2008-2009',
             'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',

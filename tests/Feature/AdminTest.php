@@ -176,6 +176,8 @@ class AdminTest extends TestCase
         $this->registration(['full_name_en' => 'Pending Person']);
         $this->registration([
             'full_name_en' => 'Verified Person',
+            // One email, one member — it is what they sign in with now.
+            'email' => 'verified.person@example.com',
             'transaction_id' => 'ZZZZZZZZ',
             'payment_status' => Registration::STATUS_VERIFIED,
         ]);

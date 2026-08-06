@@ -120,9 +120,9 @@
         </ul>
 
         <div class="flex flex-none items-center gap-3">
-            <a href="{{ route('portal.request') }}"
+            <a href="{{ auth('alumni')->check() ? route('member.dashboard') : route('member.login') }}"
                class="header-link hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block ">
-                Login
+                {{ auth('alumni')->check() ? 'My account' : 'Login' }}
             </a>
             <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">
                 Register Now
@@ -187,7 +187,11 @@
 
             <div class="mt-6 flex flex-col gap-3">
                 <a href="{{ route('register.create') }}" class="btn btn-primary w-full">Register for the Reunion</a>
-                <a href="{{ route('portal.request') }}" class="btn btn-outline w-full">Manage my registration</a>
+                @auth('alumni')
+                    <a href="{{ route('member.dashboard') }}" class="btn btn-outline w-full">My account</a>
+                @else
+                    <a href="{{ route('member.login') }}" class="btn btn-outline w-full">Member login</a>
+                @endauth
             </div>
         </div>
     </div>

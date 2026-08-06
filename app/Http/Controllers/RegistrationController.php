@@ -9,6 +9,7 @@ use App\Support\RegistrationPricing;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -45,6 +46,12 @@ class RegistrationController extends Controller
         $data['ip_address'] = $request->ip();
 
         $registration = Registration::create($data);
+
+        // They just chose a password; signing them in means the confirmation
+        // page's "manage my registration" works there and then, rather than
+        // bouncing them to a login form they filled the credentials for a
+        // moment ago. The `hashed` cast has already hashed what they typed.
+        Auth::guard('alumni')->login($registration);
 
         // A failed confirmation email must not lose us the registration itself.
         try {

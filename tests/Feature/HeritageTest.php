@@ -80,7 +80,7 @@ class HeritageTest extends TestCase
 
         // The nine primary destinations the specification calls for.
         foreach (['home', 'about', 'committee', 'events.index', 'gallery',
-            'directory', 'contact', 'faqs', 'portal.request'] as $route) {
+            'directory', 'contact', 'faqs', 'member.login'] as $route) {
             $this->assertStringContainsString(
                 'href="'.route($route).'"', $body, "Nav missing a link to: {$route}"
             );
@@ -91,7 +91,7 @@ class HeritageTest extends TestCase
 
         // The spec's ninth item is লগইন. It now serves alumni, who have no
         // password — the committee's own sign-in is one click on from there.
-        $this->get(route('portal.request'))->assertOk()->assertSee('Send me a link');
+        $this->get(route('member.login'))->assertOk()->assertSee('Send me a link');
         $this->get(route('login'))->assertOk();
 
         // The Bangla the association specified, carried on the sub-items.

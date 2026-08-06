@@ -27,6 +27,8 @@ class PaymentReceiptTest extends TestCase
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
+            'password' => 'reunion2026',
+            'password_confirmation' => 'reunion2026',
             'present_address' => 'Rajshahi',
             'session' => '2008-09',
             'degree' => 'both',
@@ -64,7 +66,7 @@ class PaymentReceiptTest extends TestCase
 
     private function openPortal(Registration $r): void
     {
-        $this->get(URL::temporarySignedRoute('portal.open', now()->addHour(), ['registration' => $r->reference]));
+        $this->get(URL::temporarySignedRoute('member.link.open', now()->addHour(), ['registration' => $r->reference]));
     }
 
     #[Test]
@@ -161,7 +163,7 @@ class PaymentReceiptTest extends TestCase
         $r = $this->registration();
         $this->openPortal($r);
 
-        $this->post(route('portal.receipt'), [
+        $this->post(route('member.receipt'), [
             'payment_receipt' => UploadedFile::fake()->image('late.jpg'),
         ])->assertRedirect()->assertSessionHasNoErrors();
 
@@ -177,10 +179,10 @@ class PaymentReceiptTest extends TestCase
         $r = $this->registration();
         $this->openPortal($r);
 
-        $this->post(route('portal.receipt'), ['payment_receipt' => UploadedFile::fake()->image('first.jpg')]);
+        $this->post(route('member.receipt'), ['payment_receipt' => UploadedFile::fake()->image('first.jpg')]);
         $first = $r->fresh()->payment_receipt_path;
 
-        $this->post(route('portal.receipt'), ['payment_receipt' => UploadedFile::fake()->image('second.jpg')]);
+        $this->post(route('member.receipt'), ['payment_receipt' => UploadedFile::fake()->image('second.jpg')]);
         $second = $r->fresh()->payment_receipt_path;
 
         $this->assertNotSame($first, $second);
@@ -196,7 +198,7 @@ class PaymentReceiptTest extends TestCase
         $r = $this->registration();
         $this->openPortal($r);
 
-        $this->post(route('portal.receipt'), [
+        $this->post(route('member.receipt'), [
             'payment_receipt' => UploadedFile::fake()->image('proof.jpg'),
             'amount_paid' => 999999,
             'amount_due' => 0,
@@ -218,8 +220,8 @@ class PaymentReceiptTest extends TestCase
     {
         Storage::fake('public');
 
-        $this->post(route('portal.receipt'), ['payment_receipt' => UploadedFile::fake()->image('x.jpg')])
-            ->assertRedirect(route('portal.request'));
+        $this->post(route('member.receipt'), ['payment_receipt' => UploadedFile::fake()->image('x.jpg')])
+            ->assertRedirect(route('member.login'));
     }
 
     #[Test]

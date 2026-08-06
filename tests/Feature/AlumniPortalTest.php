@@ -12,9 +12,13 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * The registrant's own area. There is no password: a signed, expiring link is
- * the whole credential, so the tests that matter most are the ones about who
- * can open it and what it refuses to change.
+ * The member's own area.
+ *
+ * Members sign in with an email and password on the `alumni` guard. The signed,
+ * expiring link is kept for anyone who registered before member accounts
+ * existed, and lands them on "choose a password" rather than the dashboard.
+ * The tests that matter most are the ones about who can get in at all and what
+ * the area refuses to change.
  */
 class AlumniPortalTest extends TestCase
 {
@@ -35,6 +39,7 @@ class AlumniPortalTest extends TestCase
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
+            'password' => 'reunion2026',
             'present_address' => 'Rajshahi',
             'session' => '2008-09',
             'degree' => 'both',
@@ -58,8 +63,14 @@ class AlumniPortalTest extends TestCase
 
     private function open(Registration $r): void
     {
-        $this->get(URL::temporarySignedRoute('portal.open', now()->addHour(), ['registration' => $r->reference]))
-            ->assertRedirect(route('portal.show'));
+        $this->get(URL::temporarySignedRoute('member.link.open', now()->addHour(), ['registration' => $r->reference]))
+            ->assertRedirect(route('member.dashboard'));
+    }
+
+    /** Signed in as this member, without going through a form. */
+    private function asMember(Registration $r): self
+    {
+        return $this->actingAs($r, 'alumni');
     }
 
     #[Test]
@@ -68,7 +79,7 @@ class AlumniPortalTest extends TestCase
         Mail::fake();
         $r = $this->registration();
 
-        $this->post(route('portal.send-link'), ['email' => $r->email])
+        $this->post(route('member.link.send'), ['email' => $r->email])
             ->assertRedirect()
             ->assertSessionHas('status');
 
@@ -81,7 +92,7 @@ class AlumniPortalTest extends TestCase
     {
         Mail::fake();
 
-        $this->post(route('portal.send-link'), ['email' => 'nobody@example.com'])
+        $this->post(route('member.link.send'), ['email' => 'nobody@example.com'])
             ->assertRedirect()
             ->assertSessionHas('status');
 
@@ -91,8 +102,8 @@ class AlumniPortalTest extends TestCase
     #[Test]
     public function the_area_is_closed_without_a_valid_link(): void
     {
-        $this->get(route('portal.show'))->assertRedirect(route('portal.request'));
-        $this->get(route('portal.pass'))->assertRedirect(route('portal.request'));
+        $this->get(route('member.dashboard'))->assertRedirect(route('member.login'));
+        $this->get(route('member.pass'))->assertRedirect(route('member.login'));
     }
 
     #[Test]
@@ -101,11 +112,11 @@ class AlumniPortalTest extends TestCase
         $r = $this->registration();
 
         // Tampered signature.
-        $url = URL::temporarySignedRoute('portal.open', now()->addHour(), ['registration' => $r->reference]);
+        $url = URL::temporarySignedRoute('member.link.open', now()->addHour(), ['registration' => $r->reference]);
         $this->get($url.'tamper')->assertForbidden();
 
         // Expired.
-        $expired = URL::temporarySignedRoute('portal.open', now()->subMinute(), ['registration' => $r->reference]);
+        $expired = URL::temporarySignedRoute('member.link.open', now()->subMinute(), ['registration' => $r->reference]);
         $this->get($expired)->assertForbidden();
     }
 
@@ -115,7 +126,7 @@ class AlumniPortalTest extends TestCase
         $r = $this->registration();
         $this->open($r);
 
-        $this->get(route('portal.show'))
+        $this->get(route('member.dashboard'))
             ->assertOk()
             ->assertSee($r->reference)
             ->assertSee('Md. Rofikul Islam');
@@ -127,10 +138,12 @@ class AlumniPortalTest extends TestCase
         $r = $this->registration();
         $this->open($r);
 
-        $this->patch(route('portal.update'), [
+        $this->patch(route('member.profile.update'), [
+            'full_name_en' => $r->full_name_en,
             'mobile' => '01799999999',
             'present_address' => 'New address, Rajshahi',
             'tshirt_size' => 'M',
+            'employment_status' => 'employed',
             'listed_in_directory' => '1',
         ])->assertRedirect()->assertSessionHasNoErrors();
 
@@ -139,14 +152,21 @@ class AlumniPortalTest extends TestCase
         $this->assertSame('M', $r->tshirt_size);
     }
 
-    /** Money, identity and the email itself are the committee's to change. */
+    /**
+     * Money, academic identity and the email itself stay the committee's.
+     *
+     * The name is deliberately not in that list any more — the association
+     * asked for members to be able to correct their own. Everything the
+     * committee verifies against is still refused.
+     */
     #[Test]
-    public function the_registrant_cannot_change_money_identity_or_their_email(): void
+    public function the_registrant_cannot_change_money_academic_identity_or_their_email(): void
     {
         $r = $this->registration();
         $this->open($r);
 
-        $this->patch(route('portal.update'), [
+        $this->patch(route('member.profile.update'), [
+            'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => $r->mobile,
             'present_address' => $r->present_address,
             'tshirt_size' => $r->tshirt_size,
@@ -156,19 +176,39 @@ class AlumniPortalTest extends TestCase
             'amount_paid' => 999999,
             'amount_due' => 0,
             'payment_status' => 'verified',
-            'full_name_en' => 'Someone Else',
             'session' => '1999-00',
+            'passing_year' => 1999,
             'email' => 'attacker@example.com',
             'transaction_id' => 'HIJACKED',
+            'reference' => 'RCMAA-HACK',
         ])->assertRedirect();
 
         $r->refresh();
         $this->assertSame('alumni', $r->category);
         $this->assertSame(2535, $r->amount_paid);
-        $this->assertSame('Md. Rofikul Islam', $r->full_name_en);
         $this->assertSame('2008-09', $r->session);
+        $this->assertSame(2012, $r->passing_year);
         $this->assertSame('rofikul@example.com', $r->email);
         $this->assertSame('A1B2C3D4E5', $r->transaction_id);
+        $this->assertSame(Registration::STATUS_VERIFIED, $r->payment_status);
+    }
+
+    /** The one identity field that is now theirs. */
+    #[Test]
+    public function the_registrant_can_correct_their_own_name(): void
+    {
+        $r = $this->registration();
+        $this->open($r);
+
+        $this->patch(route('member.profile.update'), [
+            'full_name_en' => 'Md. Rofiqul Islam',
+            'full_name_bn' => 'মোঃ রফিকুল ইসলাম',
+            'mobile' => $r->mobile,
+            'present_address' => $r->present_address,
+            'tshirt_size' => $r->tshirt_size,
+        ])->assertRedirect()->assertSessionHasNoErrors();
+
+        $this->assertSame('Md. Rofiqul Islam', $r->fresh()->full_name_en);
     }
 
     #[Test]
@@ -178,7 +218,8 @@ class AlumniPortalTest extends TestCase
         $this->viewingDirectory()->get(route('directory'))->assertOk()->assertSee('Wants Privacy');
 
         $this->open($r);
-        $this->patch(route('portal.update'), [
+        $this->patch(route('member.profile.update'), [
+            'full_name_en' => $r->full_name_en,
             'mobile' => $r->mobile,
             'present_address' => $r->present_address,
             'tshirt_size' => $r->tshirt_size,
@@ -199,7 +240,7 @@ class AlumniPortalTest extends TestCase
         ]);
         $this->open($r);
 
-        $this->get(route('portal.pass'))
+        $this->get(route('member.pass'))
             ->assertOk()
             ->assertSee($r->reference)
             ->assertSee('Md. Rofikul Islam')
@@ -214,7 +255,7 @@ class AlumniPortalTest extends TestCase
         $r = $this->registration(['payment_status' => Registration::STATUS_PENDING]);
         $this->open($r);
 
-        $this->get(route('portal.pass'))->assertOk()->assertSee('Payment not yet verified');
+        $this->get(route('member.pass'))->assertOk()->assertSee('Payment not yet verified');
     }
 
     #[Test]
@@ -222,10 +263,10 @@ class AlumniPortalTest extends TestCase
     {
         $r = $this->registration();
         $this->open($r);
-        $this->get(route('portal.show'))->assertOk();
+        $this->get(route('member.dashboard'))->assertOk();
 
-        $this->post(route('portal.close'))->assertRedirect(route('home'));
-        $this->get(route('portal.show'))->assertRedirect(route('portal.request'));
+        $this->post(route('member.logout'))->assertRedirect(route('home'));
+        $this->get(route('member.dashboard'))->assertRedirect(route('member.login'));
     }
 
     #[Test]
@@ -234,7 +275,7 @@ class AlumniPortalTest extends TestCase
         Mail::fake();
         $r = $this->registration();
 
-        $this->post(route('portal.send-link'), ['email' => $r->email, 'website' => 'spam'])
+        $this->post(route('member.link.send'), ['email' => $r->email, 'website' => 'spam'])
             ->assertSessionHasErrors('website');
 
         Mail::assertNothingSent();
@@ -259,7 +300,7 @@ class AlumniPortalTest extends TestCase
         ]);
         $this->open($r);
 
-        $body = $this->get(route('portal.show'))->assertOk()->getContent();
+        $body = $this->get(route('member.dashboard'))->assertOk()->getContent();
 
         // Text inputs and textareas.
         foreach (['mobile', 'whatsapp', 'present_address', 'permanent_address',

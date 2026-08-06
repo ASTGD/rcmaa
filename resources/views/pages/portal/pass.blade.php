@@ -6,7 +6,7 @@
 
             {{-- Screen-only controls --}}
             <div class="mb-8 flex flex-wrap items-center justify-between gap-4 print:hidden">
-                <a href="{{ route('portal.show') }}" class="btn btn-outline btn-sm">
+                <a href="{{ route('member.dashboard') }}" class="btn btn-outline btn-sm">
                     <x-icon name="chevron-left" class="h-3.5 w-3.5"/>Back
                 </a>
                 <button type="button" onclick="window.print()" class="btn btn-ink btn-sm">

@@ -37,6 +37,8 @@ export default (config = {}) => ({
         mobile: '',
         whatsapp: '',
         email: '',
+        password: '',
+        password_confirmation: '',
         present_address: '',
         permanent_address: '',
 
@@ -365,6 +367,18 @@ export default (config = {}) => ({
             }
             if (this.form.mobile && ! /^(\+?88)?01[3-9]\d{8}$/.test(this.form.mobile.replace(/[\s-]/g, ''))) {
                 this.errors.mobile = 'Enter a valid Bangladeshi mobile number (e.g. 01712345678).';
+            }
+
+            // The account password. Mirrors the server rule, so someone is told
+            // here rather than after a full round trip and a lost form.
+            if (! this.form.password) {
+                this.errors.password = 'Choose a password for your member account.';
+            } else if (this.form.password.length < 8) {
+                this.errors.password = 'Your password must be at least 8 characters.';
+            } else if (! (/[A-Za-z]/.test(this.form.password) && /\d/.test(this.form.password))) {
+                this.errors.password = 'Your password must contain both letters and numbers.';
+            } else if (this.form.password !== this.form.password_confirmation) {
+                this.errors.password = 'The two passwords do not match.';
             }
         }
 

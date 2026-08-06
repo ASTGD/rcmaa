@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\AlumniPortalController;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,24 +15,19 @@ use Symfony\Component\HttpFoundation\Response;
  * mobile numbers, so a public page would have contradicted a promise alumni
  * were relying on.
  *
- * Two ways in: a registrant who has opened their emailed link, or a signed-in
- * committee member.
+ * A guest is no longer bounced to the login page. Their specification asks that
+ * the public see the total number of registered members, so the controller
+ * renders a locked view instead; this only records which of the two they get.
  */
 class EnsureCanViewDirectory
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->session()->has(AlumniPortalController::SESSION_KEY)) {
-            return $next($request);
-        }
-
-        if ($request->user()?->is_admin) {
-            return $next($request);
-        }
-
-        return redirect()->route('portal.request')->with(
-            'directory_gate',
-            'The alumni directory is open to registered members. Enter the email address you registered with and we will send you a link.'
+        $request->attributes->set(
+            'directory_unlocked',
+            Auth::guard('alumni')->check() || (bool) $request->user()?->is_admin
         );
+
+        return $next($request);
     }
 }

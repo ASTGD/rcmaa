@@ -24,7 +24,7 @@
                         registration, print your entry pass and control your directory listing.
                     </p>
                     <div class="mt-5 flex flex-wrap gap-2">
-                        <a href="{{ route('portal.request') }}" class="btn btn-primary btn-sm">Manage my registration</a>
+                        <a href="{{ route('member.login') }}" class="btn btn-primary btn-sm">Manage my registration</a>
                         <a href="{{ route('registration.status') }}" class="btn btn-outline-light btn-sm">Check status</a>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
 
                 <p class="mt-6 text-center text-sm text-ink-400 lg:hidden">
                     Registered for the reunion?
-                    <a href="{{ route('portal.request') }}" class="text-brass-400 underline underline-offset-4">
+                    <a href="{{ route('member.login') }}" class="text-brass-400 underline underline-offset-4">
                         Manage your registration
                     </a>
                 </p>

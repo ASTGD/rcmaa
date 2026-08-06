@@ -27,6 +27,8 @@ class RegistrationTest extends TestCase
             'mobile' => '01712345678',
             'whatsapp' => '01712345678',
             'email' => 'rofikul@example.com',
+            'password' => 'reunion2026',
+            'password_confirmation' => 'reunion2026',
             'present_address' => 'House 12, Road 4, Rajshahi',
             'permanent_address' => 'Village Char, Natore',
             'session' => '2008-09',

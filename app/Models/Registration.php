@@ -2,15 +2,29 @@
 
 namespace App\Models;
 
+use App\Notifications\MemberPasswordReset;
 use App\Support\RegistrationPricing;
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class Registration extends Model
+/**
+ * A reunion registration — and, since the association asked for a member login,
+ * the member's account as well. It authenticates under its own `alumni` guard,
+ * kept separate from the committee's `web` guard so that being signed in to one
+ * never implies the other.
+ */
+class Registration extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
+    use AuthenticatableTrait, CanResetPassword, Notifiable;
+
     public const STATUS_PENDING = 'pending';
 
     public const STATUS_VERIFIED = 'verified';
@@ -19,6 +33,9 @@ class Registration extends Model
 
     protected $guarded = ['id'];
 
+    /** Never let a password reach a view, a log line or the CSV export. */
+    protected $hidden = ['password', 'remember_token'];
+
     protected function casts(): array
     {
         return [
@@ -26,10 +43,27 @@ class Registration extends Model
             'cultural_program' => 'boolean',
             'listed_in_directory' => 'boolean',
             'verified_at' => 'datetime',
+            'last_login_at' => 'datetime',
             'passing_year' => 'integer',
             'amount_paid' => 'integer',
             'amount_due' => 'integer',
+            'password' => 'hashed',
         ];
+    }
+
+    /** Whether this member has finished setting themselves up with a password. */
+    public function hasPassword(): bool
+    {
+        return filled($this->password);
+    }
+
+    /**
+     * Sent instead of Laravel's default so the message reads in the
+     * association's voice and points at the member reset page, not /reset.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new MemberPasswordReset($token));
     }
 
     protected static function booted(): void
