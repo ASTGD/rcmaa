@@ -129,25 +129,32 @@
                         <div @class(['flex flex-col p-7 md:p-9', 'h-full' => $twoUp])>
 
                             @if ($twoUp)
-                                {{-- Avatar header, for when the cards are side by side and
-                                     the large portrait above has been hidden. The size is on
-                                     the image itself, not h-full: inside a place-items-center
-                                     grid the item is sized to content, so height:100% has no
-                                     definite parent to resolve against and the portrait's own
-                                     4:5 wins — a 64x80 avatar in a 64x64 hole. --}}
-                                <div class="hidden items-center gap-4 border-b border-ink-900/8 pb-5 lg:flex">
-                                    <span class="grid h-16 w-16 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
+                                {{-- Header for when the cards are side by side and the portrait
+                                     above has been hidden. A proper 4:5 portrait rather than a
+                                     small avatar — the face is the point of it.
+
+                                     The size is on the image itself, not h-full: inside a
+                                     place-items-center grid the item is sized to content, so
+                                     height:100% has no definite parent to resolve against and
+                                     the portrait's own ratio wins — a 64x80 image in a 64x64
+                                     hole, back when this was square. --}}
+                                <div class="hidden items-center gap-5 border-b border-ink-900/8 pb-6 lg:flex">
+                                    <span class="grid h-40 w-32 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
                                         @if ($src)
-                                            <img src="{{ $src }}" alt="" class="h-16 w-16 object-cover object-top" loading="lazy">
+                                            <img src="{{ $src }}" alt="" class="h-40 w-32 object-cover object-top" loading="lazy">
                                         @else
-                                            <span class="heading-display text-xl">{{ $initials($m['name']) }}</span>
+                                            <span class="heading-display text-4xl">{{ $initials($m['name']) }}</span>
                                         @endif
                                     </span>
+                                    {{-- Eyebrow and title only. The name belongs to the
+                                         signature at the foot of the message, the way a letter
+                                         is signed, and repeating it here would say it twice
+                                         within one card. --}}
                                     <div class="min-w-0">
                                         <p lang="bn" class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">
                                             {{ $m['eyebrow'] }}
                                         </p>
-                                        <h3 class="heading-display mt-1.5 text-lg leading-tight text-ink-950">{{ $m['title'] }}</h3>
+                                        <h3 class="heading-display mt-2 text-xl leading-tight text-ink-950">{{ $m['title'] }}</h3>
                                     </div>
                                     <x-icon name="quote" class="ml-auto h-6 w-6 flex-none self-start text-brass-500/50"/>
                                 </div>

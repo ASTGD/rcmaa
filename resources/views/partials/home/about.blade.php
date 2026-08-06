@@ -19,7 +19,7 @@
                     <div class="rule-brass mt-3"></div>
                     <p class="mt-3 text-[0.7rem] leading-snug text-ink-300">Rajshahi College, one of the subcontinent's oldest institutions</p>
                 </div>
-            </figure>
+            </div>
 
             {{-- Copy --}}
             <div>
