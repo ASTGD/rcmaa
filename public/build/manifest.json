@@ -1,0 +1,133 @@
+{
+  "_fonts-C6_JPzOD.css": {
+    "file": "assets/fonts-C6_JPzOD.css",
+    "src": "_fonts-C6_JPzOD.css"
+  },
+  "_fraunces-400-normal-6IfK1voy.woff2": {
+    "file": "assets/fraunces-400-normal-6IfK1voy.woff2",
+    "src": "_fraunces-400-normal-6IfK1voy.woff2"
+  },
+  "_fraunces-400-normal-NUPT2cO8.woff": {
+    "file": "assets/fraunces-400-normal-NUPT2cO8.woff",
+    "src": "_fraunces-400-normal-NUPT2cO8.woff"
+  },
+  "_fraunces-500-normal-BTR4KCeb.woff": {
+    "file": "assets/fraunces-500-normal-BTR4KCeb.woff",
+    "src": "_fraunces-500-normal-BTR4KCeb.woff"
+  },
+  "_fraunces-500-normal-DnGCNyPD.woff2": {
+    "file": "assets/fraunces-500-normal-DnGCNyPD.woff2",
+    "src": "_fraunces-500-normal-DnGCNyPD.woff2"
+  },
+  "_fraunces-600-normal-BFCDtZfi.woff2": {
+    "file": "assets/fraunces-600-normal-BFCDtZfi.woff2",
+    "src": "_fraunces-600-normal-BFCDtZfi.woff2"
+  },
+  "_fraunces-600-normal-DL5QCzvS.woff": {
+    "file": "assets/fraunces-600-normal-DL5QCzvS.woff",
+    "src": "_fraunces-600-normal-DL5QCzvS.woff"
+  },
+  "_fraunces-700-normal-CEOla-zY.woff2": {
+    "file": "assets/fraunces-700-normal-CEOla-zY.woff2",
+    "src": "_fraunces-700-normal-CEOla-zY.woff2"
+  },
+  "_fraunces-700-normal-DTjk5d1Q.woff": {
+    "file": "assets/fraunces-700-normal-DTjk5d1Q.woff",
+    "src": "_fraunces-700-normal-DTjk5d1Q.woff"
+  },
+  "_hind-siliguri-400-normal-B2m00w2e.woff": {
+    "file": "assets/hind-siliguri-400-normal-B2m00w2e.woff",
+    "src": "_hind-siliguri-400-normal-B2m00w2e.woff"
+  },
+  "_hind-siliguri-400-normal-esES0U7a.woff2": {
+    "file": "assets/hind-siliguri-400-normal-esES0U7a.woff2",
+    "src": "_hind-siliguri-400-normal-esES0U7a.woff2"
+  },
+  "_hind-siliguri-500-normal-6-4w_u8d.woff": {
+    "file": "assets/hind-siliguri-500-normal-6-4w_u8d.woff",
+    "src": "_hind-siliguri-500-normal-6-4w_u8d.woff"
+  },
+  "_hind-siliguri-500-normal-S8HLIV69.woff2": {
+    "file": "assets/hind-siliguri-500-normal-S8HLIV69.woff2",
+    "src": "_hind-siliguri-500-normal-S8HLIV69.woff2"
+  },
+  "_hind-siliguri-600-normal-Cgt-s7Wl.woff": {
+    "file": "assets/hind-siliguri-600-normal-Cgt-s7Wl.woff",
+    "src": "_hind-siliguri-600-normal-Cgt-s7Wl.woff"
+  },
+  "_hind-siliguri-600-normal-DHrLfb92.woff2": {
+    "file": "assets/hind-siliguri-600-normal-DHrLfb92.woff2",
+    "src": "_hind-siliguri-600-normal-DHrLfb92.woff2"
+  },
+  "_hind-siliguri-700-normal-DO_14aHP.woff2": {
+    "file": "assets/hind-siliguri-700-normal-DO_14aHP.woff2",
+    "src": "_hind-siliguri-700-normal-DO_14aHP.woff2"
+  },
+  "_hind-siliguri-700-normal-z30-k5TQ.woff": {
+    "file": "assets/hind-siliguri-700-normal-z30-k5TQ.woff",
+    "src": "_hind-siliguri-700-normal-z30-k5TQ.woff"
+  },
+  "_instrument-sans-400-normal-D1W7dsQl.woff": {
+    "file": "assets/instrument-sans-400-normal-D1W7dsQl.woff",
+    "src": "_instrument-sans-400-normal-D1W7dsQl.woff"
+  },
+  "_instrument-sans-400-normal-DRC__1Mx.woff2": {
+    "file": "assets/instrument-sans-400-normal-DRC__1Mx.woff2",
+    "src": "_instrument-sans-400-normal-DRC__1Mx.woff2"
+  },
+  "_instrument-sans-500-normal-Dk9ku72i.woff2": {
+    "file": "assets/instrument-sans-500-normal-Dk9ku72i.woff2",
+    "src": "_instrument-sans-500-normal-Dk9ku72i.woff2"
+  },
+  "_instrument-sans-500-normal-Z6ESRlEs.woff": {
+    "file": "assets/instrument-sans-500-normal-Z6ESRlEs.woff",
+    "src": "_instrument-sans-500-normal-Z6ESRlEs.woff"
+  },
+  "_instrument-sans-600-normal-B7fBEWYG.woff2": {
+    "file": "assets/instrument-sans-600-normal-B7fBEWYG.woff2",
+    "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
+  },
+  "_instrument-sans-600-normal-B9e8oLYv.woff": {
+    "file": "assets/instrument-sans-600-normal-B9e8oLYv.woff",
+    "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
+  },
+  "_instrument-sans-700-normal-CYfAanHo.woff2": {
+    "file": "assets/instrument-sans-700-normal-CYfAanHo.woff2",
+    "src": "_instrument-sans-700-normal-CYfAanHo.woff2"
+  },
+  "_instrument-sans-700-normal-DfAjL1vF.woff": {
+    "file": "assets/instrument-sans-700-normal-DfAjL1vF.woff",
+    "src": "_instrument-sans-700-normal-DfAjL1vF.woff"
+  },
+  "_jetbrains-mono-400-normal-6-qcROiO.woff": {
+    "file": "assets/jetbrains-mono-400-normal-6-qcROiO.woff",
+    "src": "_jetbrains-mono-400-normal-6-qcROiO.woff"
+  },
+  "_jetbrains-mono-400-normal-V6pRDFza.woff2": {
+    "file": "assets/jetbrains-mono-400-normal-V6pRDFza.woff2",
+    "src": "_jetbrains-mono-400-normal-V6pRDFza.woff2"
+  },
+  "_jetbrains-mono-500-normal-BWZEU5yA.woff2": {
+    "file": "assets/jetbrains-mono-500-normal-BWZEU5yA.woff2",
+    "src": "_jetbrains-mono-500-normal-BWZEU5yA.woff2"
+  },
+  "_jetbrains-mono-500-normal-CJOVTJB7.woff": {
+    "file": "assets/jetbrains-mono-500-normal-CJOVTJB7.woff",
+    "src": "_jetbrains-mono-500-normal-CJOVTJB7.woff"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-B51FmUt7.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-C8uu0U6E.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

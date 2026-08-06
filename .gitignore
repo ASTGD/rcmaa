@@ -14,7 +14,10 @@
 /.zed
 /auth.json
 /node_modules
-/public/build
+# public/build is committed on purpose. The production host has no outbound
+# network, so `vite build` there fails fetching webfonts; Node exists only in
+# root's nvm; and npm ci is broken by a macOS-generated lock file. Shipping the
+# built assets makes a deploy `git pull` and nothing else. See DEPLOYMENT.md.
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage

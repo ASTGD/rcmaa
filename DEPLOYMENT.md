@@ -225,6 +225,9 @@ cd /home/rcmalumni.astgd.com/rcmaa      # the app root, not public_html
 sudo -u rcmal8475 env HOME=/home/rcmalumni.astgd.com \
   GIT_SSH_COMMAND='ssh -i /home/rcmalumni.astgd.com/.ssh/rcmaa_deploy -o IdentitiesOnly=yes' \
   git pull --ff-only
+
+# No npm step: public/build is committed. Build assets on your own machine
+# (`npm run build`) and commit them with the change.
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php /usr/bin/composer install --no-dev --optimize-autoloader
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan migrate --force
 sudo -u rcmal8475 /usr/local/lsws/lsphp84/bin/php artisan optimize:clear
@@ -253,16 +256,21 @@ not resolve and the deploy script stops midway, leaving the caches stale.
 currently `711 rcmal8475:nogroup`. The app files inside are owned by the site
 user; only PHP (via suexec) needs to read them.
 
-**Node.** The site user only has Node 10; Node 22 lives in root's nvm. Build
-assets as root with
-`export PATH=/root/.nvm/versions/node/v22.23.1/bin:$PATH`, then
-`chown -R rcmal8475:rcmal8475` the result. `node_modules` is not needed at
-runtime and is removed after building.
+**Do not build assets on the server.** `public/build` is committed for this
+reason. Three things stack up against building there: the host has no outbound
+network, so `vite build` dies in the `laravel:fonts` plugin fetching webfonts
+from Bunny (`ETIMEDOUT`); Node 22 exists only in root's nvm, the site user has
+Node 10; and `npm ci` refuses to run at all, because `package-lock.json` was
+generated on macOS and omits the Linux-only optional packages (`@emnapi/*`).
 
-**`npm ci` fails on this host.** `package-lock.json` was generated on macOS and
-omits the Linux-only optional native packages (`@emnapi/*`), so `npm ci` refuses
-to run. Use `npm install`, then `git checkout -- package-lock.json` to leave the
-checkout clean. Worth fixing properly in the lock file.
+The first build after launch only worked because the font plugin's download
+cache — `node_modules/.cache/laravel-vite-plugin/fonts` — was still warm.
+Deleting `node_modules` afterwards, as the old instructions here said to,
+destroyed it, and the next build failed. Build on your own machine and commit
+`public/build` with the change.
+
+If you ever do need to build on the host, restore that cache directory first,
+or give the box outbound HTTPS.
 
 **The SSL certificate.** CyberPanel issued a Let's Encrypt **staging**
 certificate when the site was created, which no browser trusts. It was replaced
