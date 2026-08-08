@@ -7,6 +7,7 @@ import {
     initParallax,
     initCounters,
     initMarquees,
+    initLazyImages,
     refreshOnMediaLoad,
     revealStranded,
 } from './lib/reveals';
@@ -48,6 +49,9 @@ function boot() {
 
     // Fonts land after first paint and reflow every measured line.
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
+
+    // Native loading="lazy" never fires under Lenis, so we decide it ourselves.
+    initLazyImages();
 
     // Lazy images land later still, and move everything below them.
     refreshOnMediaLoad();

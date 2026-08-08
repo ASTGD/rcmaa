@@ -17,6 +17,22 @@ const nativeScrolling =
 
 let lenis = null;
 
+/*
+ * How many deliberate jumps are in flight.
+ *
+ * ScrollTrigger.refresh() restores the scroll position it captured when it
+ * started, which during a step change is the foot of the page the reader just
+ * left. Anything that refreshes on a timer — images finishing, fonts landing —
+ * would therefore quietly undo a jump. Callers check this and wait.
+ */
+let jumping = 0;
+
+// The page's own overflow-anchor, saved once when the first jump starts. Jumps
+// overlap, and saving per-jump meant the second one recorded the value the
+// first had already replaced, then "restored" that — leaving anchoring off for
+// the rest of the visit.
+let anchorBeforeJump = null;
+
 /**
  * Lenis drives the scroll position and ScrollTrigger reads from it, so the two
  * have to share a single RAF loop — otherwise triggers fire against the native
@@ -43,6 +59,11 @@ export function initSmoothScroll() {
     window.__lenis = lenis;
 
     return lenis;
+}
+
+/** True while jumpTo is holding the page somewhere on purpose. */
+export function isJumping() {
+    return jumping > 0;
 }
 
 export function getLenis() {
@@ -103,46 +124,136 @@ function documentTop(el) {
 }
 
 /**
- * Put an element at the top of the viewport, now, without animating.
+ * Put an element at the top of the viewport, now, and keep it there.
  *
  * Used for moving between steps of the registration form, where landing
- * reliably matters far more than gliding. Every animated route to this — Lenis,
- * CSS smooth scrolling — depends on a frame loop that may be throttled,
- * suspended, or simply not driving the page, and each failure leaves the reader
- * stranded at the bottom of the step they just finished.
+ * reliably matters far more than gliding.
  *
- * It repeats because the step being closed shortens the page, and the clamp
- * that follows would otherwise undo the jump. There is deliberately no
- * rect-based correction afterwards: one was tried and it was the bug. It
- * measured the form after the jump, and a rect read mid-reflow reported a drift
- * that did not exist, so it scrolled back down and undid a landing that had
- * been correct. offsetTop is scroll-independent, so repeating the same call
- * converges instead of chasing itself.
+ * Scheduling a handful of setTimeout passes was not enough. Changing step blocks
+ * the main thread for the best part of a second — Alpine rebuilds a long panel,
+ * x-collapse runs, GSAP animates it — so the timers land late, against a layout
+ * that has moved, and whatever ran last won. Meanwhile Lenis eases toward its
+ * own target and a ScrollTrigger refresh restores the scroll it captured before
+ * any of this began. Measured on a laptop: the reader ends at the foot of the
+ * page with the form 1462px above them. A phone never showed it, because with
+ * syncTouch off Lenis is not driving the scroll there at all.
+ *
+ * So this converges rather than firing and hoping. It re-reads the target every
+ * frame and re-applies whenever the page has drifted, until the position has
+ * held still for a moment. The target is computed as scrollY + rect.top, which
+ * is invariant under scrolling — scrolling by d moves rect.top by exactly -d —
+ * so re-applying cannot chase itself. That invariance is what the old
+ * offsetTop-only approach was protecting against, and it is why an earlier
+ * one-shot rect correction was a bug: it measured once, mid-reflow, and
+ * believed a drift that was really its own doing.
+ *
+ * It gives way the moment the reader takes over.
  */
 export function jumpTo(target, offset = -110) {
     const el = typeof target === 'string' ? document.querySelector(target) : target;
-    if (!el) return;
+    if (! el) return;
 
-    const go = () => {
-        const top = Math.max(0, documentTop(el) + offset);
-        window.scrollTo(0, top);
+    /*
+     * Scroll anchoring is the thing that actually drags the page away.
+     *
+     * The reader presses Continue from the foot of the page, so the footer is
+     * what is on screen. The step that opens is taller than the one that closed,
+     * the page grows above that footer, and the browser faithfully scrolls down
+     * to hold it still — measured at +901px, arriving after the jump has already
+     * landed correctly. Marking the form alone was not enough: the anchor is the
+     * footer, which is outside it.
+     *
+     * Suspended on the scrolling element for the length of the jump, and put
+     * back exactly as it was afterwards, so anchoring keeps working everywhere
+     * else — it is the right behaviour in every case except this one.
+     */
+    const root = document.documentElement;
+    if (jumping === 0) anchorBeforeJump = root.style.overflowAnchor;
+    root.style.overflowAnchor = 'none';
 
-        // Lenis keeps its own idea of where the page is; left unsynced it eases
-        // back to that on the next frame and undoes the jump. Guarded because a
-        // failure here must not take the scroll down with it.
+    jumping += 1;
+
+    const targetFor = () => Math.max(0, Math.round(window.scrollY + el.getBoundingClientRect().top + offset));
+
+    const apply = (top) => {
         try {
-            lenis?.scrollTo(top, { immediate: true, force: true });
+            if (lenis) {
+                // Lenis caches the scrollable height, and the step that just
+                // closed changed it underneath.
+                lenis.resize();
+                lenis.scrollTo(top, { immediate: true, force: true, lock: true });
+            }
         } catch {
-            // Lenis is not driving this page; the native scroll above stands.
+            // Lenis is not driving this page; the native scroll below stands.
         }
+
+        window.scrollTo(0, top);
     };
 
-    go();
-    window.setTimeout(go, 120);
-    window.setTimeout(go, 340);
-    // Leaving step 1 collapses four tall category cards at once, and the page is
-    // still shrinking when the earlier passes land.
-    window.setTimeout(go, 700);
+    apply(targetFor());
+
+    /*
+     * Corrected from two clocks, because neither is dependable on its own.
+     *
+     * requestAnimationFrame is the natural fit and is measurably not delivered
+     * here: through a cold step change it produced zero frames in 2.6 seconds.
+     * Alpine's $nextTick is built on it, so that misses too, and the single
+     * timeout that did fire landed mid-reflow and was then overtaken. Timers
+     * keep running when frames do not, and frames are smoother when they do —
+     * so both drive the same check, and whichever arrives first wins.
+     */
+    const deadline = performance.now() + 2000;
+    let done = false;
+
+    const finish = () => {
+        if (done) return;
+        done = true;
+        jumping = Math.max(0, jumping - 1);
+
+        // Only the last one out puts it back.
+        if (jumping === 0) root.style.overflowAnchor = anchorBeforeJump ?? '';
+
+        events.forEach((e) => window.removeEventListener(e, release));
+    };
+
+    // The reader's own scrolling always wins.
+    const release = () => finish();
+    const events = ['wheel', 'touchstart', 'keydown'];
+    events.forEach((e) => window.addEventListener(e, release, { passive: true }));
+
+    /*
+     * Deliberately no early exit once the position looks right.
+     *
+     * An earlier version stopped as soon as it had held still for 300ms, and
+     * that was wrong here: the expensive part of a step change — Alpine building
+     * the panel, x-collapse, the reflow — arrives *after* that. The loop would
+     * congratulate itself at 400ms and shut down, and the page was dragged away
+     * at 900ms with nothing left watching. It now keeps watch for the whole
+     * window and only the reader can end it early.
+     */
+    const check = () => {
+        if (done) return;
+
+        const top = targetFor();
+        if (Math.abs(window.scrollY - top) > 2) apply(top);
+
+        if (performance.now() > deadline) finish();
+    };
+
+    const frame = () => {
+        if (done) return;
+        check();
+        requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+
+    // The same check on a timer, for when frames are not being delivered at all.
+    [40, 90, 160, 260, 400, 600, 850, 1150, 1450, 1750].forEach((ms) => window.setTimeout(check, ms));
+
+    // Always ends, even when no frame is ever delivered. Without this the
+    // deadline was only ever tested by callers that arrived before it, so
+    // finish() never ran: anchoring stayed disabled and the listeners leaked.
+    window.setTimeout(finish, 2100);
 }
 
 export function stopScroll() {

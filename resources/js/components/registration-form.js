@@ -436,7 +436,7 @@ export default (config = {}) => ({
 
     focusFirstError() {
         const run = () => {
-            const el = this.$el.querySelector('[aria-invalid="true"]');
+            const el = this.$root.querySelector('[aria-invalid="true"]');
             if (!el) return;
             el.focus({ preventScroll: true });
             jumpTo(el, -160);
@@ -447,20 +447,32 @@ export default (config = {}) => ({
     },
 
     toTop() {
-        // Clears the sticky header with a little room to spare.
-        const run = () => jumpTo(this.$el, -110);
-
-        // $nextTick is built on requestAnimationFrame, which browsers throttle
-        // or suspend — a backgrounded tab, low-power mode. If it never fires,
-        // the reader is left at the bottom of the step they just finished with
-        // no idea the form moved on. A timer is not subject to that, so the
-        // scroll is scheduled both ways; arriving twice is harmless.
-        this.$nextTick(run);
-        window.setTimeout(run, 80);
+        /*
+         * $root, not $el.
+         *
+         * These methods are called from @click on the Continue button, and in
+         * Alpine $el is the element the expression is bound to — the button —
+         * not the component. So this scrolled the *button* to the top of the
+         * screen, and since pressing Continue makes the next step expand above
+         * it, the button had just moved a long way down: measured target 3174
+         * where the form starts at 716, leaving the reader at the foot of the
+         * page. A phone hid it, because there the button lives in a fixed bar
+         * whose rect is a small constant, so the jump landed near the top by
+         * luck rather than by design.
+         *
+         * The same mistake made focusFirstError and animateStep search inside
+         * the button, where they found nothing and quietly did nothing.
+         *
+         * Clears the sticky header with a little room to spare.
+         */
+        // Once is enough now: jumpTo holds the position itself for a couple of
+        // seconds, driven by both frames and timers, so it no longer needs to be
+        // scheduled twice to survive a suspended rAF.
+        jumpTo(this.$root, -110);
     },
 
     animateStep() {
-        const panel = this.$el.querySelector('[data-step-panel]');
+        const panel = this.$root.querySelector('[data-step-panel]');
         if (! panel) return;
 
         gsap.fromTo(panel, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out' });

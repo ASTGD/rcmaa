@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, prefersReducedMotion } from './motion';
+import { gsap, ScrollTrigger, prefersReducedMotion, isJumping } from './motion';
 import { SplitText } from './split-text';
 
 const DEFAULTS = {
@@ -112,6 +112,43 @@ export function initReveals(scope = document) {
 }
 
 /**
+ * Decide for ourselves when a lazy image should load.
+ *
+ * Native loading="lazy" does not fire on this site. Lenis drives the window
+ * scroll, and Chrome's own deferral heuristic never concludes these images have
+ * come near enough — the committee portraits sat at naturalWidth 0 with their
+ * cards fully on screen and 195px from the top of the viewport, indefinitely.
+ * Flipping one to `eager` loads it immediately, so nothing is wrong with the
+ * files or the markup; only the trigger is missing.
+ *
+ * The attribute stays in the HTML for crawlers and for the no-JS case. This
+ * only promotes an image once it is within a screen of the viewport, which is
+ * what the browser was supposed to be doing.
+ */
+export function initLazyImages(scope = document) {
+    const lazy = [...scope.querySelectorAll('img[loading="lazy"]')];
+    if (! lazy.length) return;
+
+    if (! ('IntersectionObserver' in window)) {
+        lazy.forEach((img) => { img.loading = 'eager'; });
+        return;
+    }
+
+    const io = new IntersectionObserver(
+        (entries) => entries.forEach((entry) => {
+            if (! entry.isIntersecting) return;
+            entry.target.loading = 'eager';
+            io.unobserve(entry.target);
+        }),
+        // A screenful of lead time, so an image is decoded before it is reached
+        // rather than popping in under the reader.
+        { rootMargin: '600px 0px' }
+    );
+
+    lazy.forEach((img) => io.observe(img));
+}
+
+/**
  * Lazy images finish loading long after `load` — that is the whole point of
  * them — and each one that lands can change the page height. Every ScrollTrigger
  * below it is then measuring against a stale position, and a trigger that never
@@ -126,6 +163,12 @@ export function refreshOnMediaLoad(scope = document) {
     const schedule = () => {
         window.clearTimeout(pending);
         pending = window.setTimeout(() => {
+            // ScrollTrigger.refresh() restores the scroll position it captured
+            // when it began. Called in the middle of a deliberate jump — a step
+            // change, where images are loading at exactly that moment — it puts
+            // the reader back at the foot of the step they just left. Wait.
+            if (isJumping()) return schedule();
+
             ScrollTrigger.refresh();
             revealStranded(scope);
         }, 200);
@@ -147,20 +190,29 @@ export function refreshOnMediaLoad(scope = document) {
 export function revealStranded(scope = document) {
     if (prefersReducedMotion) return;
 
-    scope.querySelectorAll('[data-reveal]').forEach((el) => {
+    const onScreen = (el) => {
         const rect = el.getBoundingClientRect();
-        const onScreen = rect.top < window.innerHeight && rect.bottom > 0;
-        if (! onScreen) return;
+        return rect.top < window.innerHeight && rect.bottom > 0;
+    };
+
+    const show = (el) => gsap.to(el, {
+        opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto',
+    });
+
+    /*
+     * Both selectors, checked independently.
+     *
+     * A staggered group sets its own opacity to 1 immediately and animates only
+     * its children, so testing the container told us nothing about them — the
+     * container read 1 while every card under it sat at 0, and this sweep
+     * skipped the whole group. That is precisely the case it exists to catch.
+     */
+    scope.querySelectorAll('[data-reveal], [data-reveal-item]').forEach((el) => {
+        if (! onScreen(el)) return;
         if (getComputedStyle(el).opacity !== '0') return;
 
-        gsap.to(el, { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out', overwrite: 'auto' });
-        gsap.to(el.querySelectorAll('[data-reveal-item]'), {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: 'power2.out',
-            overwrite: 'auto',
-        });
+        show(el);
+        el.querySelectorAll('[data-reveal-item]').forEach(show);
     });
 }
 

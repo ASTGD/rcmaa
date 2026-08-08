@@ -55,7 +55,11 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                 </x-alert>
             @endif
 
+            {{-- data-registration-form turns off scroll anchoring for this form;
+                 see app.css. Steps differ a lot in height, and the browser was
+                 compensating for that against the jump to the next step. --}}
             <form method="POST" action="{{ route('register.store') }}" enctype="multipart/form-data"
+                  data-registration-form
                   x-data="registrationForm({
                       categories: {{ Js::from($categories) }},
                       guestFee: {{ Js::from($guestFee) }},
