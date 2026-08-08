@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Controllers\Member\PasswordController;
+use App\Support\PaymentMethods;
 use App\Support\RegistrationPricing;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -42,7 +43,11 @@ class RegistrationRequest extends FormRequest
             'password' => PasswordController::rules(),
 
             'present_address' => ['required', 'string', 'max:500'],
+            'present_district' => ['required', Rule::in(array_keys(config('bd-geo')))],
+            'present_upazila' => ['required', $this->upazilaBelongsTo('present_district')],
             'permanent_address' => ['nullable', 'string', 'max:500'],
+            'permanent_district' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
+            'permanent_upazila' => ['nullable', $this->upazilaBelongsTo('permanent_district')],
 
             // Part 2 — Academic
             // Teachers are staff, not graduates of the department — they are never
@@ -76,18 +81,22 @@ class RegistrationRequest extends FormRequest
             'guests.*.relation' => ['nullable', 'string', 'max:60'],
             'guests.*.occupation' => ['nullable', 'string', 'max:120'],
 
-            // Part 5 — Memories
-            'memories' => ['nullable', 'string', 'max:4000'],
+            // Part 5 — Memories. Capped at 180 characters at the association's
+            // request (they asked for 150–180; the ceiling is the limit).
+            'memories' => ['nullable', 'string', 'max:180'],
 
-            // Part 6 — Photo
+            // Part 6 — Photo. Required since 8 Aug 2026: it goes on the reunion
+            // identity card, and chasing missing photos by phone did not scale.
             'photo' => [
-                'nullable', 'image', 'mimes:jpg,jpeg,png,webp',
+                'required', 'image', 'mimes:jpg,jpeg,png,webp',
                 'max:'.config('rcmaa.registration.photo_max_kb'),
                 'dimensions:min_width=200,min_height=200',
             ],
 
             // Part 7 — Payment
-            'payment_method' => ['required', Rule::in(array_keys(config('rcmaa.payment.methods')))],
+            // Only what the page is actually offering; a method whose account
+            // is not ready must not be acceptable to the server either.
+            'payment_method' => ['required', Rule::in(PaymentMethods::keys())],
             'transaction_id' => [
                 'required', 'string', 'max:64', 'alpha_num',
                 Rule::unique('registrations')->where(
@@ -106,10 +115,29 @@ class RegistrationRequest extends FormRequest
         ];
     }
 
+    /**
+     * An upazila is only valid within its own district — "Savar" under Rajshahi
+     * is a data-entry accident the directory would then filter on.
+     */
+    private function upazilaBelongsTo(string $districtField): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($districtField) {
+            $upazilas = config('bd-geo')[$this->input($districtField)] ?? [];
+
+            if (! in_array($value, $upazilas, true)) {
+                $fail('Choose an upazila or thana from the selected district.');
+            }
+        };
+    }
+
     public function messages(): array
     {
         return [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
+            'present_district.required' => 'Please choose your district.',
+            'present_upazila.required' => 'Please choose your upazila or thana.',
+            'memories.max' => 'Please keep your memory within 180 characters.',
+            'photo.required' => 'Please upload a passport-size photograph — it is printed on your reunion identity card.',
             'email.unique' => 'A registration already exists for this email address. Sign in to your member account instead, or use "Forgot password" if you cannot remember it.',
             'password.confirmed' => 'The two passwords do not match.',
             'transaction_id.unique' => 'This transaction ID has already been used for a registration. If you believe this is an error, contact the helpdesk.',

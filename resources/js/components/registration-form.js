@@ -24,6 +24,17 @@ export default (config = {}) => ({
     // Supplied by the server so the price list lives in exactly one place.
     categories: config.categories ?? {},
     guestFee: config.guestFee ?? 0,
+
+    // District → upazilas/thanas (config/bd-geo.php), for the address dropdowns.
+    geo: config.geo ?? {},
+
+    get districts() {
+        return Object.keys(this.geo);
+    },
+
+    upazilasFor(district) {
+        return this.geo[district] ?? [];
+    },
     photoPreview: null,
     receiptPreview: null,
     receiptName: null,
@@ -40,7 +51,11 @@ export default (config = {}) => ({
         password: '',
         password_confirmation: '',
         present_address: '',
+        present_district: '',
+        present_upazila: '',
         permanent_address: '',
+        permanent_district: '',
+        permanent_upazila: '',
 
         session: '',
         masters_session: '',
@@ -331,7 +346,7 @@ export default (config = {}) => ({
     required(step) {
         return {
             1: ['category'],
-            2: ['full_name_en', 'mobile', 'email', 'present_address'],
+            2: ['full_name_en', 'mobile', 'email', 'present_district', 'present_upazila', 'present_address'],
             // A current student has not passed yet, so the year is theirs to skip.
             3: [
                 'degree',
@@ -393,6 +408,22 @@ export default (config = {}) => ({
         if (this.step === 4 && ['employed', 'self_employed'].includes(this.form.employment_status)) {
             if (! this.form.profession) this.errors.profession = 'This field is required.';
             if (! this.form.organization) this.errors.organization = 'This field is required.';
+        }
+
+        if (this.step === 6) {
+            // Required — it is printed on the reunion identity card. After a
+            // rejected submission the browser clears file inputs, so a reader
+            // restored from a draft must choose the file again; better told here
+            // than by the server after the upload.
+            if (! this.photoPreview) {
+                this.errors.photo = 'Please upload a passport-size photograph.';
+            }
+
+            // maxlength stops typing at 180, but a restored draft or a paste
+            // can arrive longer.
+            if ((this.form.memories || '').length > 180) {
+                this.errors.memories = 'Please keep your memory within 180 characters.';
+            }
         }
 
         if (this.step === 5 && this.guestTotal > 0) {

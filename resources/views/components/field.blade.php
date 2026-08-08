@@ -14,6 +14,9 @@
     'placeholder' => null,
     'options' => null,     // for type="select"
     'rows' => 4,
+    // A hard input cap, rendered on the control itself (the wrapper div would
+    // otherwise swallow it via $attributes).
+    'maxlength' => null,
     // Current value for plain server-rendered forms. Alpine-backed forms hold
     // their own state and leave this null.
     'value' => null,
@@ -64,6 +67,7 @@
     @if ($type === 'textarea')
         <textarea id="{{ $id }}" name="{{ $name }}" rows="{{ $rows }}" class="input"
                   placeholder="{{ $placeholder }}"
+                  @if ($maxlength) maxlength="{{ $maxlength }}" @endif
                   @if ($autocomplete) autocomplete="{{ $autocomplete }}" @endif @if ($serverError) aria-invalid="true" @endif
                   {!! $binding !!}>{{ $current }}</textarea>
 

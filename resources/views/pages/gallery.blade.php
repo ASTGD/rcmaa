@@ -47,8 +47,8 @@
 
                 {{-- Grid --}}
                 <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <template x-for="(item, index) in filtered" :key="item.id">
-                        <button type="button" @click="show(index)" data-gallery-item
+                    <template x-for="item in filtered" :key="item.id">
+                        <button type="button" @click="show(item.id)" data-gallery-item
                                 class="group relative aspect-4/3 overflow-hidden rounded-2xl bg-ink-800 text-left">
                             <img :src="item.url" :alt="item.title" loading="lazy"
                                  class="h-full w-full object-cover transition-transform duration-[1000ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.07]">

@@ -1,5 +1,6 @@
 <x-layout :title="$title">
     @include('partials.home.hero')
+    @include('partials.home.ticker')
     @include('partials.home.about')
     {{-- The association asked for the Convenor's and Member Secretary's messages
          on the front page — they were only on /committee, where nobody found
@@ -8,6 +9,7 @@
     @include('partials.leadership-messages', ['columns' => 2])
     @include('partials.home.committee')
     @include('partials.home.events')
+    @include('partials.home.notices')
     @include('partials.home.registration')
     @include('partials.home.directory')
     @include('partials.home.gallery')

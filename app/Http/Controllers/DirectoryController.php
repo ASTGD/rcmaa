@@ -46,12 +46,18 @@ class DirectoryController extends Controller
             'session' => $request->string('session')->toString(),
             'degree' => $request->string('degree')->toString(),
             'category' => $request->string('category')->toString(),
+            // Both at the association's request: find people by where they
+            // live now, and by the year they passed.
+            'district' => $request->string('district')->toString(),
+            'passing_year' => $request->string('passing_year')->toString(),
         ]);
 
         $matching = fn () => Registration::listed()
             ->when($filters['q'] ?? null, fn ($q, $term) => $q->search($term))
             ->when($filters['degree'] ?? null, fn ($q, $degree) => $q->where('degree', $degree))
             ->when($filters['category'] ?? null, fn ($q, $category) => $q->where('category', $category))
+            ->when($filters['district'] ?? null, fn ($q, $district) => $q->where('present_district', $district))
+            ->when($filters['passing_year'] ?? null, fn ($q, $year) => $q->where('passing_year', (int) $year))
             ->when($filters['session'] ?? null, fn ($q, $session) => $session === self::FACULTY
                 ? $q->whereNull('session')
                 : $q->where('session', $session));
@@ -97,6 +103,12 @@ class DirectoryController extends Controller
             'allSessions' => Registration::listed()->whereNotNull('session')
                 ->distinct()->orderByDesc('session')->pluck('session'),
             'hasFaculty' => Registration::listed()->whereNull('session')->exists(),
+            // Only places and years someone actually lives in / passed in — a
+            // filter that can only ever return nothing is noise.
+            'allDistricts' => Registration::listed()->whereNotNull('present_district')
+                ->distinct()->orderBy('present_district')->pluck('present_district'),
+            'allPassingYears' => Registration::listed()->whereNotNull('passing_year')
+                ->distinct()->orderByDesc('passing_year')->pluck('passing_year'),
             'filters' => $filters,
         ]);
     }

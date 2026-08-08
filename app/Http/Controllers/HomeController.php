@@ -24,6 +24,9 @@ class HomeController extends Controller
                 ->get(),
             'upcomingEvents' => Event::published()->upcoming()->take(3)->get(),
             'notices' => Notice::published()->latestFirst()->take(4)->get(),
+            // The running ticker under the hero — the last five notices, at the
+            // association's request.
+            'tickerNotices' => Notice::published()->latestFirst()->take(5)->get(),
             'galleryItems' => GalleryItem::published()->ordered()->take(6)->get(),
             'sponsors' => Sponsor::published()->ordered()->get(),
             // The two most recent people to join, shown on the home page at the

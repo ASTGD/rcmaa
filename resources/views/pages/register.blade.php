@@ -3,7 +3,13 @@
     $categories = config('rcmaa.registration.categories');
     $guestFee = config('rcmaa.registration.guest_fee');
     $cheapest = collect($categories)->min('fee');
-    $methods = config('rcmaa.payment.methods');
+
+    // District → upazilas/thanas, for the dependent address dropdowns.
+    $geo = config('bd-geo');
+
+    // Only methods that can actually receive money right now — the same set
+    // the validator accepts. See App\Support\PaymentMethods.
+    $methods = \App\Support\PaymentMethods::available();
 
     $steps = [
         1 => ['Category', 'শ্রেণী'],
@@ -62,6 +68,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                   data-registration-form
                   x-data="registrationForm({
                       categories: {{ Js::from($categories) }},
+                      geo: {{ Js::from($geo) }},
                       guestFee: {{ Js::from($guestFee) }},
                       serverErrors: {{ Js::from($errors->messages()) }},
                       old: {{ Js::from(old()) }},
@@ -243,8 +250,76 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          placeholder="Select blood group"
                                          hint="Optional, but useful for the on-site medical desk."/>
 
+                                {{-- Present address: district and upazila/thana as dropdowns
+                                     (the directory filters on them), then the free-text part.
+                                     The upazila list follows the chosen district. --}}
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-present-district">
+                                        District <span lang="bn" class="field-label-bn">&middot; জেলা</span>
+                                        <span class="text-red-600" aria-hidden="true"> *</span>
+                                    </label>
+                                    <select id="field-present-district" name="present_district" class="input"
+                                            x-model="form.present_district" @change="form.present_upazila = ''"
+                                            :aria-invalid="errors.present_district ? 'true' : 'false'">
+                                        <option value="">Select district</option>
+                                        <template x-for="d in districts" :key="d">
+                                            <option :value="d" x-text="d" :selected="form.present_district === d"></option>
+                                        </template>
+                                    </select>
+                                    <p class="field-error" x-show="errors.present_district" x-text="errors.present_district" x-cloak></p>
+                                    @error('present_district')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-present-upazila">
+                                        Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
+                                        <span class="text-red-600" aria-hidden="true"> *</span>
+                                    </label>
+                                    <select id="field-present-upazila" name="present_upazila" class="input"
+                                            x-model="form.present_upazila" :disabled="! form.present_district"
+                                            :aria-invalid="errors.present_upazila ? 'true' : 'false'">
+                                        <option value="" x-text="form.present_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
+                                        <template x-for="u in upazilasFor(form.present_district)" :key="u">
+                                            <option :value="u" x-text="u" :selected="form.present_upazila === u"></option>
+                                        </template>
+                                    </select>
+                                    <p class="field-error" x-show="errors.present_upazila" x-text="errors.present_upazila" x-cloak></p>
+                                    @error('present_upazila')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
                                 <x-field name="present_address" autocomplete="street-address" label="Present Address" bn="বর্তমান ঠিকানা"
-                                         type="textarea" rows="3" required class="sm:col-span-2"/>
+                                         type="textarea" rows="3" required class="sm:col-span-2"
+                                         hint="House / road / village — the part that is not the district or upazila."/>
+
+                                {{-- Permanent address: the same pair, optional like the address itself. --}}
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-permanent-district">
+                                        Permanent District <span lang="bn" class="field-label-bn">&middot; স্থায়ী জেলা</span>
+                                    </label>
+                                    <select id="field-permanent-district" name="permanent_district" class="input"
+                                            x-model="form.permanent_district" @change="form.permanent_upazila = ''">
+                                        <option value="">Select district</option>
+                                        <template x-for="d in districts" :key="d">
+                                            <option :value="d" x-text="d" :selected="form.permanent_district === d"></option>
+                                        </template>
+                                    </select>
+                                    @error('permanent_district')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-permanent-upazila">
+                                        Permanent Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
+                                    </label>
+                                    <select id="field-permanent-upazila" name="permanent_upazila" class="input"
+                                            x-model="form.permanent_upazila" :disabled="! form.permanent_district">
+                                        <option value="" x-text="form.permanent_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
+                                        <template x-for="u in upazilasFor(form.permanent_district)" :key="u">
+                                            <option :value="u" x-text="u" :selected="form.permanent_upazila === u"></option>
+                                        </template>
+                                    </select>
+                                    @error('permanent_upazila')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
                                 <x-field name="permanent_address" label="Permanent Address" bn="স্থায়ী ঠিকানা"
                                          type="textarea" rows="3" class="sm:col-span-2"/>
                             </div>
@@ -474,15 +549,22 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                         <div x-show="step === 6" x-cloak>
                             @include('partials.register.heading', ['n' => 6, 'en' => 'Memories & Photograph', 'bn' => 'স্মৃতিচারণ ও ছবি'])
 
-                            <x-field name="memories" type="textarea" rows="7"
+                            <x-field name="memories" type="textarea" rows="4" maxlength="180"
                                      label="Share a memorable moment or a comment about the Department of Mathematics / Rajshahi College"
-                                     bn="ইংরেজি বা বাংলায় লিখতে পারেন"
+                                     bn="ইংরেজি বা বাংলায় লিখতে পারেন · সর্বোচ্চ ১৮০ অক্ষর"
                                      placeholder="Your teachers, your classroom, the friends you made — anything you would like the committee to read."/>
+                            {{-- The cap is the association's (150–180); the counter keeps it
+                                 from feeling like a rejection at the end. --}}
+                            <p class="mt-1.5 text-right font-mono text-[0.68rem]"
+                               :class="(form.memories || '').length >= 180 ? 'text-red-600' : 'text-ink-400'">
+                                <span x-text="(form.memories || '').length"></span>/180
+                            </p>
 
                             <div class="mt-8">
                                 <p class="field-label">
                                     Passport-size photograph
                                     <span lang="bn" class="field-label-bn"> &middot; পাসপোর্ট সাইজ ছবি</span>
+                                    <span class="text-red-600" aria-hidden="true"> *</span>
                                 </p>
 
                                 <div class="flex flex-col gap-5 sm:flex-row sm:items-start">
@@ -505,7 +587,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                                 <p class="field-error" x-show="errors.photo" x-text="errors.photo" x-cloak></p>
                                 @error('photo')<p class="field-error">{{ $message }}</p>@enderror
-                                <p class="field-hint">Used on your reunion identity card. Optional, but recommended.</p>
+                                <p class="field-hint">Used on your reunion identity card. Required.</p>
                             </div>
                         </div>
 
@@ -534,9 +616,10 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                             {{-- Where to send it --}}
                             @php
                                 // A number still carrying its placeholder must never be presented
-                                // as payable — money sent there would be lost.
-                                $unconfigured = fn (string $n) => str_contains($n, 'X') || str_contains($n, '0000 0000');
-                                $anyUnconfigured = collect($methods)->contains(fn ($m) => $unconfigured($m['number']));
+                                // as payable — money sent there would be lost. QR methods carry
+                                // no number; their gate is the image-exists filter above.
+                                $unconfigured = fn (?string $n) => $n !== null && (str_contains($n, 'X') || str_contains($n, '0000 0000'));
+                                $anyUnconfigured = collect($methods)->contains(fn ($m) => $unconfigured($m['number'] ?? null));
                             @endphp
 
                             <div class="mt-8">
@@ -551,7 +634,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                                 <div class="grid gap-3 sm:grid-cols-2">
                                     @foreach ($methods as $key => $method)
-                                        @php $pending = $unconfigured($method['number']); @endphp
+                                        @php $pending = $unconfigured($method['number'] ?? null); @endphp
                                         <div @class([
                                             'rounded-xl border p-4',
                                             'border-red-300 bg-red-50' => $pending,
@@ -568,6 +651,15 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                             @if ($pending)
                                                 <p class="mt-2 text-[0.8rem] font-semibold text-red-700">
                                                     Not configured — do not send money to this method.
+                                                </p>
+                                            @elseif (isset($method['qr_image']))
+                                                {{-- Scan-and-pay: the QR is the account. --}}
+                                                <img src="{{ Storage::disk('public')->url($method['qr_image']) }}"
+                                                     alt="{{ $method['label'] }} payment QR code for {{ config('rcmaa.short_name') }}"
+                                                     class="mt-3 h-40 w-40 rounded-lg border border-ink-900/10 bg-white object-contain p-1.5">
+                                                <p class="mt-2 text-[0.78rem] leading-relaxed text-ink-500">
+                                                    {{ $method['instruction'] }}
+                                                    <span lang="bn" class="font-bangla">&middot; যেকোনো ব্যাংক বা এমএফএস অ্যাপ দিয়ে স্ক্যান করুন</span>
                                                 </p>
                                             @else
                                                 <p class="mt-2 font-mono text-[0.9rem] break-all text-ink-700">{{ $method['number'] }}</p>
@@ -586,40 +678,73 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                     ব্যবহার করুন, &ldquo;Send Money&rdquo; নয়।</span>
                                 </p>
 
-                                {{-- Donations above the registration fee, at the
-                                     association's instruction. It has to be read
-                                     BEFORE paying, so it sits with the account
-                                     details rather than further down the step. --}}
-                                @php
-                                    // The number is shown in Bangla numerals, but a tel: link
-                                    // needs ASCII — \D would strip Bangla digits entirely.
-                                    $donationLine = strtr(config('rcmaa.contact.donation'), [
-                                        '০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4',
-                                        '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9',
-                                        '-' => '', ' ' => '',
-                                    ]);
-                                @endphp
-                                <div class="mt-4 rounded-xl border border-brass-500/40 bg-brass-100/60 p-4">
+                                {{-- Donations: register and pay the fee first, then transfer
+                                     the donation straight to the bank account. The wording is
+                                     the association's, verbatim, both languages. Shown to every
+                                     category — donating is not tied to any of them. --}}
+                                @php $bank = array_filter(config('rcmaa.donation.bank')); @endphp
+                                <div class="mt-4 rounded-xl border border-brass-500/40 bg-brass-100/60 p-4"
+                                     x-data="{ showDonation: false }">
                                     <p lang="bn" class="font-bangla text-[0.86rem] font-semibold text-ink-900">
-                                        বিশেষ নির্দেশনা
+                                        ডোনেশন <span class="font-sans text-ink-500">&middot; Donation</span>
                                     </p>
                                     <p lang="bn" class="mt-1.5 font-bangla text-[0.82rem] leading-relaxed text-ink-700">
-                                        যদি কোনো নিবন্ধনকারী নির্ধারিত রেজিস্ট্রেশন ফি-এর অতিরিক্ত আর্থিক সহযোগিতা
-                                        (Donation/Contribution) প্রদান করতে ইচ্ছুক হন, তাহলে অনুগ্রহ করে সরাসরি
-                                        পেমেন্ট করার পূর্বে নিচের নম্বরে যোগাযোগ করুন।
-                                    </p>
-                                    <a href="tel:{{ $donationLine }}"
-                                       class="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-white px-4 py-2.5 font-mono text-[0.9rem] font-semibold text-ink-900 transition hover:text-brass-700">
-                                        <x-icon name="phone" class="h-4 w-4 text-brass-600"/>
-                                        {{ config('rcmaa.contact.donation') }}
-                                    </a>
-                                    <p lang="bn" class="mt-2.5 font-bangla text-[0.8rem] leading-relaxed text-ink-600">
-                                        অতিরিক্ত অনুদান সংক্রান্ত প্রয়োজনীয় নির্দেশনা ও পেমেন্ট প্রক্রিয়া
-                                        যোগাযোগের মাধ্যমে জানিয়ে দেওয়া হবে।
+                                        {{ config('rcmaa.donation.instruction_bn') }}
                                     </p>
                                     <p class="mt-2 text-[0.78rem] leading-relaxed text-ink-500">
-                                        Registering only? Ignore this and pay the total shown above.
+                                        {{ config('rcmaa.donation.instruction') }}
                                     </p>
+
+                                    <button type="button" @click="showDonation = ! showDonation"
+                                            class="btn btn-ink btn-sm mt-3"
+                                            :aria-expanded="showDonation">
+                                        <x-icon name="heart" class="h-4 w-4"/>
+                                        Donation
+                                        <x-icon name="chevron-down" class="h-3.5 w-3.5 transition-transform"
+                                                ::class="showDonation && 'rotate-180'"/>
+                                    </button>
+
+                                    <div x-show="showDonation" x-collapse x-cloak>
+                                        <div class="mt-4 rounded-lg bg-white p-4">
+                                            <p class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">
+                                                Bank account details <span lang="bn" class="font-bangla normal-case tracking-normal">&middot; ব্যাংক অ্যাকাউন্ট</span>
+                                            </p>
+
+                                            @if ($bank)
+                                                <dl class="mt-3 space-y-2 text-[0.85rem]">
+                                                    @foreach ([
+                                                        'account_name' => 'Account name',
+                                                        'account_number' => 'Account number',
+                                                        'bank' => 'Bank',
+                                                        'branch' => 'Branch',
+                                                        'routing' => 'Routing number',
+                                                    ] as $field => $label)
+                                                        @if ($bank[$field] ?? null)
+                                                            <div class="flex justify-between gap-4">
+                                                                <dt class="text-ink-500">{{ $label }}</dt>
+                                                                <dd class="font-mono font-semibold text-ink-900">{{ $bank[$field] }}</dd>
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </dl>
+                                            @else
+                                                {{-- No invented account numbers where money is involved. --}}
+                                                <p lang="bn" class="mt-2 font-bangla text-[0.84rem] leading-relaxed text-ink-700">
+                                                    ব্যাংক অ্যাকাউন্টের বিবরণ শীঘ্রই জানানো হবে। এর মধ্যে ডোনেশনের জন্য
+                                                    হেল্পলাইনে যোগাযোগ করুন: {{ config('rcmaa.contact.helpline') }}
+                                                </p>
+                                                <p class="mt-1.5 text-[0.78rem] text-ink-500">
+                                                    Bank details will be announced shortly. Until then, please contact
+                                                    the helpline about donations: {{ config('rcmaa.contact.helpline') }}.
+                                                </p>
+                                            @endif
+
+                                            <p lang="bn" class="mt-4 border-t border-ink-900/8 pt-3 font-bangla text-[0.82rem] font-semibold text-ink-800">
+                                                {{ config('rcmaa.donation.note_bn') }}
+                                            </p>
+                                            <p class="mt-1 text-[0.76rem] text-ink-500">{{ config('rcmaa.donation.note') }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

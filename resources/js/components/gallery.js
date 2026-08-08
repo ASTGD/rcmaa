@@ -26,8 +26,19 @@ export default (items = []) => ({
         });
     },
 
-    show(index) {
-        this.index = index;
+    /*
+     * Keyed by the item's id, never by the loop position.
+     *
+     * The x-for iterator used to be named `index` — the same name as this
+     * component's own `index` property. Whichever scope won the lookup decided
+     * what show() received, and when the component's own property won, every
+     * click opened image 0. The client saw exactly that: any photo tapped, the
+     * first one opens. An id cannot collide with anything and survives
+     * filtering besides.
+     */
+    show(id) {
+        const at = this.filtered.findIndex((item) => item.id === id);
+        this.index = at === -1 ? 0 : at;
         this.open = true;
         stopScroll();
     },

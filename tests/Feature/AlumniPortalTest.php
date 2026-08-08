@@ -40,7 +40,7 @@ class AlumniPortalTest extends TestCase
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
             'password' => 'reunion2026',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'both',
             'masters_session' => '2012-13',
@@ -168,7 +168,7 @@ class AlumniPortalTest extends TestCase
         $this->patch(route('member.profile.update'), [
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => $r->mobile,
-            'present_address' => $r->present_address,
+            'present_address' => $r->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'tshirt_size' => $r->tshirt_size,
             'listed_in_directory' => '1',
             // All of these should be ignored.
@@ -204,7 +204,7 @@ class AlumniPortalTest extends TestCase
             'full_name_en' => 'Md. Rofiqul Islam',
             'full_name_bn' => 'মোঃ রফিকুল ইসলাম',
             'mobile' => $r->mobile,
-            'present_address' => $r->present_address,
+            'present_address' => $r->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'tshirt_size' => $r->tshirt_size,
         ])->assertRedirect()->assertSessionHasNoErrors();
 
@@ -221,7 +221,7 @@ class AlumniPortalTest extends TestCase
         $this->patch(route('member.profile.update'), [
             'full_name_en' => $r->full_name_en,
             'mobile' => $r->mobile,
-            'present_address' => $r->present_address,
+            'present_address' => $r->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'tshirt_size' => $r->tshirt_size,
             // checkbox omitted = opted out
         ])->assertRedirect();

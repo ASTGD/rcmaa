@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -23,13 +24,13 @@ class DirectoryBatchTest extends TestCase
         return Registration::create(array_merge([
             'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
             'full_name_en' => $name, 'mobile' => '01712345678',
-            'email' => Str()->slug($name).'@example.test', 'present_address' => 'Rajshahi',
+            'email' => Str()->slug($name).'@example.test', 'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
             'session' => $session, 'degree' => 'bsc',
             'passing_year' => (int) substr($session, 0, 4) + 4,
             'employment_status' => 'employed', 'profession' => 'Education',
             'tshirt_size' => 'L', 'cultural_program' => false,
-            'guest_count' => '0', 'guests' => [], 'payment_method' => 'bkash',
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500), 'guest_count' => '0', 'guests' => [], 'payment_method' => 'bkash',
             'transaction_id' => Str()->upper(Str()->random(10)), 'sender_number' => '01712345678',
             'amount_paid' => 2535, 'amount_due' => 2535,
             'payment_status' => Registration::STATUS_VERIFIED,
@@ -231,11 +232,12 @@ class DirectoryBatchTest extends TestCase
             'category' => 'alumni', 'full_name_en' => 'Bad Session',
             'mobile' => '01712345678', 'email' => 'bad@example.test',
             'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
-            'present_address' => 'Rajshahi', 'session' => '2008-2009',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba', 'session' => '2008-2009',
             'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',
             'organization' => 'Rajshahi College', 'tshirt_size' => 'L',
             'cultural_program' => '0', 'guest_count' => '0',
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),
             'payment_method' => 'bkash', 'transaction_id' => 'BADSESSION',
             'sender_number' => '01712345678', 'amount_paid' => 2535, 'terms' => '1',
         ];

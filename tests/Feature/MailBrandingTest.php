@@ -23,7 +23,7 @@ class MailBrandingTest extends TestCase
             'full_name_en' => 'Rasel Rana',
             'mobile' => '01712345678',
             'email' => 'rasel@example.com',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2022-23',
             'degree' => 'msc',
             'passing_year' => 2024,

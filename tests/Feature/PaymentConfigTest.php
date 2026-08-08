@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Support\PaymentMethods;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -85,13 +88,27 @@ class PaymentConfigTest extends TestCase
      * sent the wrong way does not arrive correctly.
      */
     #[Test]
-    public function bkash_is_the_only_method_and_it_is_a_merchant_account(): void
+    public function bkash_is_the_only_offered_method_and_it_is_a_merchant_account(): void
     {
-        $methods = config('rcmaa.payment.methods');
+        // Bangla QR is declared but gated behind its QR image existing on the
+        // public disk. No image in tests, so bKash is the whole offer — and
+        // the validator must refuse bangla_qr while that holds.
+        $methods = PaymentMethods::available();
 
         $this->assertSame(['bkash'], array_keys($methods));
         $this->assertSame('01400366369', $methods['bkash']['number']);
         $this->assertSame('Merchant', $methods['bkash']['type']);
+    }
+
+    #[Test]
+    public function bangla_qr_is_offered_once_its_image_exists(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put(
+            config('rcmaa.payment.methods.bangla_qr.qr_image'), 'png-bytes'
+        );
+
+        $this->assertSame(['bkash', 'bangla_qr'], PaymentMethods::keys());
     }
 
     #[Test]
@@ -120,16 +137,22 @@ class PaymentConfigTest extends TestCase
             'category' => 'alumni', 'full_name_en' => 'Payment Method Check',
             'mobile' => '01712345678', 'email' => 'pm@example.test',
             'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
-            'present_address' => 'Rajshahi', 'session' => '2008-09',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba', 'session' => '2008-09',
             'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',
             'organization' => 'Rajshahi College', 'tshirt_size' => 'L',
             'cultural_program' => '0', 'guest_count' => '0',
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),
             'transaction_id' => 'BKASHONLY1', 'sender_number' => '01712345678',
             'amount_paid' => 2535, 'terms' => '1',
         ];
 
         $this->post(route('register.store'), ['payment_method' => 'nagad'] + $payload)
+            ->assertSessionHasErrors('payment_method');
+
+        // Declared in config, but not offered until its QR image exists — so
+        // the server must refuse it too.
+        $this->post(route('register.store'), ['payment_method' => 'bangla_qr'] + $payload)
             ->assertSessionHasErrors('payment_method');
 
         $this->post(route('register.store'), ['payment_method' => 'bkash'] + $payload)
@@ -146,13 +169,18 @@ class PaymentConfigTest extends TestCase
     {
         $body = $this->get(route('register.create'))->assertOk()->getContent();
 
-        $this->assertStringContainsString('বিশেষ নির্দেশনা', $body);
-        $this->assertStringContainsString('Donation/Contribution', $body);
-        $this->assertStringContainsString('০১৪০০-৩৬৬৩৬৯', $body);
-        $this->assertStringContainsString('tel:01400366369', $body);
+        // The association's 8 Aug 2026 wording, verbatim, both languages.
+        $this->assertStringContainsString(e(config('rcmaa.donation.instruction_bn')), $body);
+        $this->assertStringContainsString(e(config('rcmaa.donation.instruction')), $body);
+        $this->assertStringContainsString(e(config('rcmaa.donation.note_bn')), $body);
+
+        // The Donation button, and — with no bank account configured yet — the
+        // announcement line rather than an invented account number.
+        $this->assertStringContainsString('Donation', $body);
+        $this->assertStringContainsString('শীঘ্রই জানানো হবে', $body);
 
         // It must appear alongside the account, above the transaction fields.
-        $notice = strpos($body, 'বিশেষ নির্দেশনা');
+        $notice = strpos($body, 'ডোনেশন');
         $trxField = strpos($body, 'name="transaction_id"');
         $this->assertNotFalse($notice);
         $this->assertLessThan($trxField, $notice, 'The notice must be read before paying.');

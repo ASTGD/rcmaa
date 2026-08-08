@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Registration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -29,7 +30,7 @@ class AcademicDetailsTest extends TestCase
             'email' => 'rofikul@example.test',
             'password' => 'reunion2026',
             'password_confirmation' => 'reunion2026',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'bsc',
             'passing_year' => 2012,
@@ -39,6 +40,7 @@ class AcademicDetailsTest extends TestCase
             'tshirt_size' => 'L',
             'cultural_program' => '0',
             'guest_count' => '0',
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),
             'payment_method' => 'bkash',
             'transaction_id' => 'ACADEMIC01',
             'sender_number' => '01712345678',
@@ -261,7 +263,7 @@ class AcademicDetailsTest extends TestCase
         return array_merge([
             'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
             'full_name_en' => 'Someone', 'mobile' => '01712345678',
-            'email' => 'someone@example.test', 'present_address' => 'Rajshahi',
+            'email' => 'someone@example.test', 'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09', 'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',
             'tshirt_size' => 'L', 'cultural_program' => false,

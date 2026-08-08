@@ -24,7 +24,7 @@ class DirectoryAccessTest extends TestCase
         return Registration::create(array_merge([
             'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 500,
             'full_name_en' => 'Listed Alumnus', 'mobile' => '01712345678',
-            'email' => 'listed@example.test', 'present_address' => 'Rajshahi',
+            'email' => 'listed@example.test', 'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09', 'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',
             'tshirt_size' => 'L', 'cultural_program' => false,

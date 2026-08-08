@@ -27,7 +27,7 @@ class MemberAccountTest extends TestCase
             'category' => 'alumni', 'category_fee' => 2535, 'guest_fee' => 0,
             'full_name_en' => 'Md. Rofikul Islam', 'mobile' => '01712345678',
             'email' => 'rofikul@example.com', 'password' => 'reunion2026',
-            'present_address' => 'Rajshahi', 'session' => '2008-09',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba', 'session' => '2008-09',
             'degree' => 'bsc', 'passing_year' => 2012,
             'employment_status' => 'employed', 'profession' => 'Education',
             'organization' => 'Rajshahi College', 'tshirt_size' => 'XL',
@@ -220,7 +220,7 @@ class MemberAccountTest extends TestCase
         $this->actingAs($member, 'alumni')->patch(route('member.profile.update'), [
             'full_name_en' => $member->full_name_en,
             'mobile' => $member->mobile,
-            'present_address' => $member->present_address,
+            'present_address' => $member->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'tshirt_size' => 'L',
             'photo' => UploadedFile::fake()->image('me.jpg', 400, 500),
         ])->assertRedirect()->assertSessionHasNoErrors();
@@ -241,7 +241,7 @@ class MemberAccountTest extends TestCase
             ->patch(route('member.profile.update'), [
                 'full_name_en' => $member->full_name_en,
                 'mobile' => $member->mobile,
-                'present_address' => $member->present_address,
+                'present_address' => $member->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
                 'tshirt_size' => $member->tshirt_size,
                 'photo' => UploadedFile::fake()->image($name, 400, 500),
             ]);
@@ -265,7 +265,7 @@ class MemberAccountTest extends TestCase
         $this->actingAs($member, 'alumni')->patch(route('member.profile.update'), [
             'full_name_en' => $member->full_name_en,
             'mobile' => '01799999999',
-            'present_address' => $member->present_address,
+            'present_address' => $member->present_address, 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'tshirt_size' => 'M',
             'employment_status' => 'self_employed',
             'profession' => 'Software',

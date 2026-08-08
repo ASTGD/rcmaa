@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Registration;
 use App\Support\RegistrationPricing;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,7 +28,7 @@ class RegistrationCategoryTest extends TestCase
             'email' => 'rofikul@example.com',
             'password' => 'reunion2026',
             'password_confirmation' => 'reunion2026',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'both',
             'masters_session' => '2012-13',
@@ -37,6 +38,7 @@ class RegistrationCategoryTest extends TestCase
             'cultural_program' => '1',
             'guest_count' => '0',
             'guests' => [],
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),
             'payment_method' => 'bkash',
             'transaction_id' => 'A1B2C3D4E5',
             'sender_number' => '01712345678',

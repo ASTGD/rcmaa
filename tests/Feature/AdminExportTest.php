@@ -30,7 +30,7 @@ class AdminExportTest extends TestCase
             'blood_group' => 'B+',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'both',
             'masters_session' => '2012-13',

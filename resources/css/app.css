@@ -574,3 +574,12 @@
 [data-registration-form] {
     overflow-anchor: none;
 }
+
+/* No page may scroll sideways on a phone. Every template measures exactly
+   viewport-wide, but one oversized element anywhere — a long unbroken string,
+   a future embed — would hand mobile users a blank band beside the page when
+   they pinch out. `clip` truncates without creating a scroll container, so it
+   cannot interfere with Lenis or position: sticky the way `hidden` can. */
+html, body {
+    overflow-x: clip;
+}

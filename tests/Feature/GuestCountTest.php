@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Registration;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ class GuestCountTest extends TestCase
             'email' => 'shafiqul@example.test',
             'password' => 'reunion2026',
             'password_confirmation' => 'reunion2026',
-            'present_address' => 'Boalia, Rajshahi',
+            'present_address' => 'Boalia, Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'both',
             'masters_session' => '2012-13',
@@ -40,6 +41,7 @@ class GuestCountTest extends TestCase
             'organization' => 'Rajshahi College',
             'tshirt_size' => 'XL',
             'cultural_program' => '1',
+            'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),
             'payment_method' => 'bkash',
             'transaction_id' => 'BR7K2M9XQ4',
             'sender_number' => '01712345678',

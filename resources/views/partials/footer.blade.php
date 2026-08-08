@@ -29,7 +29,7 @@
                 <p class="max-w-sm text-sm leading-relaxed text-ink-300">
                     {{ config('rcmaa.tagline') }} Honoring our heritage, fostering our future.
                 </p>
-                @include('partials.social', ['class' => 'mt-6 text-ink-300'])
+                @include('partials.social', ['class' => 'mt-6 gap-4 text-ink-300', 'size' => 'h-6 w-6'])
             </div>
 
             @foreach ([

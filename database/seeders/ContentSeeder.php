@@ -108,6 +108,16 @@ class ContentSeeder extends Seeder
     {
         $notices = [
             [
+                // The association's own opening line for the home-page ticker,
+                // verbatim from their 8 Aug 2026 requirements document.
+                'title' => 'খুব শীঘ্রই রেজিষ্ট্রেশন কার্যক্রম শুরু হতে যাচ্ছে। আমাদের গ্রান্ড রিইউনিয়ন: Math Nexus - RCMAA Reunion 2026 আগামী ১৯ শে ডিসেম্বর ২০২৬।',
+                'slug' => 'reunion-2026-announcement',
+                'published_on' => '2026-08-08',
+                'excerpt' => 'Registration process will start very soon. Our Grand Reunion: Math Nexus - RCMAA Reunion 2026 will be held on December 19, 2026.',
+                'body' => "খুব শীঘ্রই রেজিষ্ট্রেশন কার্যক্রম শুরু হতে যাচ্ছে। আমাদের গ্রান্ড রিইউনিয়ন: **Math Nexus - RCMAA Reunion 2026** আগামী ১৯ শে ডিসেম্বর ২০২৬।\n\nRegistration process will start very soon. Our Grand Reunion: **Math Nexus - RCMAA Reunion 2026** will be held on December 19, 2026.",
+                'is_pinned' => true,
+            ],
+            [
                 'title' => 'Registration open for the Grand Reunion 2026',
                 'published_on' => '2026-07-01',
                 'excerpt' => 'Online registration for Math Nexus — the Grand Reunion of the Department of Mathematics — is now open.',
@@ -123,8 +133,9 @@ class ContentSeeder extends Seeder
         ];
 
         foreach ($notices as $notice) {
+            // A Bangla title slugs to an empty string, so those carry their own.
             Notice::updateOrCreate(
-                ['slug' => Str::slug($notice['title'])],
+                ['slug' => $notice['slug'] ?? Str::slug($notice['title'])],
                 [...$notice, 'is_published' => true]
             );
         }

@@ -36,7 +36,7 @@ class AdminTest extends TestCase
             'full_name_en' => 'Md. Rofikul Islam',
             'mobile' => '01712345678',
             'email' => 'rofikul@example.com',
-            'present_address' => 'Rajshahi',
+            'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09',
             'degree' => 'both',
             'masters_session' => '2012-13',
@@ -200,7 +200,7 @@ class AdminTest extends TestCase
             'payment_status' => Registration::STATUS_VERIFIED,
             'mobile' => '01755500011',
             'email' => 'private@example.com',
-            'present_address' => 'A private street address',
+            'present_address' => 'A private street address', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'blood_group' => 'AB-',
         ]);
 

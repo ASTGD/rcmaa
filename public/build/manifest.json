@@ -116,7 +116,7 @@
     "src": "_jetbrains-mono-500-normal-CJOVTJB7.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D4lIOsjk.css",
+    "file": "assets/app-BMdEezUM.css",
     "name": "app",
     "names": [
       "app.css"
@@ -125,7 +125,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CA2Ijf7F.js",
+    "file": "assets/app-C3x2Jk63.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

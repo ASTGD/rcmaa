@@ -10,7 +10,9 @@
 
             {{-- Filters --}}
             <form method="GET" action="{{ route('directory') }}" class="card p-5 md:p-6" data-reveal>
-                <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-[1fr_11rem_12rem_12rem_auto] xl:items-end">
+                {{-- Six filters now, so they wrap as a grid of equal cells with
+                     the buttons on their own row rather than one long rail. --}}
+                <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     <div>
                         <label for="q" class="field-label">Search by name</label>
                         <input id="q" name="q" type="search" class="input" placeholder="Name…"
@@ -57,6 +59,33 @@
                             @endforeach
                         </select>
                     </div>
+
+                    {{-- By place — where members live now, from the structured
+                         address the form collects. --}}
+                    <div>
+                        <label for="district" class="field-label">
+                            Place <span lang="bn" class="field-label-bn">&middot; জেলা</span>
+                        </label>
+                        <select id="district" name="district" class="input">
+                            <option value="">All districts</option>
+                            @foreach ($allDistricts as $district)
+                                <option value="{{ $district }}" @selected(($filters['district'] ?? null) === $district)>{{ $district }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="passing_year" class="field-label">
+                            Passing Year <span lang="bn" class="field-label-bn">&middot; পাসের বছর</span>
+                        </label>
+                        <select id="passing_year" name="passing_year" class="input">
+                            <option value="">All years</option>
+                            @foreach ($allPassingYears as $year)
+                                <option value="{{ $year }}" @selected(($filters['passing_year'] ?? null) == $year)>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-ink h-[3.05rem] flex-1">
                             <x-icon name="search" class="h-4 w-4"/>Search
@@ -154,6 +183,15 @@
                                                 <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
                                                     <x-icon name="briefcase" class="h-3.5 w-3.5 flex-none text-brass-600"/>
                                                     <span class="truncate">{{ $person->profession }}</span>
+                                                </p>
+                                            @endif
+
+                                            {{-- Where they live now — the thing the Place filter
+                                                 searches on, so a hit shows why it matched. --}}
+                                            @if ($person->present_district)
+                                                <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
+                                                    <x-icon name="map-pin" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                    <span class="truncate">{{ $person->present_upazila ? $person->present_upazila.', ' : '' }}{{ $person->present_district }}</span>
                                                 </p>
                                             @endif
 

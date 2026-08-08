@@ -252,6 +252,52 @@ return [
                 'instruction' => 'Payment',
                 'colour' => '#e2136e',
             ],
+
+            /*
+             * Bangla QR — scan-and-pay from any bank or MFS app, at the
+             * association's request. There is no number to type; the QR image
+             * IS the account. Until the association supplies their QR (drop it
+             * at the path below on the public disk), the option hides itself
+             * from the form rather than presenting a code that pays nobody.
+             */
+            'bangla_qr' => [
+                'label' => 'Bangla QR',
+                'type' => 'Scan & Pay',
+                'instruction' => 'Scan with any banking or MFS app',
+                'colour' => '#d61f26',
+                'qr_image' => 'payment/bangla-qr.png',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Donations
+    |--------------------------------------------------------------------------
+    |
+    | The association's instruction: register and pay the registration fee
+    | first, then transfer any donation directly to the bank account. The
+    | wording below is theirs, verbatim, in both languages.
+    |
+    | The account fields are null until the association supplies them — the
+    | donation dialog says details are being announced rather than inventing
+    | an account for other people's money.
+    |
+    */
+
+    'donation' => [
+        'instruction_bn' => 'যদি আপনি ডোনেশন করতে চান তাহলে প্রথমে রেজিষ্ট্রেশন করে তার পেমেন্ট করুন, এরপর বাকি টাকাটা সরাসরি ব্যাংক অ্যাকাউন্ট-এ ট্রান্সফার করে দিবেন। আপনি ডোনেশন করতে চাইলে ডোনেশন বাটনে ক্লিক করুন।',
+        'instruction' => 'If you wish to make a donation, please complete your registration and registration payment first, then transfer your donation amount directly to our bank account. Click the Donation button to proceed.',
+
+        'note_bn' => 'আপনার ডোনেশন সরাসরি ব্যাংকে টাকা পাঠিয়ে দিন।',
+        'note' => 'Please send your donation directly to the bank account.',
+
+        'bank' => [
+            'account_name' => env('RCMAA_BANK_ACCOUNT_NAME'),
+            'account_number' => env('RCMAA_BANK_ACCOUNT_NUMBER'),
+            'bank' => env('RCMAA_BANK_NAME'),
+            'branch' => env('RCMAA_BANK_BRANCH'),
+            'routing' => env('RCMAA_BANK_ROUTING'),
         ],
     ],
 

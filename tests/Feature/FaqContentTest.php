@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Faq;
+use App\Support\PaymentMethods;
 use App\Support\RegistrationPricing;
 use Database\Seeders\ContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -91,7 +92,10 @@ class FaqContentTest extends TestCase
             '৫০০ টাকা', Faq::where('question', 'Guest Fee কত?')->firstOrFail()->answer
         );
 
-        $this->assertSame(['bkash'], array_keys(config('rcmaa.payment.methods')));
+        // Bangla QR is declared in config but only offered once the
+        // association's QR image exists — which it does not in tests, so what
+        // is on offer (and what the FAQ describes) is still bKash alone.
+        $this->assertSame(['bkash'], PaymentMethods::keys());
         $this->assertStringContainsString(
             'বিকাশ (bKash)', Faq::where('question', 'Registration Fee কীভাবে পরিশোধ করতে হবে?')->firstOrFail()->answer
         );

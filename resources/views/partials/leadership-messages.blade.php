@@ -171,15 +171,33 @@
                                 <x-icon name="quote" class="h-7 w-7 flex-none text-brass-500/50"/>
                             </div>
 
-                            {{-- Bangla is the original; shown first and in full. --}}
-                            <div lang="bn" @class([
-                                    'mt-6 space-y-3.5 font-bangla leading-[1.9] text-ink-700',
-                                    'text-[0.95rem] lg:mt-5 lg:text-[0.9rem]' => $twoUp,
-                                    'text-[0.95rem]' => ! $twoUp,
-                                 ])>
-                                @foreach ($m['bn'] as $p)
-                                    <p>{{ $p }}</p>
-                                @endforeach
+                            {{-- Bangla is the original. On the home page it opens at four
+                                 lines with a Read More, at the association's request; on
+                                 /committee the full message stands as before. --}}
+                            <div @if ($twoUp) x-data="{ expanded: false }" @endif>
+                                <div lang="bn"
+                                     @if ($twoUp) :class="expanded || 'line-clamp-4'" @endif
+                                     @class([
+                                        'mt-6 space-y-3.5 font-bangla leading-[1.9] text-ink-700',
+                                        'text-[0.95rem] lg:mt-5 lg:text-[0.9rem]' => $twoUp,
+                                        'text-[0.95rem]' => ! $twoUp,
+                                     ])>
+                                    @foreach ($m['bn'] as $p)
+                                        <p>{{ $p }}</p>
+                                    @endforeach
+                                </div>
+
+                                @if ($twoUp)
+                                    <button type="button" @click="expanded = ! expanded"
+                                            class="mt-3 inline-flex items-center gap-2 text-[0.78rem] font-semibold uppercase tracking-[0.1em] text-brass-700 transition hover:text-ink-950"
+                                            :aria-expanded="expanded">
+                                        <span x-text="expanded ? 'Show less' : 'Read more'"></span>
+                                        <span lang="bn" class="font-bangla normal-case tracking-normal"
+                                              x-text="expanded ? '· সংক্ষেপ করুন' : '· আরও পড়ুন'"></span>
+                                        <x-icon name="chevron-down" class="h-3.5 w-3.5 transition-transform"
+                                                ::class="expanded && 'rotate-180'"/>
+                                    </button>
+                                @endif
                             </div>
 
                             {{-- mt-auto keeps both signatures on one line when the cards sit
