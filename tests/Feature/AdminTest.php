@@ -189,17 +189,25 @@ class AdminTest extends TestCase
     }
 
     /**
-     * The association chose to publish mobile numbers so alumni can reach each
-     * other. Everything else stays private — and the Privacy Policy and the
-     * registration form both say exactly this, so nobody is surprised.
+     * What the directory publishes, and what it holds back.
+     *
+     * Mobile and — since 9 August 2026, at the association's instruction —
+     * email are both shown so alumni can reach each other. The home address
+     * and blood group are not, and must not start appearing by accident.
+     *
+     * Note for whoever reads this next: the Privacy Policy still enumerates
+     * the published fields as "name, session, passing year, profession,
+     * photograph and mobile number". Email is now shown as well, so the two
+     * disagree. The association was told and chose to publish; the wording
+     * needs catching up, and this test is the reminder.
      */
     #[Test]
-    public function the_directory_publishes_the_mobile_but_nothing_else_private(): void
+    public function the_directory_publishes_contact_details_but_not_the_address(): void
     {
         $this->registration([
             'payment_status' => Registration::STATUS_VERIFIED,
             'mobile' => '01755500011',
-            'email' => 'private@example.com',
+            'email' => 'reachable@example.com',
             'present_address' => 'A private street address', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'blood_group' => 'AB-',
         ]);
@@ -207,8 +215,9 @@ class AdminTest extends TestCase
         $this->viewingDirectory()->get(route('directory'))
             ->assertOk()
             ->assertSee('01755500011')
-            ->assertDontSee('private@example.com')
-            ->assertDontSee('A private street address');
+            ->assertSee('reachable@example.com')
+            ->assertDontSee('A private street address')
+            ->assertDontSee('AB-');
     }
 
     #[Test]

@@ -55,7 +55,7 @@ class DashboardController extends Controller
             'organization' => ['nullable', 'string', 'max:180'],
             'tshirt_size' => ['required', Rule::in($options['tshirt_sizes'])],
             'memories' => ['nullable', 'string', 'max:4000'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:' . config('rcmaa.registration.photo_max_kb', 3072)],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.config('rcmaa.registration.photo_max_kb', 3072)],
         ], [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
             'photo.image' => 'Your profile picture must be an image.',
@@ -96,7 +96,7 @@ class DashboardController extends Controller
                 'required',
                 'file',
                 'mimes:jpg,jpeg,png,webp,pdf',
-                'max:' . config('rcmaa.registration.receipt_max_kb'),
+                'max:'.config('rcmaa.registration.receipt_max_kb'),
             ],
         ], [
             'payment_receipt.required' => 'Choose a file to upload.',
@@ -156,7 +156,7 @@ class DashboardController extends Controller
     /** dompdf renders images from data URIs reliably; from URLs it does not. */
     private function dataUri(string $path): ?string
     {
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             return null;
         }
 
@@ -167,7 +167,7 @@ class DashboardController extends Controller
             default => null,
         };
 
-        return $mime ? 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path)) : null;
+        return $mime ? 'data:'.$mime.';base64,'.base64_encode(file_get_contents($path)) : null;
     }
 
     private function member(): Registration
