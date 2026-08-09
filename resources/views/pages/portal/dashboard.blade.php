@@ -95,6 +95,35 @@
                             <x-field name="full_name_bn" :value="$r->full_name_bn" label="Full name" bn="বাংলায় নাম" :model="false"/>
                             <x-field name="mobile" autocomplete="tel" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
                             <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
+                            <x-field name="linkedin_url" :value="$r->linkedin_url" label="LinkedIn Profile Link" :model="false" placeholder="https://linkedin.com/in/username"/>
+
+                            <div class="min-w-0">
+                                <label class="field-label" for="field-profession-type">
+                                    Profession Type <span lang="bn" class="field-label-bn">&middot; পেশার ধরণ</span>
+                                </label>
+                                <select id="field-profession-type" name="profession_type" class="input mt-2"
+                                        onchange="document.getElementById('work-location-wrapper').style.display = this.value ? 'block' : 'none'">
+                                    <option value="">Select profession type</option>
+                                    @foreach ($opt['profession_types'] as $key => $label)
+                                        <option value="{{ $key }}" @selected(old('profession_type', $r->profession_type) === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                @error('profession_type')<p class="field-error">{{ $message }}</p>@enderror
+                            </div>
+
+                            <div class="min-w-0 sm:col-span-2" id="work-location-wrapper" style="display: {{ old('profession_type', $r->profession_type) ? 'block' : 'none' }}">
+                                <label class="field-label" for="field-work-location">
+                                    Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
+                                </label>
+                                <select id="field-work-location" name="work_location" class="input mt-2">
+                                    <option value="">Select district</option>
+                                    @foreach (array_keys(config('bd-geo')) as $district)
+                                        <option value="{{ $district }}" @selected(old('work_location', $r->work_location) === $district)>{{ $district }}</option>
+                                    @endforeach
+                                </select>
+                                @error('work_location')<p class="field-error">{{ $message }}</p>@enderror
+                            </div>
+
                             <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
                                      :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
                                      placeholder="Select blood group"/>

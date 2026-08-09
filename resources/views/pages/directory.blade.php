@@ -188,44 +188,69 @@
                                             @endif
                                         </span>
 
-                                        <div class="min-w-0">
-                                            <h3 class="truncate text-[0.95rem] font-semibold text-ink-950">{{ $person->full_name_en }}</h3>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="truncate text-[0.95rem] font-semibold text-ink-950">{{ $person->full_name_en }}</h3>
+                                                @if ($person->linkedin_url)
+                                                    <a href="{{ $person->linkedin_url }}" target="_blank" rel="noopener" class="text-brass-600 hover:text-ink-950 transition flex-none" title="LinkedIn Profile">
+                                                        <x-icon name="linkedin" class="h-4 w-4"/>
+                                                    </a>
+                                                @endif
+                                            </div>
                                             @if ($person->full_name_bn)
                                                 <p lang="bn" class="truncate text-xs text-ink-400">{{ $person->full_name_bn }}</p>
                                             @endif
+                                            @if ($person->session)
+                                                <p class="text-xs text-ink-500 mt-0.5">Session: {{ $person->session }}</p>
+                                            @endif
 
-                                            <p class="mt-2 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
-                                                <x-icon name="graduation" class="h-3.5 w-3.5 flex-none text-brass-600"/>
-                                                @if ($person->category === 'teacher')
-                                                    Department of Mathematics
-                                                @else
-                                                    {{ $person->passing_year ? 'Passed '.$person->passing_year : 'Currently studying' }}
-                                                @endif
-                                            </p>
-
-                                            @if ($person->profession)
-                                                <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
-                                                    <x-icon name="briefcase" class="h-3.5 w-3.5 flex-none text-brass-600"/>
-                                                    <span class="truncate">{{ $person->profession }}</span>
+                                            @if ($person->passing_year)
+                                                <p class="mt-2 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
+                                                    <x-icon name="calendar" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                    <span>Passing Year: {{ $person->passing_year }}</span>
                                                 </p>
                                             @endif
 
-                                            {{-- Where they live now — the thing the Place filter
-                                                 searches on, so a hit shows why it matched. --}}
-                                            @if ($person->present_district)
-                                                <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
-                                                    <x-icon name="map-pin" class="h-3.5 w-3.5 flex-none text-brass-600"/>
-                                                    <span class="truncate">{{ $person->present_upazila ? $person->present_upazila.', ' : '' }}{{ $person->present_district }}</span>
+                                            @if ($person->profession_type === 'student' || $person->category === 'current_student')
+                                                <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] font-semibold text-brass-700">
+                                                    <x-icon name="book" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                    <span>Student (শিক্ষার্থী)</span>
                                                 </p>
+                                            @else
+                                                @if ($person->designation)
+                                                    <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
+                                                        <x-icon name="user" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                        <span class="truncate">{{ $person->designation }}</span>
+                                                    </p>
+                                                @endif
+                                                @if ($person->organization)
+                                                    <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
+                                                        <x-icon name="briefcase" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                        <span class="truncate">{{ $person->organization }}</span>
+                                                    </p>
+                                                @endif
+                                                @if ($person->work_location)
+                                                    <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500">
+                                                        <x-icon name="map-pin" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                        <span class="truncate">Work Location: {{ $person->work_location }}</span>
+                                                    </p>
+                                                @endif
                                             @endif
 
                                             {{-- Published at the association's instruction; the Privacy Policy
                                                  and the registration form both say so plainly. --}}
                                             @if ($person->mobile)
                                                 <a href="tel:{{ preg_replace('/\D/', '', $person->mobile) }}"
-                                                   class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500 transition hover:text-brass-700">
+                                                   class="mt-2 flex items-center gap-1.5 text-[0.75rem] text-ink-500 transition hover:text-brass-700">
                                                     <x-icon name="phone" class="h-3.5 w-3.5 flex-none text-brass-600"/>
                                                     <span class="truncate">{{ $person->mobile }}</span>
+                                                </a>
+                                            @endif
+                                            @if ($person->email)
+                                                <a href="mailto:{{ $person->email }}"
+                                                   class="mt-1 flex items-center gap-1.5 text-[0.75rem] text-ink-500 transition hover:text-brass-700">
+                                                    <x-icon name="mail" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                    <span class="truncate">{{ $person->email }}</span>
                                                 </a>
                                             @endif
                                         </div>

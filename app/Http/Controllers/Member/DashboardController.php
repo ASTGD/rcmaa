@@ -43,6 +43,9 @@ class DashboardController extends Controller
             'full_name_bn' => ['nullable', 'string', 'max:120'],
             'mobile' => ['required', 'string', 'max:32', 'regex:/^(\+?88)?01[3-9]\d{8}$/'],
             'whatsapp' => ['nullable', 'string', 'max:32'],
+            'linkedin_url' => ['nullable', 'url', 'max:255'],
+            'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
+            'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
             'present_address' => ['required', 'string', 'max:500'],
             'permanent_address' => ['nullable', 'string', 'max:500'],
@@ -52,7 +55,7 @@ class DashboardController extends Controller
             'organization' => ['nullable', 'string', 'max:180'],
             'tshirt_size' => ['required', Rule::in($options['tshirt_sizes'])],
             'memories' => ['nullable', 'string', 'max:4000'],
-            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.config('rcmaa.registration.photo_max_kb', 3072)],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:' . config('rcmaa.registration.photo_max_kb', 3072)],
         ], [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
             'photo.image' => 'Your profile picture must be an image.',
@@ -90,8 +93,10 @@ class DashboardController extends Controller
 
         $request->validate([
             'payment_receipt' => [
-                'required', 'file', 'mimes:jpg,jpeg,png,webp,pdf',
-                'max:'.config('rcmaa.registration.receipt_max_kb'),
+                'required',
+                'file',
+                'mimes:jpg,jpeg,png,webp,pdf',
+                'max:' . config('rcmaa.registration.receipt_max_kb'),
             ],
         ], [
             'payment_receipt.required' => 'Choose a file to upload.',
@@ -151,7 +156,7 @@ class DashboardController extends Controller
     /** dompdf renders images from data URIs reliably; from URLs it does not. */
     private function dataUri(string $path): ?string
     {
-        if (! is_file($path)) {
+        if (!is_file($path)) {
             return null;
         }
 
@@ -162,7 +167,7 @@ class DashboardController extends Controller
             default => null,
         };
 
-        return $mime ? 'data:'.$mime.';base64,'.base64_encode(file_get_contents($path)) : null;
+        return $mime ? 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($path)) : null;
     }
 
     private function member(): Registration
