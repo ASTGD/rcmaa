@@ -252,37 +252,6 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                                 <x-field name="linkedin_url" label="LinkedIn Profile Link" placeholder="https://linkedin.com/in/username"/>
 
-                                <div class="min-w-0">
-                                    <label class="field-label" for="field-profession-type">
-                                        Profession Type <span lang="bn" class="field-label-bn">&middot; পেশার ধরণ</span>
-                                    </label>
-                                    <select id="field-profession-type" name="profession_type" class="input"
-                                            x-model="form.profession_type"
-                                            :aria-invalid="errors.profession_type ? 'true' : 'false'">
-                                        <option value="">Select profession type</option>
-                                        @foreach ($opt['profession_types'] as $key => $label)
-                                            <option value="{{ $key }}" @selected(old('profession_type') === $key)>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                    <p class="field-error" x-show="errors.profession_type" x-text="errors.profession_type" x-cloak></p>
-                                    @error('profession_type')<p class="field-error">{{ $message }}</p>@enderror
-                                </div>
-
-                                <div class="min-w-0 sm:col-span-2" x-show="form.profession_type" x-collapse x-cloak>
-                                    <label class="field-label" for="field-work-location">
-                                        Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
-                                    </label>
-                                    <select id="field-work-location" name="work_location" class="input"
-                                            x-model="form.work_location"
-                                            :aria-invalid="errors.work_location ? 'true' : 'false'">
-                                        <option value="">Select district</option>
-                                        <template x-for="d in districts" :key="d">
-                                            <option :value="d" x-text="d" :selected="form.work_location === d"></option>
-                                        </template>
-                                    </select>
-                                    <p class="field-error" x-show="errors.work_location" x-text="errors.work_location" x-cloak></p>
-                                    @error('work_location')<p class="field-error">{{ $message }}</p>@enderror
-                                </div>
 
                                 {{-- Present address: district and upazila/thana as dropdowns
                                      (the directory filters on them), then the free-text part.
@@ -375,26 +344,60 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                 </p>
 
                                 <div class="mt-5 grid gap-6 sm:grid-cols-2">
-                                    <div>
+                                    <div x-data="{ show: false }">
                                         <label for="password" class="field-label">
                                             Password <span lang="bn" class="field-label-bn">&middot; পাসওয়ার্ড</span>
                                             <span class="text-brass-700">*</span>
                                         </label>
-                                        <input id="password" name="password" type="password" required
-                                               autocomplete="new-password" class="input mt-2"
-                                               x-model="form.password" @input="clearError('password')">
+                                        <div class="relative mt-2">
+                                            <input id="password" name="password" :type="show ? 'text' : 'password'" required
+                                                   autocomplete="new-password" class="input w-full pr-10"
+                                                   x-model="form.password" @input="clearError('password')">
+                                            <button type="button" @click="show = !show"
+                                                class="absolute inset-y-0 right-1 flex items-center pr-3 text-ink-500 hover:text-ink-950">
+                                                <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.058m4.09-4.09A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21m-4.2-4.2L3 3" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                         <p class="mt-1.5 text-xs text-ink-500">At least 8 characters, with letters and numbers.</p>
                                         <p class="field-error" x-show="errors.password" x-text="errors.password" x-cloak></p>
                                         @error('password')<p class="field-error">{{ $message }}</p>@enderror
                                     </div>
 
-                                    <div>
+                                    <div x-data="{ show: false }">
                                         <label for="password_confirmation" class="field-label">
                                             Confirm password <span class="text-brass-700">*</span>
                                         </label>
-                                        <input id="password_confirmation" name="password_confirmation" type="password" required
-                                               autocomplete="new-password" class="input mt-2"
-                                               x-model="form.password_confirmation" @input="clearError('password')">
+                                        <div class="relative mt-2">
+                                            <input id="password_confirmation" name="password_confirmation" :type="show ? 'text' : 'password'" required
+                                                   autocomplete="new-password" class="input w-full pr-10"
+                                                   x-model="form.password_confirmation" @input="clearError('password')">
+                                            <button type="button" @click="show = !show"
+                                                class="absolute inset-y-0 right-1 flex items-center pr-3 text-ink-500 hover:text-ink-950">
+                                                <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                <svg x-show="show" x-cloak class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.058m4.09-4.09A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21m-4.2-4.2L3 3" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
