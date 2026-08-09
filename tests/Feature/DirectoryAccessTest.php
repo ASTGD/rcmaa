@@ -140,7 +140,7 @@ class DirectoryAccessTest extends TestCase
         $r = $this->member();
         $this->member([
             'email' => 'teacher@example.test', 'transaction_id' => 'DIRTEST0009',
-            'full_name_en' => 'Departmental Teacher', 'category' => 'teacher',
+            'full_name_en' => 'Departmental Teacher', 'category' => 'teacher', 'teacher_type' => 'teacher',
             'session' => null, 'degree' => null, 'passing_year' => null,
         ]);
         $this->openPortal($r);

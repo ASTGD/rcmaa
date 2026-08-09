@@ -350,7 +350,14 @@ export default (config = {}) => ({
     required(step) {
         return {
             1: ['category'],
-            2: ['full_name_en', 'mobile', 'email', 'present_district', 'present_upazila', 'present_address'],
+            2: [
+                'full_name_en', 'mobile', 'email',
+                'present_district', 'present_upazila', 'present_address',
+                // The server requires this of teachers (required_if), so the step
+                // has to ask for it too. Without this a teacher completes every
+                // step and is bounced back here from the final submit.
+                ...(this.form.category === 'teacher' ? ['teacher_type'] : []),
+            ],
             // A current student has not passed yet, so the year is theirs to skip.
             3: [
                 'degree',

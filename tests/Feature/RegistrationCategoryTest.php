@@ -73,6 +73,9 @@ class RegistrationCategoryTest extends TestCase
 
         $this->post(route('register.store'), $this->payload([
             'category' => $key,
+            // A teacher must now say which they are — teaching staff, or an
+            // officer of the department. Nullable for everyone else.
+            'teacher_type' => $key === 'teacher' ? 'teacher' : null,
             'amount_paid' => $fee,
         ]))->assertSessionHasNoErrors();
 
@@ -116,7 +119,7 @@ class RegistrationCategoryTest extends TestCase
     {
         // 2,000 was the previous flat rate; it no longer covers any full category.
         $this->post(route('register.store'), $this->payload([
-            'category' => 'teacher',
+            'category' => 'teacher', 'teacher_type' => 'teacher',
             'amount_paid' => 2000,
         ]))->assertSessionHasErrors('amount_paid');
     }

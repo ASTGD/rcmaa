@@ -174,10 +174,19 @@ class PaymentConfigTest extends TestCase
         $this->assertStringContainsString(e(config('rcmaa.donation.instruction')), $body);
         $this->assertStringContainsString(e(config('rcmaa.donation.note_bn')), $body);
 
-        // The Donation button, and — with no bank account configured yet — the
-        // announcement line rather than an invented account number.
+        // The Donation button, and the association's bank account, which they
+        // supplied on 9 Aug 2026 — so the panel now discloses the real account
+        // rather than the "details to follow" line it carried before.
         $this->assertStringContainsString('Donation', $body);
-        $this->assertStringContainsString('শীঘ্রই জানানো হবে', $body);
+
+        foreach (array_filter(config('rcmaa.donation.bank')) as $field => $value) {
+            $this->assertStringContainsString(
+                e($value), $body, "The donation panel is missing its bank {$field}."
+            );
+        }
+
+        // And the placeholder it replaced must be gone.
+        $this->assertStringNotContainsString('শীঘ্রই জানানো হবে', $body);
 
         // It must appear alongside the account, above the transaction fields.
         $notice = strpos($body, 'ডোনেশন');

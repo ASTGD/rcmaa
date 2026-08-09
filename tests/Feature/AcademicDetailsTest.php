@@ -187,7 +187,7 @@ class AcademicDetailsTest extends TestCase
     public function a_teacher_registers_without_academic_or_professional_details(): void
     {
         $this->post(route('register.store'), $this->payload([
-            'category' => 'teacher',
+            'category' => 'teacher', 'teacher_type' => 'teacher',
             'session' => null,
             'degree' => null,
             'passing_year' => null,
@@ -232,7 +232,7 @@ class AcademicDetailsTest extends TestCase
     public function teachers_are_listed_separately_in_the_directory(): void
     {
         $teacher = Registration::create($this->stored([
-            'category' => 'teacher', 'full_name_en' => 'Prof. Saiful Islam',
+            'category' => 'teacher', 'teacher_type' => 'teacher', 'full_name_en' => 'Prof. Saiful Islam',
             'email' => 'prof@example.test', 'session' => null, 'degree' => null,
             'passing_year' => null, 'employment_status' => null,
         ]));

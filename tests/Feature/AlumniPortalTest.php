@@ -172,7 +172,7 @@ class AlumniPortalTest extends TestCase
             'tshirt_size' => $r->tshirt_size,
             'listed_in_directory' => '1',
             // All of these should be ignored.
-            'category' => 'teacher',
+            'category' => 'teacher', 'teacher_type' => 'teacher',
             'amount_paid' => 999999,
             'amount_due' => 0,
             'payment_status' => 'verified',
