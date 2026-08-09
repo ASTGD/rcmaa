@@ -398,15 +398,17 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                     </div>
                                 </div>
                             </div>
-                            {{-- Publishing a mobile number is a decision the registrant should
-                                 make knowingly, so it is stated at the point of entry. --}}
-                            <x-alert type="info" title="Your mobile number will be published" class="mt-6">
+                            {{-- Publishing contact details is a decision the registrant should
+                                 make knowingly, so it is stated at the point of entry rather than
+                                 left to the privacy policy alone. --}}
+                            <x-alert type="info" title="Your mobile number and email address will be published" class="mt-6">
                                 Verified registrations appear in the
                                 <a href="{{ route('directory') }}" class="font-semibold underline underline-offset-2">alumni directory</a>,
                                 which is open only to registered members who have signed in. It shows your
-                                name, session, profession, photograph and mobile number so that fellow
-                                graduates can reach you. Your email, addresses and blood group are
-                                <strong>not</strong> published. You can ask us to remove your number at any time.
+                                name, session, passing year, work details, photograph, mobile number and
+                                email address so that fellow graduates can reach you. Your addresses,
+                                WhatsApp number and blood group are <strong>not</strong> published.
+                                You can ask us to remove your contact details at any time.
                             </x-alert>
 
                         </div>

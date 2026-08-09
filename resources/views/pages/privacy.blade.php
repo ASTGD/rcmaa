@@ -20,9 +20,10 @@
             ],
         ],
         'What is published' => [
-            'The alumni directory shows your name, session, passing year, profession, photograph and mobile number. It is not public: only registered members who have signed in, and the committee, can open it. The mobile number is listed so that fellow graduates can reach you directly, and you can remove yourself from the directory at any time from your own portal without affecting your registration.',
-            'Your WhatsApp number, email address, present and permanent addresses, blood group and payment details are not published. They are held by the committee for administering your registration.',
-            'If you would prefer your mobile number not to appear, write to us at the address below and we will remove it from the directory.',
+            'The alumni directory shows your name, session, passing year, designation and place of work, work location, photograph, your LinkedIn profile if you give one, your mobile number and your email address. It is not public: only registered members who have signed in, and the committee, can open it. The mobile number and email address are listed so that fellow graduates can reach you directly, and you can remove yourself from the directory at any time from your own portal without affecting your registration.',
+            'Please note that your email address is also what you sign in with. It is shown only to other signed-in members, never to the public.',
+            'Your WhatsApp number, present and permanent addresses, blood group, the memories you share and your payment details are not published. They are held by the committee for administering your registration.',
+            'If you would prefer your mobile number or email address not to appear, write to us at the address below and we will remove them from the directory.',
             'Committee members with administrator access can see your full record in order to verify payments and organise events.',
         ],
         'Payment information' => [

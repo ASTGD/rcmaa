@@ -221,12 +221,16 @@ class AdminTest extends TestCase
     }
 
     #[Test]
-    public function the_privacy_policy_states_that_the_mobile_is_published(): void
+    public function the_privacy_policy_states_which_contact_details_are_published(): void
     {
         $this->get(route('privacy'))
             ->assertOk()
             ->assertSee('It is not public: only registered members who have signed in')
-            ->assertSee('mobile number is listed')
+            ->assertSee('mobile number and email address are listed')
+            // The directory publishes the email, so the policy must say so —
+            // this is the assertion that keeps the two from drifting apart.
+            ->assertSee('your email address')
+            ->assertSee('also what you sign in with')
             ->assertSee('are not published');
     }
 
@@ -235,7 +239,7 @@ class AdminTest extends TestCase
     {
         $this->get(route('register.create'))
             ->assertOk()
-            ->assertSee('Your mobile number will be published');
+            ->assertSee('Your mobile number and email address will be published');
     }
 
     #[Test]
