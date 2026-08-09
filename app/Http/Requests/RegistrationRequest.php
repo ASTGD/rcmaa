@@ -32,6 +32,9 @@ class RegistrationRequest extends FormRequest
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
             'mobile' => ['required', 'string', 'max:32', 'regex:/^(\+?88)?01[3-9]\d{8}$/'],
             'whatsapp' => ['nullable', 'string', 'max:32', 'regex:/^(\+?\d{1,3})?[\d\s-]{6,18}$/'],
+            'linkedin_url' => ['nullable', 'url', 'max:255'],
+            'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
+            'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
             // Deliberately not `dns` — it makes a submission depend on a live DNS
             // lookup and rejects otherwise-valid domains that publish no MX record.
             // Unique because it is now the thing they sign in with, and one

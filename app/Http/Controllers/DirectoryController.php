@@ -50,6 +50,8 @@ class DirectoryController extends Controller
             // live now, and by the year they passed.
             'district' => $request->string('district')->toString(),
             'passing_year' => $request->string('passing_year')->toString(),
+            'profession_type' => $request->string('profession_type')->toString(),
+            'work_location' => $request->string('work_location')->toString(),
         ]);
 
         $matching = fn () => Registration::listed()
@@ -58,6 +60,8 @@ class DirectoryController extends Controller
             ->when($filters['category'] ?? null, fn ($q, $category) => $q->where('category', $category))
             ->when($filters['district'] ?? null, fn ($q, $district) => $q->where('present_district', $district))
             ->when($filters['passing_year'] ?? null, fn ($q, $year) => $q->where('passing_year', (int) $year))
+            ->when($filters['profession_type'] ?? null, fn ($q, $type) => $q->where('profession_type', $type))
+            ->when($filters['work_location'] ?? null, fn ($q, $location) => $q->where('work_location', $location))
             ->when($filters['session'] ?? null, fn ($q, $session) => $session === self::FACULTY
                 ? $q->whereNull('session')
                 : $q->where('session', $session));
@@ -109,6 +113,9 @@ class DirectoryController extends Controller
                 ->distinct()->orderBy('present_district')->pluck('present_district'),
             'allPassingYears' => Registration::listed()->whereNotNull('passing_year')
                 ->distinct()->orderByDesc('passing_year')->pluck('passing_year'),
+            'allProfessionTypes' => config('rcmaa.options.profession_types'),
+            'allWorkLocations' => Registration::listed()->whereNotNull('work_location')
+                ->distinct()->orderBy('work_location')->pluck('work_location'),
             'filters' => $filters,
         ]);
     }

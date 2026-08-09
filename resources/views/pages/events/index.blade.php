@@ -1,7 +1,7 @@
 <x-layout :title="$title" :description="$description">
     <x-page-hero
         eyebrow="Events"
-        title="Bridging generations through mathematics"
+        title="Bridging Generations Through Mathematical Events"
         lead="Join the Department of Mathematics, Rajshahi College, for our upcoming alumni reunions, seminars, and networking sessions. Experience meaningful discussions, celebrate academic excellence, and reconnect with fellow mathematicians."
         :breadcrumbs="['Events' => null]"/>
 

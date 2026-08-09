@@ -250,6 +250,40 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          placeholder="Select blood group"
                                          hint="Optional, but useful for the on-site medical desk."/>
 
+                                <x-field name="linkedin_url" label="LinkedIn Profile Link" placeholder="https://linkedin.com/in/username"/>
+
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-profession-type">
+                                        Profession Type <span lang="bn" class="field-label-bn">&middot; পেশার ধরণ</span>
+                                    </label>
+                                    <select id="field-profession-type" name="profession_type" class="input"
+                                            x-model="form.profession_type"
+                                            :aria-invalid="errors.profession_type ? 'true' : 'false'">
+                                        <option value="">Select profession type</option>
+                                        @foreach ($opt['profession_types'] as $key => $label)
+                                            <option value="{{ $key }}" @selected(old('profession_type') === $key)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="field-error" x-show="errors.profession_type" x-text="errors.profession_type" x-cloak></p>
+                                    @error('profession_type')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
+                                <div class="min-w-0 sm:col-span-2" x-show="form.profession_type" x-collapse x-cloak>
+                                    <label class="field-label" for="field-work-location">
+                                        Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
+                                    </label>
+                                    <select id="field-work-location" name="work_location" class="input"
+                                            x-model="form.work_location"
+                                            :aria-invalid="errors.work_location ? 'true' : 'false'">
+                                        <option value="">Select district</option>
+                                        <template x-for="d in districts" :key="d">
+                                            <option :value="d" x-text="d" :selected="form.work_location === d"></option>
+                                        </template>
+                                    </select>
+                                    <p class="field-error" x-show="errors.work_location" x-text="errors.work_location" x-cloak></p>
+                                    @error('work_location')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+
                                 {{-- Present address: district and upazila/thana as dropdowns
                                      (the directory filters on them), then the free-text part.
                                      The upazila list follows the chosen district. --}}

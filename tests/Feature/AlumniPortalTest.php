@@ -240,13 +240,21 @@ class AlumniPortalTest extends TestCase
         ]);
         $this->open($r);
 
-        $this->get(route('member.pass'))
-            ->assertOk()
-            ->assertSee($r->reference)
-            ->assertSee('Md. Rofikul Islam')
-            ->assertSee('Alumnus')
-            ->assertSee('XL')
-            ->assertSee('Shirin Akter');
+        // The pass is now a PDF download rather than a page, so it is checked
+        // the way the registration and payment slips are: the right file, and
+        // the details rendered into it read back out of the PDF's own text.
+        $response = $this->get(route('member.pass'));
+
+        $response->assertOk()->assertHeader('content-type', 'application/pdf');
+        $this->assertStringContainsString(
+            "RCMAA-pass-{$r->reference}.pdf",
+            $response->headers->get('content-disposition')
+        );
+
+        $text = $this->pdfText($response->getContent());
+        foreach ([$r->reference, 'Md. Rofikul Islam', 'Alumnus', 'XL', 'Shirin Akter'] as $needle) {
+            $this->assertStringContainsString($needle, $text, "The pass PDF is missing: {$needle}");
+        }
     }
 
     #[Test]
@@ -255,7 +263,11 @@ class AlumniPortalTest extends TestCase
         $r = $this->registration(['payment_status' => Registration::STATUS_PENDING]);
         $this->open($r);
 
-        $this->get(route('member.pass'))->assertOk()->assertSee('Payment not yet verified');
+        $response = $this->get(route('member.pass'))->assertOk();
+
+        $this->assertStringContainsString(
+            'Payment not yet verified', $this->pdfText($response->getContent())
+        );
     }
 
     #[Test]
