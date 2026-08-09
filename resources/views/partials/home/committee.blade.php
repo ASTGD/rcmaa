@@ -4,27 +4,36 @@
 
     <div class="container-rc relative">
         <div class="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
+            {{-- :reveal="false" — see below; nothing in this section waits on a
+                 scroll animation to become visible. --}}
             <x-section-heading
                 light
+                :reveal="false"
                 eyebrow="Committee"
                 title="Fostering mathematical excellence and future leaders"
                 lead="The Department of Mathematics at Rajshahi College is committed to nurturing analytical thinking, research, and academic leadership. We empower our students with strong foundational knowledge and problem-solving skills to excel in higher education and diverse professional careers worldwide."/>
 
-            <a href="{{ route('committee') }}" class="btn btn-outline-light flex-none" data-reveal data-reveal-delay="0.2">
+            <a href="{{ route('committee') }}" class="btn btn-outline-light flex-none">
                 All Committees
                 <x-icon name="arrow-right" class="h-4 w-4"/>
             </a>
         </div>
 
         @if ($featuredMembers->isNotEmpty())
-            <div class="mt-16 grid justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3"
-                 data-reveal data-reveal-stagger="0.1">
+            {{-- Deliberately no data-reveal here.
+                 The reveal sets its targets to opacity 0 and only animates them
+                 back when a scroll trigger fires, so arriving at this section
+                 meant waiting out a 1s stagger before the portraits appeared —
+                 and scrolling straight past left a section of text with three
+                 blanks where the faces should be. The photographs are the
+                 content here, not decoration; they are simply present. --}}
+            <div class="mt-16 grid justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($featuredMembers as $member)
-                    <article class="group relative overflow-hidden rounded-2xl border border-white/8 bg-ink-800/60 transition-all duration-500 hover:border-brass-600/50 hover:bg-ink-800 mx-auto w-full max-w-xs"
-                             data-reveal-item>
+                    <article class="group relative overflow-hidden rounded-2xl border border-white/8 bg-ink-800/60 transition-all duration-500 hover:border-brass-600/50 hover:bg-ink-800 mx-auto w-full max-w-xs">
                         <div class="relative aspect-4/5 overflow-hidden bg-ink-800">
                             @if ($member->photo_url)
-                                <img src="{{ $member->photo_url }}" alt="{{ $member->name }}" loading="eager"
+                                <img src="{{ $member->photo_url }}" alt="{{ $member->name }}"
+                                     loading="eager" decoding="async" width="400" height="500"
                                      class="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.06]">
                             @else
                                 <div class="bg-grid-light grid h-full place-items-center">
