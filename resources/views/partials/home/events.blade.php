@@ -16,10 +16,16 @@
             @endphp
             <div class="mt-16 card overflow-hidden border border-ink-900/8 bg-white w-full shadow-md">
                 {{-- 1. Full Width Banner --}}
-                <div class="relative aspect-[21/9] w-full overflow-hidden bg-ink-800">
+                {{-- The cover is a designed banner: a tagline across the top, the
+                     title, the date, the venue. object-cover on a 21/9 frame scaled
+                     a 2:1 artwork up to fill the width and took the tagline off the
+                     top. The frame matches a 2:1 banner now, and object-contain
+                     means an upload of any other proportion is letterboxed rather
+                     than having part of its message cut away. --}}
+                <div class="relative aspect-[2/1] w-full overflow-hidden bg-ink-900">
                     @if ($event->cover_url)
                         <img src="{{ $event->cover_url }}" alt="{{ $event->title }}" loading="eager"
-                            class="h-full w-full object-cover">
+                            class="h-full w-full object-contain">
                     @else
                         <div class="bg-grid-light grid h-full place-items-center">
                             <x-icon name="sigma" class="h-16 w-16 text-brass-500/60" />

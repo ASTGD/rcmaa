@@ -30,8 +30,10 @@
     <section class="bg-parchment py-16 md:py-24">
         <div class="container-narrow">
             @if ($event->cover_url)
+                {{-- Contained, not covered: a poster's own proportions are part of
+                     it, and 16/9 would have trimmed the sides off a 2:1 banner. --}}
                 <img src="{{ $event->cover_url }}" alt="{{ $event->title }}"
-                     class="mb-12 aspect-16/9 w-full rounded-2xl object-cover" data-reveal="mask">
+                     class="mb-12 aspect-[2/1] w-full rounded-2xl bg-ink-900 object-contain" data-reveal="mask">
             @endif
 
             @if ($event->body)

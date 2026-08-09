@@ -18,7 +18,7 @@
                             <div class="relative aspect-16/9 overflow-hidden bg-ink-800 md:aspect-auto md:min-h-56">
                                 @if ($event->cover_url)
                                     <img src="{{ $event->cover_url }}" alt="{{ $event->title }}" loading="lazy"
-                                         class="h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.05]">
+                                         class="h-full w-full object-contain transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.05]">
                                 @else
                                     <div class="bg-grid-light grid h-full place-items-center">
                                         <x-icon name="sigma" class="h-10 w-10 text-brass-500/60"/>
