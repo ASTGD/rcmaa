@@ -17,6 +17,7 @@ class Event extends Model
         return [
             'starts_on' => 'date',
             'ends_on' => 'date',
+            'registration_deadline' => 'date',
             'registration_open' => 'boolean',
             'is_featured' => 'boolean',
             'is_published' => 'boolean',

@@ -17,17 +17,16 @@
         </div>
 
         @if ($featuredMembers->isNotEmpty())
-            <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal data-reveal-stagger="0.1">
+            <div class="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-center">
                 @foreach ($featuredMembers as $member)
-                    <article class="group relative overflow-hidden rounded-2xl border border-white/8 bg-ink-800/60 transition-all duration-500 hover:border-brass-600/50 hover:bg-ink-800"
-                             data-reveal-item>
-                        <div class="relative aspect-4/5 overflow-hidden">
+                    <article class="group relative overflow-hidden rounded-2xl border border-white/8 bg-ink-800/60 transition-all duration-500 hover:border-brass-600/50 hover:bg-ink-800 max-w-xs w-full mx-auto">
+                        <div class="relative aspect-4/5 overflow-hidden bg-ink-850">
                             @if ($member->photo_url)
-                                <img src="{{ $member->photo_url }}" alt="{{ $member->name }}" loading="lazy"
-                                     class="h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.06]">
+                                <img src="{{ $member->photo_url }}" alt="{{ $member->name }}" loading="eager"
+                                     class="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] group-hover:scale-[1.06]">
                             @else
                                 <div class="bg-grid-light grid h-full place-items-center">
-                                    <span class="heading-display text-6xl text-brass-500/70">{{ $member->initials }}</span>
+                                    <span class="heading-display text-5xl text-brass-500/70">{{ $member->initials }}</span>
                                 </div>
                             @endif
                             <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink-950 to-transparent"></div>
@@ -36,9 +35,9 @@
                                 <p class="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-brass-400">
                                     {{ $member->designation }}
                                 </p>
-                                <h3 class="heading-display mt-2 text-2xl text-parchment">{{ $member->name }}</h3>
+                                <h3 class="heading-display mt-2 text-xl text-parchment">{{ $member->name }}</h3>
                                 @if ($member->name_bn)
-                                    <p lang="bn" class="mt-1 text-sm text-ink-300">{{ $member->name_bn }}</p>
+                                    <p lang="bn" class="mt-1 text-xs text-ink-300">{{ $member->name_bn }}</p>
                                 @endif
                             </div>
                         </div>

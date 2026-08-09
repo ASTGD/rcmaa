@@ -337,6 +337,16 @@ return [
 
         'guest_counts' => ['0' => 'None', '1' => '1', '2' => '2', '3+' => '3+'],
 
+        'profession_types' => [
+            'teaching' => 'Teaching · শিক্ষকতা',
+            'banking' => 'Banking · ব্যাংকিং',
+            'govt_job' => 'Government Job · সরকারি চাকরি',
+            'business' => 'Business · ব্যবসা',
+            'private_company' => 'Private Company · প্রাইভেট কোম্পানী',
+            'multinational_company' => 'Multinational Company · মাল্টিন্যাショナル কোম্পানী',
+            'student' => 'Student · স্টুডেন্ট',
+        ],
+
         /*
          * Academic sessions, newest first.
          *

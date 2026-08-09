@@ -29,6 +29,10 @@ class HomeController extends Controller
             'tickerNotices' => Notice::published()->latestFirst()->take(5)->get(),
             'galleryItems' => GalleryItem::published()->ordered()->take(6)->get(),
             'sponsors' => Sponsor::published()->ordered()->get(),
+            'categoryCounts' => Registration::verified()
+                ->selectRaw('category, COUNT(*) as total')
+                ->groupBy('category')
+                ->pluck('total', 'category'),
             // The two most recent people to join, shown on the home page at the
             // association's request. Verified and opted-in only — the same rule
             // the full directory follows.

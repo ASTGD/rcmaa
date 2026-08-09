@@ -86,6 +86,30 @@
                         </select>
                     </div>
 
+                    <div>
+                        <label for="profession_type" class="field-label">
+                            Profession Type <span lang="bn" class="field-label-bn">&middot; পেশার ধরণ</span>
+                        </label>
+                        <select id="profession_type" name="profession_type" class="input">
+                            <option value="">All profession types</option>
+                            @foreach ($allProfessionTypes as $key => $label)
+                                <option value="{{ $key }}" @selected(($filters['profession_type'] ?? null) === $key)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="work_location" class="field-label">
+                            Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
+                        </label>
+                        <select id="work_location" name="work_location" class="input">
+                            <option value="">All locations</option>
+                            @foreach ($allWorkLocations as $location)
+                                <option value="{{ $location }}" @selected(($filters['work_location'] ?? null) === $location)>{{ $location }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-ink h-[3.05rem] flex-1">
                             <x-icon name="search" class="h-4 w-4"/>Search

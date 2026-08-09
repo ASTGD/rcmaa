@@ -48,7 +48,8 @@
                 @endif
 
                 <form method="POST" action="{{ route('member.profile.update') }}"
-                      enctype="multipart/form-data" class="card p-6 md:p-8">
+                      enctype="multipart/form-data" class="card p-6 md:p-8"
+                      x-data="{ editing: false }">
                     @csrf @method('PATCH')
 
                     <h2 class="heading-display text-xl text-ink-950">Your details</h2>
@@ -57,74 +58,85 @@
                         only be altered by the committee — call the helpdesk on {{ config('rcmaa.contact.helpline') }}.
                     </p>
 
-                    {{-- Profile picture. Sits above the fields because it is the one
-                         thing here that is not a text box, and burying a file input
-                         among them is how people miss it. --}}
-                    <div class="mt-7 flex flex-wrap items-center gap-5 rounded-2xl bg-parchment-dim p-5">
-                        <span class="grid h-20 w-20 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
-                            @if ($r->photo_url)
-                                <img src="{{ $r->photo_url }}" alt="" class="h-full w-full object-cover">
-                            @else
-                                <span class="heading-display text-2xl">
-                                    {{ mb_strtoupper(mb_substr(preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $r->full_name_en), 0, 1)) }}
-                                </span>
-                            @endif
-                        </span>
-
-                        <div class="min-w-0 flex-1">
-                            <label for="member-photo" class="field-label">
-                                Profile picture <span lang="bn" class="field-label-bn">&middot; ছবি</span>
-                            </label>
-                            <input id="member-photo" type="file" name="photo"
-                                   accept="image/jpeg,image/png,image/webp"
-                                   class="mt-2 block w-full text-sm text-ink-600
-                                          file:mr-3 file:rounded-lg file:border-0 file:bg-brass-100 file:px-3.5 file:py-2
-                                          file:text-sm file:font-medium file:text-brass-800 hover:file:bg-brass-200">
-                            @error('photo')<p class="field-error">{{ $message }}</p>@enderror
-                            <p class="mt-1.5 text-xs text-ink-400">
-                                JPG, PNG or WebP &middot; maximum {{ round(config('rcmaa.registration.photo_max_kb') / 1024, 1) }} MB.
-                                Shown in the alumni directory if you are listed.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-7 grid gap-6 sm:grid-cols-2">
-                        <x-field name="full_name_en" autocomplete="name" :value="$r->full_name_en" label="Full name (English)" required :model="false"/>
-                        <x-field name="full_name_bn" :value="$r->full_name_bn" label="Full name" bn="বাংলায় নাম" :model="false"/>
-                        <x-field name="mobile" autocomplete="tel" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
-                        <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
-                        <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
-                                 :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
-                                 placeholder="Select blood group"/>
-                        <x-field name="tshirt_size" :value="$r->tshirt_size" label="T-shirt size" type="select" required :model="false"
-                                 :options="array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes'])"/>
-                        <x-field name="present_address" autocomplete="street-address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
-                                 type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
-                        <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
-                                 type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
-                        <x-field name="employment_status" :value="$r->employment_status" label="Employment status" type="select" :model="false"
-                                 :options="$opt['employment_statuses']" placeholder="Select your status"/>
-                        <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
-                        <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
-                        <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
-                        <x-field name="memories" :value="$r->memories" label="Your memories of the department" type="textarea"
-                                 rows="5" :model="false" class="sm:col-span-2"/>
-                    </div>
-
-                    <div class="mt-7 rounded-2xl bg-parchment-dim p-5">
-                        <label class="choice !items-start !border-0 !bg-transparent !py-0">
-                            <input type="checkbox" name="listed_in_directory" value="1"
-                                   @checked(old('listed_in_directory', $r->listed_in_directory))>
-                            <span class="choice-box mt-0.5" aria-hidden="true"></span>
-                            <span class="text-[0.85rem] font-normal leading-relaxed">
-                                <strong class="font-semibold">Show me in the alumni directory.</strong>
-                                It lists your name, session, profession, photograph and mobile number so
-                                fellow graduates can reach you. Your email and addresses are never published.
+                    <fieldset :disabled="!editing" class="contents">
+                        {{-- Profile picture. Sits above the fields because it is the one
+                             thing here that is not a text box, and burying a file input
+                             among them is how people miss it. --}}
+                        <div class="mt-7 flex flex-wrap items-center gap-5 rounded-2xl bg-parchment-dim p-5">
+                            <span class="grid h-20 w-20 flex-none place-items-center overflow-hidden rounded-2xl bg-ink-900 text-brass-500">
+                                @if ($r->photo_url)
+                                    <img src="{{ $r->photo_url }}" alt="" class="h-full w-full object-cover">
+                                @else
+                                    <span class="heading-display text-2xl">
+                                        {{ mb_strtoupper(mb_substr(preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $r->full_name_en), 0, 1)) }}
+                                    </span>
+                                @endif
                             </span>
-                        </label>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary mt-7">Save changes</button>
+                            <div class="min-w-0 flex-1">
+                                <label for="member-photo" class="field-label">
+                                    Profile picture <span lang="bn" class="field-label-bn">&middot; ছবি</span>
+                                </label>
+                                <input id="member-photo" type="file" name="photo"
+                                       accept="image/jpeg,image/png,image/webp"
+                                       class="mt-2 block w-full text-sm text-ink-600
+                                              file:mr-3 file:rounded-lg file:border-0 file:bg-brass-100 file:px-3.5 file:py-2
+                                              file:text-sm file:font-medium file:text-brass-800 hover:file:bg-brass-200">
+                                @error('photo')<p class="field-error">{{ $message }}</p>@enderror
+                                <p class="mt-1.5 text-xs text-ink-400">
+                                    JPG, PNG or WebP &middot; maximum {{ round(config('rcmaa.registration.photo_max_kb') / 1024, 1) }} MB.
+                                    Shown in the alumni directory if you are listed.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-7 grid gap-6 sm:grid-cols-2">
+                            <x-field name="full_name_en" autocomplete="name" :value="$r->full_name_en" label="Full name (English)" required :model="false"/>
+                            <x-field name="full_name_bn" :value="$r->full_name_bn" label="Full name" bn="বাংলায় নাম" :model="false"/>
+                            <x-field name="mobile" autocomplete="tel" :value="$r->mobile" label="Mobile" bn="মোবাইল" type="tel" required :model="false"/>
+                            <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
+                            <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
+                                     :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
+                                     placeholder="Select blood group"/>
+                            <x-field name="tshirt_size" :value="$r->tshirt_size" label="T-shirt size" type="select" required :model="false"
+                                     :options="array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes'])"/>
+                            <x-field name="present_address" autocomplete="street-address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
+                                     type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
+                            <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
+                                     type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
+                            <x-field name="employment_status" :value="$r->employment_status" label="Employment status" type="select" :model="false"
+                                     :options="$opt['employment_statuses']" placeholder="Select your status"/>
+                            <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
+                            <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
+                            <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
+                            <x-field name="memories" :value="$r->memories" label="Your memories of the department" type="textarea"
+                                     rows="5" :model="false" class="sm:col-span-2"/>
+                        </div>
+
+                        <div class="mt-7 rounded-2xl bg-parchment-dim p-5">
+                            <label class="choice !items-start !border-0 !bg-transparent !py-0">
+                                <input type="checkbox" name="listed_in_directory" value="1"
+                                       @checked(old('listed_in_directory', $r->listed_in_directory))>
+                                <span class="choice-box mt-0.5" aria-hidden="true"></span>
+                                <span class="text-[0.85rem] font-normal leading-relaxed">
+                                    <strong class="font-semibold">Show me in the alumni directory.</strong>
+                                    It lists your name, session, profession, photograph and mobile number so
+                                    fellow graduates can reach you. Your email and addresses are never published.
+                                </span>
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <div class="mt-7">
+                        <template x-if="!editing">
+                            <button type="button" @click="editing = true" class="btn btn-primary">Edit details</button>
+                        </template>
+                        <template x-if="editing">
+                            <div class="flex items-center gap-3">
+                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                <button type="button" @click="editing = false" class="btn btn-outline">Cancel</button>
+                            </div>
+                        </template>
                 </form>
             </div>
 

@@ -128,12 +128,11 @@ class DashboardController extends Controller
     }
 
     /** A print-ready pass for the registration desk. */
-    public function pass(): View
+    public function pass(): Response
     {
-        return view('pages.portal.pass', [
-            'title' => 'Reunion pass',
-            'registration' => $this->member(),
-        ]);
+        $member = $this->member();
+
+        return $this->pdf('pdf.pass', $member, "RCMAA-pass-{$member->reference}.pdf");
     }
 
     private function pdf(string $view, Registration $member, string $filename): Response
@@ -143,6 +142,7 @@ class DashboardController extends Controller
             // dompdf cannot fetch over the network, so anything shown in the PDF
             // has to be handed to it as a local path or a data URI.
             'logo' => $this->dataUri(public_path('media/logo.png')),
+            'photo' => $member->photo_path ? $this->dataUri(Storage::disk('public')->path($member->photo_path)) : null,
         ])->setPaper('a4');
 
         return $pdf->download($filename);

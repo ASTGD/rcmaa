@@ -124,9 +124,18 @@
                class="header-link hidden text-[0.78rem] font-semibold uppercase tracking-[0.12em] text-ink-600 transition hover:text-ink-950 lg:block ">
                 {{ auth('alumni')->check() ? 'My account' : 'Login' }}
             </a>
-            <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">
-                Register Now
-            </a>
+            @if (auth('alumni')->check())
+                <form method="POST" action="{{ route('member.logout') }}" class="inline-flex">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-sm hidden sm:inline-flex">
+                        Sign Out
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">
+                    Register Now
+                </a>
+            @endif
 
             <button type="button" @click="open = !open"
                     class="relative grid h-11 w-11 place-items-center rounded-full border border-ink-900/12 transition hover:border-ink-900/30 xl:hidden [.is-over-dark_&]:border-white/20"
