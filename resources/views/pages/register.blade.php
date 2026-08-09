@@ -252,79 +252,107 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                                 <x-field name="linkedin_url" label="LinkedIn Profile Link" placeholder="https://linkedin.com/in/username"/>
 
-
-                                {{-- Present address: district and upazila/thana as dropdowns
-                                     (the directory filters on them), then the free-text part.
-                                     The upazila list follows the chosen district. --}}
-                                <div class="min-w-0">
-                                    <label class="field-label" for="field-present-district">
-                                        District <span lang="bn" class="field-label-bn">&middot; জেলা</span>
-                                        <span class="text-red-600" aria-hidden="true"> *</span>
+                                <div class="min-w-0" x-show="form.category === 'teacher'" x-collapse x-cloak>
+                                    <label class="field-label" for="field-teacher-type">
+                                        Role / Designation Type <span lang="bn" class="field-label-bn">&middot; ধরণ</span>
+                                        <span class="text-brass-700">*</span>
                                     </label>
-                                    <select id="field-present-district" name="present_district" class="input"
-                                            x-model="form.present_district" @change="form.present_upazila = ''"
-                                            :aria-invalid="errors.present_district ? 'true' : 'false'">
-                                        <option value="">Select district</option>
-                                        <template x-for="d in districts" :key="d">
-                                            <option :value="d" x-text="d" :selected="form.present_district === d"></option>
-                                        </template>
+                                    <select id="field-teacher-type" name="teacher_type" class="input mt-2"
+                                            x-model="form.teacher_type"
+                                            :required="form.category === 'teacher'"
+                                            :aria-invalid="errors.teacher_type ? 'true' : 'false'">
+                                        <option value="">Select type</option>
+                                        @foreach ($opt['teacher_types'] as $key => $label)
+                                            <option value="{{ $key }}" @selected(old('teacher_type') === $key)>{{ $label }}</option>
+                                        @endforeach
                                     </select>
-                                    <p class="field-error" x-show="errors.present_district" x-text="errors.present_district" x-cloak></p>
-                                    @error('present_district')<p class="field-error">{{ $message }}</p>@enderror
+                                    <p class="field-error" x-show="errors.teacher_type" x-text="errors.teacher_type" x-cloak></p>
+                                    @error('teacher_type')<p class="field-error">{{ $message }}</p>@enderror
                                 </div>
 
-                                <div class="min-w-0">
-                                    <label class="field-label" for="field-present-upazila">
-                                        Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
-                                        <span class="text-red-600" aria-hidden="true"> *</span>
-                                    </label>
-                                    <select id="field-present-upazila" name="present_upazila" class="input"
-                                            x-model="form.present_upazila" :disabled="! form.present_district"
-                                            :aria-invalid="errors.present_upazila ? 'true' : 'false'">
-                                        <option value="" x-text="form.present_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
-                                        <template x-for="u in upazilasFor(form.present_district)" :key="u">
-                                            <option :value="u" x-text="u" :selected="form.present_upazila === u"></option>
-                                        </template>
-                                    </select>
-                                    <p class="field-error" x-show="errors.present_upazila" x-text="errors.present_upazila" x-cloak></p>
-                                    @error('present_upazila')<p class="field-error">{{ $message }}</p>@enderror
+
+                                {{-- Present Details Box --}}
+                                <div class="sm:col-span-2 rounded-2xl border border-brass-600/25 bg-brass-100/15 p-5 md:p-6 mt-4">
+                                    <p class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">Present Details</p>
+                                    <h3 class="heading-display mt-2 text-lg text-ink-950">Present Address · বর্তমান ঠিকানা</h3>
+                                    <div class="grid gap-6 sm:grid-cols-2 mt-4">
+                                        <div class="min-w-0">
+                                            <label class="field-label" for="field-present-district">
+                                                District <span lang="bn" class="field-label-bn">&middot; জেলা</span>
+                                                <span class="text-red-600" aria-hidden="true"> *</span>
+                                            </label>
+                                            <select id="field-present-district" name="present_district" class="input"
+                                                    x-model="form.present_district" @change="form.present_upazila = ''"
+                                                    :aria-invalid="errors.present_district ? 'true' : 'false'">
+                                                <option value="">Select district</option>
+                                                <template x-for="d in districts" :key="d">
+                                                    <option :value="d" x-text="d" :selected="form.present_district === d"></option>
+                                                </template>
+                                            </select>
+                                            <p class="field-error" x-show="errors.present_district" x-text="errors.present_district" x-cloak></p>
+                                            @error('present_district')<p class="field-error">{{ $message }}</p>@enderror
+                                        </div>
+
+                                        <div class="min-w-0">
+                                            <label class="field-label" for="field-present-upazila">
+                                                Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
+                                                <span class="text-red-600" aria-hidden="true"> *</span>
+                                            </label>
+                                            <select id="field-present-upazila" name="present_upazila" class="input"
+                                                    x-model="form.present_upazila" :disabled="! form.present_district"
+                                                    :aria-invalid="errors.present_upazila ? 'true' : 'false'">
+                                                <option value="" x-text="form.present_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
+                                                <template x-for="u in upazilasFor(form.present_district)" :key="u">
+                                                    <option :value="u" x-text="u" :selected="form.present_upazila === u"></option>
+                                                </template>
+                                            </select>
+                                            <p class="field-error" x-show="errors.present_upazila" x-text="errors.present_upazila" x-cloak></p>
+                                            @error('present_upazila')<p class="field-error">{{ $message }}</p>@enderror
+                                        </div>
+
+                                        <x-field name="present_address" autocomplete="street-address" label="Present Address" bn="বর্তমান ঠিকানা"
+                                                 type="textarea" rows="3" required class="sm:col-span-2"
+                                                 hint="House / road / village — the part that is not the district or upazila."/>
+                                    </div>
                                 </div>
 
-                                <x-field name="present_address" autocomplete="street-address" label="Present Address" bn="বর্তমান ঠিকানা"
-                                         type="textarea" rows="3" required class="sm:col-span-2"
-                                         hint="House / road / village — the part that is not the district or upazila."/>
+                                {{-- Permanent Details Box --}}
+                                <div class="sm:col-span-2 rounded-2xl border border-brass-600/25 bg-brass-100/15 p-5 md:p-6 mt-4">
+                                    <p class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">Permanent Details</p>
+                                    <h3 class="heading-display mt-2 text-lg text-ink-950">Permanent Address · স্থায়ী ঠিকানা</h3>
+                                    <div class="grid gap-6 sm:grid-cols-2 mt-4">
+                                        <div class="min-w-0">
+                                            <label class="field-label" for="field-permanent-district">
+                                                Permanent District <span lang="bn" class="field-label-bn">&middot; স্থায়ী জেলা</span>
+                                            </label>
+                                            <select id="field-permanent-district" name="permanent_district" class="input"
+                                                    x-model="form.permanent_district" @change="form.permanent_upazila = ''">
+                                                <option value="">Select district</option>
+                                                <template x-for="d in districts" :key="d">
+                                                    <option :value="d" x-text="d" :selected="form.permanent_district === d"></option>
+                                                </template>
+                                            </select>
+                                            @error('permanent_district')<p class="field-error">{{ $message }}</p>@enderror
+                                        </div>
 
-                                {{-- Permanent address: the same pair, optional like the address itself. --}}
-                                <div class="min-w-0">
-                                    <label class="field-label" for="field-permanent-district">
-                                        Permanent District <span lang="bn" class="field-label-bn">&middot; স্থায়ী জেলা</span>
-                                    </label>
-                                    <select id="field-permanent-district" name="permanent_district" class="input"
-                                            x-model="form.permanent_district" @change="form.permanent_upazila = ''">
-                                        <option value="">Select district</option>
-                                        <template x-for="d in districts" :key="d">
-                                            <option :value="d" x-text="d" :selected="form.permanent_district === d"></option>
-                                        </template>
-                                    </select>
-                                    @error('permanent_district')<p class="field-error">{{ $message }}</p>@enderror
+                                        <div class="min-w-0">
+                                            <label class="field-label" for="field-permanent-upazila">
+                                                Permanent Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
+                                            </label>
+                                            <select id="field-permanent-upazila" name="permanent_upazila" class="input"
+                                                    x-model="form.permanent_upazila" :disabled="! form.permanent_district">
+                                                <option value="" x-text="form.permanent_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
+                                                <template x-for="u in upazilasFor(form.permanent_district)" :key="u">
+                                                    <option :value="u" x-text="u" :selected="form.permanent_upazila === u"></option>
+                                                </template>
+                                            </select>
+                                            @error('permanent_upazila')<p class="field-error">{{ $message }}</p>@enderror
+                                        </div>
+
+                                        <x-field name="permanent_address" label="Permanent Address" bn="স্থায়ী ঠিকানা"
+                                                 type="textarea" rows="3" class="sm:col-span-2"/>
+                                    </div>
                                 </div>
-
-                                <div class="min-w-0">
-                                    <label class="field-label" for="field-permanent-upazila">
-                                        Permanent Upazila / Thana <span lang="bn" class="field-label-bn">&middot; উপজেলা / থানা</span>
-                                    </label>
-                                    <select id="field-permanent-upazila" name="permanent_upazila" class="input"
-                                            x-model="form.permanent_upazila" :disabled="! form.permanent_district">
-                                        <option value="" x-text="form.permanent_district ? 'Select upazila / thana' : 'Choose a district first'"></option>
-                                        <template x-for="u in upazilasFor(form.permanent_district)" :key="u">
-                                            <option :value="u" x-text="u" :selected="form.permanent_upazila === u"></option>
-                                        </template>
-                                    </select>
-                                    @error('permanent_upazila')<p class="field-error">{{ $message }}</p>@enderror
-                                </div>
-
-                                <x-field name="permanent_address" label="Permanent Address" bn="স্থায়ী ঠিকানা"
-                                         type="textarea" rows="3" class="sm:col-span-2"/>
                             </div>
 
                             {{-- The account password, set here so a registrant leaves with a
@@ -480,6 +508,21 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                     <x-field name="organization" autocomplete="organization" label="Organization / Institution" bn="কর্মস্থল"
                                              required class="sm:col-span-2"
                                              placeholder="e.g. Rajshahi College"/>
+
+                                    <div class="min-w-0 sm:col-span-2">
+                                        <label class="field-label" for="field-work-location">
+                                            Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
+                                        </label>
+                                        <select id="field-work-location" name="work_location" class="input mt-2"
+                                                x-model="form.work_location">
+                                            <option value="">Select district</option>
+                                            <template x-for="d in districts" :key="d">
+                                                <option :value="d" x-text="d" :selected="form.work_location === d"></option>
+                                            </template>
+                                        </select>
+                                        <p class="field-error" x-show="errors.work_location" x-text="errors.work_location" x-cloak></p>
+                                        @error('work_location')<p class="field-error">{{ $message }}</p>@enderror
+                                    </div>
                                 </div>
                             </div>
 
@@ -757,6 +800,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                                         'bank' => 'Bank',
                                                         'branch' => 'Branch',
                                                         'routing' => 'Routing number',
+                                                        'swift_code' => 'Swift code',
                                                     ] as $field => $label)
                                                         @if ($bank[$field] ?? null)
                                                             <div class="flex justify-between gap-4">

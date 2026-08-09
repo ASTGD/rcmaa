@@ -46,6 +46,7 @@ class DashboardController extends Controller
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
             'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
+            'teacher_type' => [$member->category === 'teacher' ? 'required' : 'nullable', Rule::in(array_keys($options['teacher_types']))],
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
             'present_address' => ['required', 'string', 'max:500'],
             'permanent_address' => ['nullable', 'string', 'max:500'],

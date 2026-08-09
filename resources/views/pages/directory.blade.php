@@ -211,6 +211,13 @@
                                                 </p>
                                             @endif
 
+                                            @if ($person->category === 'teacher')
+                                                <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] font-semibold text-brass-700">
+                                                    <x-icon name="graduation" class="h-3.5 w-3.5 flex-none text-brass-600"/>
+                                                    <span>{{ $person->teacher_type === 'staff' ? 'Employee / Officer (কর্মকর্তা/কর্মচারী)' : 'Teacher (শিক্ষক)' }}</span>
+                                                </p>
+                                            @endif
+
                                             @if ($person->profession_type === 'student' || $person->category === 'current_student')
                                                 <p class="mt-1 flex items-center gap-1.5 text-[0.75rem] font-semibold text-brass-700">
                                                     <x-icon name="book" class="h-3.5 w-3.5 flex-none text-brass-600"/>

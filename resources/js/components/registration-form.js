@@ -41,6 +41,7 @@ export default (config = {}) => ({
 
     form: {
         category: '',
+        teacher_type: '',
 
         full_name_en: '',
         full_name_bn: '',

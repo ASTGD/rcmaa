@@ -293,11 +293,12 @@ return [
         'note' => 'Please send your donation directly to the bank account.',
 
         'bank' => [
-            'account_name' => env('RCMAA_BANK_ACCOUNT_NAME'),
-            'account_number' => env('RCMAA_BANK_ACCOUNT_NUMBER'),
-            'bank' => env('RCMAA_BANK_NAME'),
-            'branch' => env('RCMAA_BANK_BRANCH'),
-            'routing' => env('RCMAA_BANK_ROUTING'),
+            'account_name' => env('RCMAA_BANK_ACCOUNT_NAME', 'RAJSHAHI COLLEGE MATHEMATICS ALUMNI ASSOCIATION (RCMAA)'),
+            'account_number' => env('RCMAA_BANK_ACCOUNT_NUMBER', '6606101046454'),
+            'bank' => env('RCMAA_BANK_NAME', 'Pubali Bank PLC'),
+            'branch' => env('RCMAA_BANK_BRANCH', 'Court Bazar Islamic Banking Branch'),
+            'routing' => env('RCMAA_BANK_ROUTING', '175810059'),
+            'swift_code' => env('RCMAA_BANK_SWIFT', 'PUBABDDH'),
         ],
     ],
 
@@ -345,6 +346,11 @@ return [
             'private_company' => 'Private Company · প্রাইভেট কোম্পানী',
             'multinational_company' => 'Multinational Company · মাল্টিন্যাশনাল কোম্পানী',
             'student' => 'Student · স্টুডেন্ট',
+        ],
+
+        'teacher_types' => [
+            'teacher' => 'Teacher · শিক্ষক',
+            'staff' => 'Employee / Officer · কর্মকর্তা / কর্মচারী',
         ],
 
         /*

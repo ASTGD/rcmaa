@@ -97,21 +97,38 @@
                             <x-field name="whatsapp" autocomplete="tel" :value="$r->whatsapp" label="WhatsApp" type="tel" :model="false"/>
                             <x-field name="linkedin_url" :value="$r->linkedin_url" label="LinkedIn Profile Link" :model="false" placeholder="https://linkedin.com/in/username"/>
 
-                            <div class="min-w-0">
-                                <label class="field-label" for="field-profession-type">
-                                    Profession Type <span lang="bn" class="field-label-bn">&middot; পেশার ধরণ</span>
-                                </label>
-                                <select id="field-profession-type" name="profession_type" class="input mt-2"
-                                        onchange="document.getElementById('work-location-wrapper').style.display = this.value ? 'block' : 'none'">
-                                    <option value="">Select profession type</option>
-                                    @foreach ($opt['profession_types'] as $key => $label)
-                                        <option value="{{ $key }}" @selected(old('profession_type', $r->profession_type) === $key)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                @error('profession_type')<p class="field-error">{{ $message }}</p>@enderror
-                            </div>
+                            @if ($r->category === 'teacher')
+                                <div class="min-w-0">
+                                    <label class="field-label" for="field-teacher-type">
+                                        Role / Designation Type <span lang="bn" class="field-label-bn">&middot; ধরণ</span>
+                                    </label>
+                                    <select id="field-teacher-type" name="teacher_type" class="input mt-2">
+                                        <option value="">Select type</option>
+                                        @foreach ($opt['teacher_types'] as $key => $label)
+                                            <option value="{{ $key }}" @selected(old('teacher_type', $r->teacher_type) === $key)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('teacher_type')<p class="field-error">{{ $message }}</p>@enderror
+                                </div>
+                            @endif
 
-                            <div class="min-w-0 sm:col-span-2" id="work-location-wrapper" style="display: {{ old('profession_type', $r->profession_type) ? 'block' : 'none' }}">
+                            <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
+                                     :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
+                                     placeholder="Select blood group"/>
+                            <x-field name="tshirt_size" :value="$r->tshirt_size" label="T-shirt size" type="select" required :model="false"
+                                     :options="array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes'])"/>
+                            <x-field name="present_address" autocomplete="street-address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
+                                     type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
+                            <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
+                                     type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
+                            <x-field name="employment_status" :value="$r->employment_status" label="Employment status" type="select" :model="false"
+                                     :options="$opt['employment_statuses']" placeholder="Select your status"
+                                     onchange="document.getElementById('work-location-wrapper').style.display = ['employed','self_employed'].includes(this.value) ? 'block' : 'none'"/>
+                            <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
+                            <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
+                            <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
+
+                            <div class="min-w-0 sm:col-span-2" id="work-location-wrapper" style="display: {{ in_array(old('employment_status', $r->employment_status), ['employed', 'self_employed']) ? 'block' : 'none' }}">
                                 <label class="field-label" for="field-work-location">
                                     Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
                                 </label>
@@ -124,20 +141,6 @@
                                 @error('work_location')<p class="field-error">{{ $message }}</p>@enderror
                             </div>
 
-                            <x-field name="blood_group" :value="$r->blood_group" label="Blood group" type="select" :model="false"
-                                     :options="array_combine($opt['blood_groups'], $opt['blood_groups'])"
-                                     placeholder="Select blood group"/>
-                            <x-field name="tshirt_size" :value="$r->tshirt_size" label="T-shirt size" type="select" required :model="false"
-                                     :options="array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes'])"/>
-                            <x-field name="present_address" autocomplete="street-address" :value="$r->present_address" label="Present address" bn="বর্তমান ঠিকানা"
-                                     type="textarea" rows="3" required :model="false" class="sm:col-span-2"/>
-                            <x-field name="permanent_address" :value="$r->permanent_address" label="Permanent address" bn="স্থায়ী ঠিকানা"
-                                     type="textarea" rows="3" :model="false" class="sm:col-span-2"/>
-                            <x-field name="employment_status" :value="$r->employment_status" label="Employment status" type="select" :model="false"
-                                     :options="$opt['employment_statuses']" placeholder="Select your status"/>
-                            <x-field name="profession" :value="$r->profession" label="Profession / sector" :model="false"/>
-                            <x-field name="designation" autocomplete="organization-title" :value="$r->designation" label="Designation" bn="পদবী" :model="false"/>
-                            <x-field name="organization" autocomplete="organization" :value="$r->organization" label="Organization" bn="কর্মস্থল" :model="false" class="sm:col-span-2"/>
                             <x-field name="memories" :value="$r->memories" label="Your memories of the department" type="textarea"
                                      rows="5" :model="false" class="sm:col-span-2"/>
                         </div>

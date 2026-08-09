@@ -38,6 +38,72 @@
                         <x-icon name="arrow-right" class="h-4 w-4"/>
                     </button>
                 </form>
+
+                {{-- Donations panel --}}
+                @php $bank = array_filter(config('rcmaa.donation.bank')); @endphp
+                <div class="mt-8 rounded-xl border border-brass-500/40 bg-brass-100/60 p-5 md:p-6"
+                     x-data="{ showDonation: false }">
+                    <p lang="bn" class="font-bangla text-[0.9rem] font-semibold text-ink-900">
+                        ডোনেশন <span class="font-sans text-ink-500">&middot; Donation</span>
+                    </p>
+                    <p lang="bn" class="mt-1.5 font-bangla text-[0.84rem] leading-relaxed text-ink-700">
+                        {{ config('rcmaa.donation.instruction_bn') }}
+                    </p>
+                    <p class="mt-2 text-[0.8rem] leading-relaxed text-ink-500">
+                        {{ config('rcmaa.donation.instruction') }}
+                    </p>
+
+                    <button type="button" @click="showDonation = ! showDonation"
+                            class="btn btn-ink btn-sm mt-3"
+                            :aria-expanded="showDonation">
+                        <x-icon name="heart" class="h-4 w-4"/>
+                        Donation
+                        <x-icon name="chevron-down" class="h-3.5 w-3.5 transition-transform"
+                                ::class="showDonation && 'rotate-180'"/>
+                    </button>
+
+                    <div x-show="showDonation" x-collapse x-cloak>
+                        <div class="mt-4 rounded-lg bg-white p-4">
+                            <p class="font-mono text-[0.62rem] uppercase tracking-[0.16em] text-brass-700">
+                                Bank account details <span lang="bn" class="font-bangla normal-case tracking-normal">&middot; ব্যাংক অ্যাকাউন্ট</span>
+                            </p>
+
+                            @if ($bank)
+                                <dl class="mt-3 space-y-2 text-[0.85rem]">
+                                    @foreach ([
+                                        'account_name' => 'Account name',
+                                        'account_number' => 'Account number',
+                                        'bank' => 'Bank',
+                                        'branch' => 'Branch',
+                                        'routing' => 'Routing number',
+                                        'swift_code' => 'Swift code',
+                                    ] as $field => $label)
+                                        @if ($bank[$field] ?? null)
+                                            <div class="flex justify-between gap-4">
+                                                <dt class="text-ink-500">{{ $label }}</dt>
+                                                <dd class="font-mono font-semibold text-ink-900">{{ $bank[$field] }}</dd>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </dl>
+                            @else
+                                <p lang="bn" class="mt-2 font-bangla text-[0.84rem] leading-relaxed text-ink-700">
+                                    ব্যাংক অ্যাকাউন্টের বিবরণ শীঘ্রই জানানো হবে। এর মধ্যে ডোনেশনের জন্য
+                                    হেল্পলাইনে যোগাযোগ করুন: {{ config('rcmaa.contact.helpline') }}
+                                </p>
+                                <p class="mt-1.5 text-[0.78rem] text-ink-500">
+                                    Bank details will be announced shortly. Until then, please contact
+                                    the helpline about donations: {{ config('rcmaa.contact.helpline') }}.
+                                </p>
+                            @endif
+
+                            <p lang="bn" class="mt-4 border-t border-ink-900/8 pt-3 font-bangla text-[0.82rem] font-semibold text-ink-800">
+                                {{ config('rcmaa.donation.note_bn') }}
+                            </p>
+                            <p class="mt-1 text-[0.76rem] text-ink-500">{{ config('rcmaa.donation.note') }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Details --}}

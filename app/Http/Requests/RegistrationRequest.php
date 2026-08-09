@@ -35,6 +35,7 @@ class RegistrationRequest extends FormRequest
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
             'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
+            'teacher_type' => ['required_if:category,teacher', 'nullable', Rule::in(array_keys($options['teacher_types']))],
             // Deliberately not `dns` — it makes a submission depend on a live DNS
             // lookup and rejects otherwise-valid domains that publish no MX record.
             // Unique because it is now the thing they sign in with, and one
