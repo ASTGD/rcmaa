@@ -92,29 +92,47 @@
             $hasNotPassed = $eventDate->isFuture();
         @endphp
         @if ($hasNotPassed)
-            <div class="mt-12 inline-flex flex-col gap-5 rounded-2xl border border-white/12 bg-ink-950/85 px-5 py-5 shadow-[0_24px_60px_-30px_rgba(0,0,0,.9)] backdrop-blur-md sm:px-7 lg:flex-row lg:items-center lg:gap-8"
+            {{-- Full width while stacked, hugging its content only once there is
+                 room. As an inline-flex it took a fixed 338px from the widest
+                 row inside it and could not shrink: on a 360px Android it kept
+                 its left margin and ran off the right edge, which is what read
+                 as the countdown being pushed to one side. --}}
+            <div class="mt-12 flex w-full flex-col gap-5 rounded-2xl border border-white/12 bg-ink-950/85 px-4 py-5 shadow-[0_24px_60px_-30px_rgba(0,0,0,.9)] backdrop-blur-md sm:px-7 lg:inline-flex lg:w-auto lg:flex-row lg:items-center lg:gap-8"
                  data-hero-fade x-data="countdown('{{ $eventDate->toIso8601String() }}')">
 
-                <div class="flex items-start gap-3 sm:gap-4">
+                {{-- Four equal columns that divide whatever width there is, so the
+                     row centres itself and cannot overflow. From sm up the cells
+                     go back to their natural size and sit together in the middle. --}}
+                <div class="flex w-full items-start justify-between gap-1.5 sm:w-auto sm:justify-center sm:gap-4">
                     @foreach ([['days', 'Days'], ['hours', 'Hours'], ['minutes', 'Minutes'], ['seconds', 'Seconds']] as [$unit, $label])
-                        <div class="min-w-[3.1rem] text-center sm:min-w-[3.6rem]">
-                            <span class="heading-display block text-[2.1rem] font-semibold leading-none text-brass-500 tabular-nums [text-shadow:0_2px_18px_rgba(0,0,0,.55)] sm:text-[2.6rem]"
+                        <div class="min-w-0 flex-1 text-center sm:min-w-[3.6rem] sm:flex-none">
+                            {{-- Scales with the viewport so three digits of Days
+                                 still fit a quarter of a 320px screen. --}}
+                            <span class="heading-display block text-[clamp(1.5rem,7vw,2.1rem)] font-semibold leading-none text-brass-500 tabular-nums [text-shadow:0_2px_18px_rgba(0,0,0,.55)] sm:text-[2.6rem]"
                                   x-text="{{ $unit === 'days' ? 'days' : "pad({$unit})" }}">00</span>
-                            <span class="mt-2 block font-mono text-[0.58rem] uppercase tracking-[0.18em] text-ink-300">
+                            {{-- -me cancels the trailing letter-space that tracking
+                                 adds after the last character, which otherwise
+                                 shifts the label left of the number above it. --}}
+                            {{-- "SECONDS" plus its tracking is wider than a quarter
+                                 of a 320px screen, so both size and tracking ease
+                                 off with the viewport. -me cancels the trailing
+                                 letter-space, which otherwise shifts the label left
+                                 of the number above it. --}}
+                            <span class="mt-2 block -me-[0.18em] truncate font-mono text-[clamp(0.44rem,2.4vw,0.58rem)] uppercase tracking-[0.1em] text-ink-300 sm:tracking-[0.18em]">
                                 {{ $label }}
                             </span>
                         </div>
                         @unless ($loop->last)
-                            <span class="heading-display pt-0.5 text-2xl leading-none text-brass-500/35 sm:text-3xl" aria-hidden="true">:</span>
+                            <span class="heading-display flex-none pt-0.5 text-xl leading-none text-brass-500/35 sm:text-3xl" aria-hidden="true">:</span>
                         @endunless
                     @endforeach
                 </div>
 
-                <div class="border-t border-white/10 pt-4 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                <div class="border-t border-white/10 pt-4 text-center lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0 lg:text-left">
                     <p class="font-mono text-[0.62rem] uppercase leading-relaxed tracking-[0.2em] text-brass-400">
                         To the Grand Reunion
                     </p>
-                    <p class="mt-2 flex items-center gap-2 text-sm text-ink-200">
+                    <p class="mt-2 flex items-center justify-center gap-2 text-sm text-ink-200 lg:justify-start">
                         <x-icon name="calendar" class="h-4 w-4 flex-none text-brass-500"/>
                         {{ $eventDate->format('l, j F Y') }}
                     </p>
