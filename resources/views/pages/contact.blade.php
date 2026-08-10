@@ -42,7 +42,7 @@
                 {{-- Donations panel --}}
                 @php $bank = array_filter(config('rcmaa.donation.bank')); @endphp
                 <div class="mt-8 rounded-xl border border-brass-500/40 bg-brass-100/60 p-5 md:p-6"
-                     x-data="{ showDonation: false }">
+                     x-data="{ showDonation: {{ $errors->hasAny(['donor_name', 'phone_number', 'amount', 'transaction_id', 'receipt']) || session('donation_status') ? 'true' : 'false' }} }">
                     <p lang="bn" class="font-bangla text-[0.9rem] font-semibold text-ink-900">
                         ডোনেশন <span class="font-sans text-ink-500">&middot; Donation</span>
                     </p>
@@ -101,6 +101,7 @@
                                 {{ config('rcmaa.donation.note_bn') }}
                             </p>
                             <p class="mt-1 text-[0.76rem] text-ink-500">{{ config('rcmaa.donation.note') }}</p>
+                            @include('partials.donation-form')
                         </div>
                     </div>
                 </div>
@@ -169,4 +170,8 @@
             </aside>
         </div>
     </section>
+
+    <form id="donation-submit-form" method="POST" action="{{ route('donation.store') }}" enctype="multipart/form-data" class="hidden">
+        @csrf
+    </form>
 </x-layout>

@@ -50,6 +50,10 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('contact.store');
 
+Route::post('/donation', [\App\Http\Controllers\DonationController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('donation.store');
+
 /*
 |--------------------------------------------------------------------------
 | Reunion registration
@@ -169,6 +173,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/messages', [Admin\MessageController::class, 'index'])->name('messages.index');
     Route::patch('/messages/{message}', [Admin\MessageController::class, 'update'])->name('messages.update');
     Route::delete('/messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy');
+
+    Route::get('/donations', [Admin\DonationController::class, 'index'])->name('donations.index');
+    Route::patch('/donations/{donation}', [Admin\DonationController::class, 'update'])->name('donations.update');
+    Route::delete('/donations/{donation}', [Admin\DonationController::class, 'destroy'])->name('donations.destroy');
 
     // Content CMS — one generic controller drives every simple content model.
     Route::get('/content/{type}', [Admin\ContentController::class, 'index'])->name('content.index');

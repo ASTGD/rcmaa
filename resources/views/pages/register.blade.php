@@ -826,6 +826,7 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                                 {{ config('rcmaa.donation.note_bn') }}
                                             </p>
                                             <p class="mt-1 text-[0.76rem] text-ink-500">{{ config('rcmaa.donation.note') }}</p>
+                                            @include('partials.donation-form')
                                         </div>
                                     </div>
                                 </div>
@@ -1028,6 +1029,10 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
 
                 {{-- Clearance so the bar never covers the last field. --}}
                 <div class="h-24 md:hidden" aria-hidden="true"></div>
+            </form>
+
+            <form id="donation-submit-form" method="POST" action="{{ route('donation.store') }}" enctype="multipart/form-data" class="hidden">
+                @csrf
             </form>
             @endunless
         </div>

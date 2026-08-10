@@ -6,6 +6,8 @@
         ['label' => 'Registrations', 'icon' => 'users', 'href' => route('admin.registrations.index'), 'active' => request()->routeIs('admin.registrations.*')],
         ['label' => 'Messages', 'icon' => 'mail', 'href' => route('admin.messages.index'), 'active' => request()->routeIs('admin.messages.*'),
          'badge' => \App\Models\ContactMessage::where('is_read', false)->count()],
+        ['label' => 'Donations', 'icon' => 'heart', 'href' => route('admin.donations.index'), 'active' => request()->routeIs('admin.donations.*'),
+         'badge' => \App\Models\Donation::where('is_verified', false)->count()],
         ['label' => 'Accounts', 'icon' => 'lock', 'href' => route('admin.users.index'), 'active' => request()->routeIs('admin.users.*')],
     ];
     $content = \App\Http\Controllers\Admin\ContentController::menu();
