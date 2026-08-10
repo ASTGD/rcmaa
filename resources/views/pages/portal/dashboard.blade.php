@@ -10,32 +10,33 @@
 @endphp
 
 <x-layout :title="$title">
-    <x-page-hero
-        eyebrow="Your registration"
-        :title="$r->full_name_en"
-        :breadcrumbs="['My registration' => null]">
-        <div class="mt-6 flex flex-wrap items-center gap-4" data-reveal data-reveal-delay="0.2">
-            <span class="heading-display text-2xl tracking-wider text-brass-400">{{ $r->reference }}</span>
-            <span class="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold {{ $chip }}">
-                <span class="h-1.5 w-1.5 rounded-full {{ $dot }}"></span>{{ $label }}
-            </span>
-        </div>
-        <div class="mt-7 flex flex-wrap gap-3" data-reveal data-reveal-delay="0.3">
-            <a href="{{ route('member.slip.registration') }}" class="btn btn-primary">
-                <x-icon name="download" class="h-4 w-4"/>Registration slip
-            </a>
-            <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
-                <x-icon name="download" class="h-4 w-4"/>Payment slip
-            </a>
-            <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
-                <x-icon name="download" class="h-4 w-4"/>Entry pass
-            </a>
-            <form method="POST" action="{{ route('member.logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-outline-light">Sign out</button>
-            </form>
-        </div>
-    </x-page-hero>
+    <div x-data="{ editing: {{ $errors->any() ? 'true' : 'false' }} }">
+        <x-page-hero
+            eyebrow="Your registration"
+            :title="$r->full_name_en"
+            :breadcrumbs="['My registration' => null]">
+            <div class="mt-6 flex flex-wrap items-center gap-4" data-reveal data-reveal-delay="0.2">
+                <span class="heading-display text-2xl tracking-wider text-brass-400">{{ $r->reference }}</span>
+                <span class="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold {{ $chip }}">
+                    <span class="h-1.5 w-1.5 rounded-full {{ $dot }}"></span>{{ $label }}
+                </span>
+            </div>
+            <div class="mt-7 flex flex-wrap items-center gap-3" data-reveal data-reveal-delay="0.3">
+                <a href="{{ route('member.slip.registration') }}" class="btn btn-outline-light">
+                    <x-icon name="download" class="h-4 w-4"/>Registration slip
+                </a>
+                <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
+                    <x-icon name="download" class="h-4 w-4"/>Payment slip
+                </a>
+                <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
+                    <x-icon name="download" class="h-4 w-4"/>Entry pass
+                </a>
+                <form method="POST" action="{{ route('member.logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-light">Sign out</button>
+                </form>
+            </div>
+        </x-page-hero>
 
     <section class="bg-parchment py-16 md:py-24">
         <div class="container-rc grid gap-8 lg:grid-cols-[1fr_20rem] lg:items-start">
@@ -47,9 +48,205 @@
                     <x-alert type="info" title="Note from the committee" class="mb-6">{{ $r->admin_note }}</x-alert>
                 @endif
 
-                <form method="POST" action="{{ route('member.profile.update') }}"
-                      enctype="multipart/form-data" class="card p-6 md:p-8"
-                      x-data="{ editing: false }">
+                {{-- Read-only Profile Overview --}}
+                <div x-show="!editing" class="space-y-6">
+                    {{-- Header Profile Card --}}
+                    <div class="card p-6 md:p-8 flex flex-col sm:flex-row gap-6 justify-between items-center sm:items-start">
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 flex-1 min-w-0">
+                            {{-- Profile Photo --}}
+                            <div class="h-28 w-28 flex-none overflow-hidden rounded-2xl border-2 border-brass-500/20 bg-ink-900 shadow-sm">
+                                @if ($r->photo_url)
+                                    <img src="{{ $r->photo_url }}" alt="" class="h-full w-full object-cover">
+                                @else
+                                    <div class="grid h-full place-items-center text-brass-500 bg-ink-900">
+                                        <span class="heading-display text-4xl">
+                                            {{ mb_strtoupper(mb_substr(preg_replace('/^(Md\.|Mst\.|Mrs\.|Mr\.|Dr\.)\s*/i', '', $r->full_name_en), 0, 1)) }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Name & Meta --}}
+                            <div class="text-center sm:text-left min-w-0">
+                                <h1 class="heading-display text-2xl md:text-3xl text-ink-950 truncate">{{ $r->full_name_en }}</h1>
+                                <span class="inline-flex mt-2 rounded-full bg-brass-100 px-3 py-1 text-xs font-semibold text-brass-800">
+                                    {{ $r->category_label }} Member
+                                </span>
+                                
+                                <div class="mt-4 space-y-2 text-sm text-ink-600">
+                                    <p class="flex items-center justify-center sm:justify-start gap-2">
+                                        <x-icon name="user" class="h-4 w-4 text-brass-600"/>
+                                        <span>Member ID: <strong>{{ $r->reference }}</strong></span>
+                                    </p>
+                                    <p class="flex items-center justify-center sm:justify-start gap-2">
+                                        <x-icon name="calendar" class="h-4 w-4 text-brass-600"/>
+                                        <span>Registered on: {{ $r->created_at->format('j F Y') }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Edit Button --}}
+                        <button type="button" @click="editing = true" x-show="!editing" class="btn btn-outline self-center sm:self-start flex-none">
+                            <x-icon name="edit" class="h-4 w-4"/>Edit Profile
+                        </button>
+                    </div>
+
+                    {{-- Personal & Participation Information --}}
+                    <div class="card p-6 md:p-8">
+                        <h2 class="flex items-center gap-2.5 heading-display text-lg text-ink-950 pb-4 border-b border-ink-900/6">
+                            <x-icon name="user" class="h-5 w-5 text-brass-600"/>
+                            Personal & Participation Information
+                        </h2>
+
+                        <div class="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2 text-sm">
+                            {{-- Left Column --}}
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="user" class="h-4 w-4 text-brass-600/70"/>
+                                        Full Name
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->full_name_en }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="tag" class="h-4 w-4 text-brass-600/70"/>
+                                        Category
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->category_label }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="tag" class="h-4 w-4 text-brass-600/70"/>
+                                        Degree
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->degree_label }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="clock" class="h-4 w-4 text-brass-600/70"/>
+                                        Session / Batch
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->session }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="clock" class="h-4 w-4 text-brass-600/70"/>
+                                        Masters Session
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->masters_session ?: '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="chevron-down" class="h-4 w-4 text-brass-600/70"/>
+                                        T-Shirt Size
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->tshirt_size }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Right Column --}}
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="users" class="h-4 w-4 text-brass-600/70"/>
+                                        Accompanying Guests
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->guest_total }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="heart" class="h-4 w-4 text-brass-600/70"/>
+                                        Blood Group
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->blood_group ?: '—' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="music" class="h-4 w-4 text-brass-600/70"/>
+                                        Cultural Programme
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->cultural_program ? 'Participating' : 'Not Participating' }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="mail" class="h-4 w-4 text-brass-600/70"/>
+                                        Email
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right truncate max-w-[200px]" title="{{ $r->email }}">{{ $r->email }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="phone" class="h-4 w-4 text-brass-600/70"/>
+                                        Phone
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right">{{ $r->mobile }}</span>
+                                </div>
+                                <div class="flex items-center justify-between border-b border-ink-900/5 pb-2">
+                                    <span class="flex items-center gap-2 text-ink-500 font-medium">
+                                        <x-icon name="map-pin" class="h-4 w-4 text-brass-600/70"/>
+                                        Address
+                                    </span>
+                                    <span class="font-semibold text-ink-900 text-right truncate max-w-[200px]" title="{{ $r->present_address }}">{{ $r->present_address }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Event Information --}}
+                    <div class="card p-6 md:p-8">
+                        <h2 class="flex items-center gap-2.5 heading-display text-lg text-ink-950 pb-4 border-b border-ink-900/6">
+                            <x-icon name="calendar" class="h-5 w-5 text-brass-600"/>
+                            Event Information
+                        </h2>
+
+                        <div class="mt-6 grid gap-6 sm:grid-cols-3">
+                            <div class="flex items-start gap-4">
+                                <span class="grid h-12 w-12 flex-none place-items-center rounded-xl bg-ink-950 text-brass-500">
+                                    <x-icon name="calendar" class="h-5 w-5"/>
+                                </span>
+                                <div>
+                                    <p class="text-xs text-ink-500 font-medium">Event Name</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900">Math Nexus 2026</p>
+                                    <p class="text-[0.7rem] text-ink-400">Reunion & Cultural Fest</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <span class="grid h-12 w-12 flex-none place-items-center rounded-xl bg-ink-950 text-brass-500">
+                                    <x-icon name="clock" class="h-5 w-5"/>
+                                </span>
+                                <div>
+                                    <p class="text-xs text-ink-500 font-medium">Event Date</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900">Saturday</p>
+                                    <p class="text-[0.7rem] text-ink-400">19 December 2026</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-4">
+                                <span class="grid h-12 w-12 flex-none place-items-center rounded-xl bg-ink-950 text-brass-500">
+                                    <x-icon name="map-pin" class="h-5 w-5"/>
+                                </span>
+                                <div>
+                                    <p class="text-xs text-ink-500 font-medium">Venue</p>
+                                    <p class="mt-1 text-sm font-bold text-ink-900">Rajshahi College Campus</p>
+                                    <p class="text-[0.7rem] text-ink-400">Rajshahi, Bangladesh</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Footer Banner --}}
+                    <div class="flex items-center gap-3.5 rounded-2xl bg-amber-50 border border-amber-500/25 p-4 text-amber-800 text-sm font-medium">
+                        <x-icon name="lock" class="h-5 w-5 text-amber-600 flex-none"/>
+                        <span>This is your profile overview. Click on &ldquo;Edit Profile&rdquo; button to update your information.</span>
+                    </div>
+                </div>
+
+                {{-- Edit profile Form --}}
+                <form x-show="editing" method="POST" action="{{ route('member.profile.update') }}"
+                      enctype="multipart/form-data" class="card p-6 md:p-8" x-cloak>
                     @csrf @method('PATCH')
 
                     <h2 class="heading-display text-xl text-ink-950">Your details</h2>
@@ -159,38 +356,38 @@
                         </div>
                     </fieldset>
 
-                    <div class="mt-7">
-                        <template x-if="!editing">
-                            <button type="button" @click="editing = true" class="btn btn-primary">Edit details</button>
-                        </template>
-                        <template x-if="editing">
-                            <div class="flex items-center gap-3">
-                                <button type="submit" class="btn btn-primary">Save changes</button>
-                                <button type="button" @click="editing = false" class="btn btn-outline">Cancel</button>
-                            </div>
-                        </template>
+                    <div class="mt-7 flex items-center gap-3">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="button" @click="editing = false" class="btn btn-outline">Cancel</button>
+                    </div>
                 </form>
             </div>
 
-            {{-- What only the committee can change --}}
+            {{-- Payment Details --}}
             <aside class="space-y-4 lg:sticky lg:top-28">
                 <div class="card overflow-hidden">
                     <h2 class="border-b border-ink-900/8 bg-parchment-dim px-5 py-3 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-ink-500">
-                        Fixed by the committee
+                        Payment Status
                     </h2>
                     <dl class="divide-y divide-ink-900/6 text-sm">
+                        @php
+                            $isVerified = $r->payment_status === 'verified';
+                            $due = $isVerified ? 0 : $r->amount_due;
+                            $paid = $isVerified ? $r->amount_paid : 0;
+                        @endphp
                         @foreach ([
-                            'Category' => $r->category_label,
-                            'Session' => $r->session,
-                            'Masters session' => $r->masters_session ?: '—',
-                            'Degree' => $r->degree_label,
-                            'Guests' => $r->guest_total,
-                            'Amount due' => 'BDT '.number_format($r->amount_due),
-                            'Amount paid' => 'BDT '.number_format($r->amount_paid),
+                            'Status' => $isVerified ? 'Paid (পরিশোধিত)' : 'Pending (অপেক্ষমান)',
+                            'Amount due' => 'BDT '.number_format($due),
+                            'Amount paid' => 'BDT '.number_format($paid),
                         ] as $k => $v)
                             <div class="flex justify-between gap-3 px-5 py-2.5">
                                 <dt class="text-ink-500">{{ $k }}</dt>
-                                <dd class="text-right font-medium text-ink-900">{{ $v }}</dd>
+                                <dd @class([
+                                    'text-right font-medium',
+                                    'text-emerald-700 font-bold' => $k === 'Status' && $isVerified,
+                                    'text-amber-700 font-bold' => $k === 'Status' && ! $isVerified,
+                                    'text-ink-900' => $k !== 'Status',
+                                ])>{{ $v }}</dd>
                             </div>
                         @endforeach
                     </dl>
@@ -279,4 +476,5 @@
             </aside>
         </div>
     </section>
+    </div>
 </x-layout>

@@ -752,7 +752,8 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                 {{-- The association's bKash is a Merchant account, so the
                                      customer journey is "Payment" — "Send Money" is for
                                      personal numbers and will not reach it correctly. --}}
-                                <p class="field-hint">
+                                    @include('partials.bangla-qr-instructions')        
+                                     <p class="field-hint">
                                     This is a bKash <strong>Merchant</strong> account &mdash; choose
                                     <strong>&ldquo;Payment&rdquo;</strong> in your bKash app, not
                                     &ldquo;Send Money&rdquo;.
