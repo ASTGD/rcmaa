@@ -50,7 +50,7 @@
                 </div>
 
                 {{-- Content Body: 2-Column Grid --}}
-                <div class="p-8 md:p-10">
+                <div class="p-5 sm:p-8 md:p-10">
                     <div class="grid gap-8 md:grid-cols-2">
                         
                         {{-- Left Column: Countdown & Registration Counts --}}
@@ -76,20 +76,20 @@
                                         update();
                                         setInterval(update, 1000);
                                     }
-                                }" class="flex gap-2 items-center">
-                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2.5 text-center min-w-[64px] border border-ink-900/5">
+                                }" class="flex flex-wrap gap-2 items-center">
+                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2 md:p-2.5 text-center min-w-[56px] md:min-w-[64px] border border-ink-900/5">
                                         <span class="block text-xl font-bold font-mono" x-text="days">0</span>
                                         <span class="text-[0.55rem] uppercase tracking-wider text-ink-500">Days</span>
                                     </div>
-                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2.5 text-center min-w-[64px] border border-ink-900/5">
+                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2 md:p-2.5 text-center min-w-[56px] md:min-w-[64px] border border-ink-900/5">
                                         <span class="block text-xl font-bold font-mono" x-text="hours">0</span>
                                         <span class="text-[0.55rem] uppercase tracking-wider text-ink-500">Hours</span>
                                     </div>
-                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2.5 text-center min-w-[64px] border border-ink-900/5">
+                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2 md:p-2.5 text-center min-w-[56px] md:min-w-[64px] border border-ink-900/5">
                                         <span class="block text-xl font-bold font-mono" x-text="minutes">0</span>
                                         <span class="text-[0.55rem] uppercase tracking-wider text-ink-500">Mins</span>
                                     </div>
-                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2.5 text-center min-w-[64px] border border-ink-900/5">
+                                    <div class="bg-parchment-dim text-ink-900 rounded-xl p-2 md:p-2.5 text-center min-w-[56px] md:min-w-[64px] border border-ink-900/5">
                                         <span class="block text-xl font-bold font-mono" x-text="seconds">0</span>
                                         <span class="text-[0.55rem] uppercase tracking-wider text-ink-500">Secs</span>
                                     </div>

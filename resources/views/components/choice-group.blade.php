@@ -31,7 +31,7 @@
                 <input type="{{ $type }}" name="{{ $name }}" value="{{ $value }}"
                        x-model="{{ $model }}" @checked(old($name) == $value)>
                 <span class="choice-box" aria-hidden="true"></span>
-                <span class="min-w-0 truncate">{{ $text }}</span>
+                <span class="min-w-0 leading-tight">{{ $text }}</span>
             </label>
         @endforeach
     </div>

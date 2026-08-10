@@ -69,7 +69,7 @@
                             </p>
 
                             @if ($bank)
-                                <dl class="mt-3 space-y-2 text-[0.85rem]">
+                                <dl class="mt-3 space-y-2">
                                     @foreach ([
                                         'account_name' => 'Account name',
                                         'account_number' => 'Account number',
@@ -79,9 +79,9 @@
                                         'swift_code' => 'Swift code',
                                     ] as $field => $label)
                                         @if ($bank[$field] ?? null)
-                                            <div class="flex justify-between gap-4">
-                                                <dt class="text-ink-500">{{ $label }}</dt>
-                                                <dd class="font-mono font-semibold text-ink-900">{{ $bank[$field] }}</dd>
+                                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-1 sm:gap-4 border-b border-ink-900/5 pb-2 last:border-0 last:pb-0">
+                                                <dt class="text-xs text-ink-500 font-medium sm:text-[0.85rem]">{{ $label }}</dt>
+                                                <dd class="font-semibold text-ink-950 text-sm sm:text-[0.85rem] text-left sm:text-right break-words">{{ $bank[$field] }}</dd>
                                             </div>
                                         @endif
                                     @endforeach
