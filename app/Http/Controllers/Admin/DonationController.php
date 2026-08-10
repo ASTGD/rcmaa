@@ -7,6 +7,7 @@ use App\Models\Donation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class DonationController extends Controller
 {
@@ -34,7 +35,7 @@ class DonationController extends Controller
     public function destroy(Donation $donation): RedirectResponse
     {
         if ($donation->receipt_path) {
-            \Illuminate\Support\Facades\Storage::disk('public')->delete($donation->receipt_path);
+            Storage::disk('public')->delete($donation->receipt_path);
         }
         $donation->delete();
 

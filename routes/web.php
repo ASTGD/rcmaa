@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CommitteeController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DirectoryController;
+use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\GalleryController;
@@ -50,7 +51,7 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('contact.store');
 
-Route::post('/donation', [\App\Http\Controllers\DonationController::class, 'store'])
+Route::post('/donation', [DonationController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('donation.store');
 
