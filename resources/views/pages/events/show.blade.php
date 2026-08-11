@@ -19,10 +19,17 @@
 
         @if ($event->registration_open)
             <div class="mt-8" data-reveal data-reveal-delay="0.35">
-                <a href="{{ route('register.create') }}" class="btn btn-primary">
-                    Register for this Event
-                    <x-icon name="arrow-right" class="h-4 w-4"/>
-                </a>
+                @auth('alumni')
+                    <a href="{{ route('member.dashboard') }}" class="btn btn-primary">
+                        My Account / Dashboard
+                        <x-icon name="arrow-right" class="h-4 w-4"/>
+                    </a>
+                @else
+                    <a href="{{ route('register.create') }}" class="btn btn-primary">
+                        Register for this Event
+                        <x-icon name="arrow-right" class="h-4 w-4"/>
+                    </a>
+                @endauth
             </div>
         @endif
     </x-page-hero>

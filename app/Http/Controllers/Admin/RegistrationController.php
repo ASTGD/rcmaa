@@ -70,9 +70,15 @@ class RegistrationController extends Controller
             'full_name_en' => ['required', 'string', 'max:120'],
             'full_name_bn' => ['nullable', 'string', 'max:120'],
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
-            'mobile' => ['required', 'string', 'max:32'],
+            'mobile' => [
+                'required', 'string', 'max:32',
+                Rule::unique('registrations', 'mobile')->ignore($registration->id),
+            ],
             'whatsapp' => ['nullable', 'string', 'max:32'],
-            'email' => ['required', 'email:rfc', 'max:190'],
+            'email' => [
+                'required', 'email:rfc', 'max:190',
+                Rule::unique('registrations', 'email')->ignore($registration->id),
+            ],
             'present_address' => ['required', 'string', 'max:500'],
             'permanent_address' => ['nullable', 'string', 'max:500'],
             // Canonical list, or whatever this record already holds — a legacy

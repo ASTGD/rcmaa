@@ -35,10 +35,17 @@
                 </p>
 
                 <div class="mt-9 flex flex-wrap items-center gap-4" data-reveal data-reveal-delay="0.25">
-                    <a href="{{ route('register.create') }}" class="btn btn-primary">
-                        Register Now
-                        <x-icon name="arrow-right" class="h-4 w-4"/>
-                    </a>
+                    @auth('alumni')
+                        <a href="{{ route('member.dashboard') }}" class="btn btn-primary">
+                            My Account
+                            <x-icon name="arrow-right" class="h-4 w-4"/>
+                        </a>
+                    @else
+                        <a href="{{ route('register.create') }}" class="btn btn-primary">
+                            Register Now
+                            <x-icon name="arrow-right" class="h-4 w-4"/>
+                        </a>
+                    @endauth
                     <a href="{{ route('help-center') }}" class="btn btn-outline-light">Need Help?</a>
                 </div>
 

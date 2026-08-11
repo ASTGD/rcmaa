@@ -74,10 +74,17 @@
         </p>
 
         <div class="mt-10 flex flex-wrap items-center gap-4" data-hero-fade>
-            <a href="{{ route('register.create') }}" class="btn btn-primary">
-                Join the Association
-                <x-icon name="arrow-right" class="h-4 w-4"/>
-            </a>
+            @auth('alumni')
+                <a href="{{ route('member.dashboard') }}" class="btn btn-primary">
+                    My Account
+                    <x-icon name="arrow-right" class="h-4 w-4"/>
+                </a>
+            @else
+                <a href="{{ route('register.create') }}" class="btn btn-primary">
+                    Join the Association
+                    <x-icon name="arrow-right" class="h-4 w-4"/>
+                </a>
+            @endauth
             <a href="{{ route('directory') }}" class="btn btn-outline-light">View Directory</a>
         </div>
 

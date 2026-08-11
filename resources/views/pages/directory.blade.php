@@ -274,7 +274,11 @@
                     title="No alumni match this search"
                     message="The directory is built from verified reunion registrations. If you have registered and cannot find yourself, your payment may still be awaiting verification.">
                     <div class="mt-6 flex flex-wrap justify-center gap-3">
-                        <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm">Join the Directory</a>
+                        @auth('alumni')
+                            <a href="{{ route('member.dashboard') }}" class="btn btn-primary btn-sm">My Account</a>
+                        @else
+                            <a href="{{ route('register.create') }}" class="btn btn-primary btn-sm">Join the Directory</a>
+                        @endauth
                         <a href="{{ route('registration.status') }}" class="btn btn-outline btn-sm">Check Your Status</a>
                     </div>
                 </x-empty-state>

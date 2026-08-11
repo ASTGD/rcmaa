@@ -195,10 +195,10 @@
             </div>
 
             <div class="mt-6 flex flex-col gap-3">
-                <a href="{{ route('register.create') }}" class="btn btn-primary w-full">Register for the Reunion</a>
                 @auth('alumni')
-                    <a href="{{ route('member.dashboard') }}" class="btn btn-outline w-full">My account</a>
+                    <a href="{{ route('member.dashboard') }}" class="btn btn-primary w-full">My account</a>
                 @else
+                    <a href="{{ route('register.create') }}" class="btn btn-primary w-full">Register for the Reunion</a>
                     <a href="{{ route('member.login') }}" class="btn btn-outline w-full">Member login</a>
                 @endauth
             </div>

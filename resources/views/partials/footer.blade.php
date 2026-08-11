@@ -17,7 +17,11 @@
                 </p>
             </div>
             <div class="flex flex-wrap gap-3 lg:justify-end" data-reveal data-reveal-delay="0.15">
-                <a href="{{ route('register.create') }}" class="btn btn-primary">Register for the Reunion</a>
+                @auth('alumni')
+                    <a href="{{ route('member.dashboard') }}" class="btn btn-primary">My Account / Dashboard</a>
+                @else
+                    <a href="{{ route('register.create') }}" class="btn btn-primary">Register for the Reunion</a>
+                @endauth
                 <a href="{{ route('contact') }}" class="btn btn-outline-light">Contact Us</a>
             </div>
         </div>

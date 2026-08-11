@@ -1,4 +1,4 @@
-@if (config('rcmaa.registration.open'))
+@if (config('rcmaa.registration.open') && ! auth('alumni')->check())
     {{-- Appears once the hero is behind you; dismissible for the session. --}}
     <div x-data="{ shown: false, dismissed: false }"
          x-init="window.addEventListener('scroll', () => shown = window.scrollY > 900, { passive: true })"

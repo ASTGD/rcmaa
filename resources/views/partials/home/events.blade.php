@@ -153,10 +153,17 @@
 
                             {{-- Registration link --}}
                             <div class="pt-6 border-t border-ink-900/5">
-                                <a href="{{ route('register.create') }}" class="btn btn-primary btn-lg w-full text-center flex items-center justify-center gap-2">
-                                    <x-icon name="user-plus" class="h-5 w-5" />
-                                    Register for Reunion
-                                </a>
+                                @auth('alumni')
+                                    <a href="{{ route('member.dashboard') }}" class="btn btn-outline btn-lg w-full text-center flex items-center justify-center gap-2">
+                                        <x-icon name="user" class="h-5 w-5" />
+                                        Go to Dashboard
+                                    </a>
+                                @else
+                                    <a href="{{ route('register.create') }}" class="btn btn-primary btn-lg w-full text-center flex items-center justify-center gap-2">
+                                        <x-icon name="user-plus" class="h-5 w-5" />
+                                        Register for Reunion
+                                    </a>
+                                @endauth
                             </div>
                         </div>
 

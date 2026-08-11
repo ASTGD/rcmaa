@@ -30,7 +30,7 @@ class RegistrationRequest extends FormRequest
             'full_name_en' => ['required', 'string', 'max:120'],
             'full_name_bn' => ['nullable', 'string', 'max:120'],
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
-            'mobile' => ['required', 'string', 'max:32', 'regex:/^(\+?88)?01[3-9]\d{8}$/'],
+            'mobile' => ['required', 'string', 'max:32', 'regex:/^(\+?88)?01[3-9]\d{8}$/', Rule::unique('registrations', 'mobile')],
             'whatsapp' => ['nullable', 'string', 'max:32', 'regex:/^(\+?\d{1,3})?[\d\s-]{6,18}$/'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
@@ -138,6 +138,7 @@ class RegistrationRequest extends FormRequest
     {
         return [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
+            'mobile.unique' => 'A registration already exists with this mobile number. Sign in to your member account instead, or use "Forgot password" if you cannot remember it.',
             'present_district.required' => 'Please choose your district.',
             'present_upazila.required' => 'Please choose your upazila or thana.',
             'memories.max' => 'Please keep your memory within 180 characters.',

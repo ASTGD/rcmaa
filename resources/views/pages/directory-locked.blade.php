@@ -45,7 +45,9 @@
 
                     <div class="mt-8 flex flex-wrap justify-center gap-3">
                         <a href="{{ route('member.login') }}" class="btn btn-primary">Sign in to view</a>
-                        <a href="{{ route('register.create') }}" class="btn btn-outline">Register for the Reunion</a>
+                        @unless (auth('alumni')->check())
+                            <a href="{{ route('register.create') }}" class="btn btn-outline">Register for the Reunion</a>
+                        @endunless
                     </div>
 
                     <p class="mt-6 text-xs text-ink-400">

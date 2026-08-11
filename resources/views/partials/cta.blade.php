@@ -19,7 +19,11 @@
                 </p>
 
                 <div class="mt-9 flex flex-wrap justify-center gap-3" data-reveal data-reveal-delay="0.25">
-                    <a href="{{ route('register.create') }}" class="btn btn-primary">Register Now</a>
+                    @auth('alumni')
+                        <a href="{{ route('member.dashboard') }}" class="btn btn-primary">My Account</a>
+                    @else
+                        <a href="{{ route('register.create') }}" class="btn btn-primary">Register Now</a>
+                    @endauth
                     <a href="{{ route('help-center') }}" class="btn btn-outline-light">Need Help?</a>
                 </div>
             </div>
