@@ -91,7 +91,7 @@
                         @endforeach
                     </ol>
 
-                    <div class="mt-8 grid grid-cols-2 gap-4" data-reveal>
+                    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2" data-reveal>
                         @foreach ([
                             [config('rcmaa.department.teachers'), 'Teaching posts'],
                             [config('rcmaa.department.students'), 'Students'],
