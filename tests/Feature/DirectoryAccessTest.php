@@ -26,7 +26,7 @@ class DirectoryAccessTest extends TestCase
             'full_name_en' => 'Listed Alumnus', 'mobile' => '01712345678',
             'email' => 'listed@example.test', 'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba',
             'session' => '2008-09', 'degree' => 'bsc', 'passing_year' => 2012,
-            'employment_status' => 'employed', 'profession' => 'Education',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi', 'profession' => 'Education',
             'tshirt_size' => 'L', 'cultural_program' => false,
             'guest_count' => '0', 'guests' => [], 'payment_method' => 'bkash',
             'transaction_id' => 'DIRTEST0001', 'sender_number' => '01712345678',

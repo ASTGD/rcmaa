@@ -139,7 +139,7 @@ class PaymentConfigTest extends TestCase
             'password' => 'reunion2026', 'password_confirmation' => 'reunion2026',
             'present_address' => 'Rajshahi', 'present_district' => 'Rajshahi', 'present_upazila' => 'Paba', 'session' => '2008-09',
             'degree' => 'bsc', 'passing_year' => 2012,
-            'employment_status' => 'employed', 'profession' => 'Education',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi', 'profession' => 'Education',
             'organization' => 'Rajshahi College', 'tshirt_size' => 'L',
             'cultural_program' => '0', 'guest_count' => '0',
             'photo' => UploadedFile::fake()->image('portrait.jpg', 400, 500),

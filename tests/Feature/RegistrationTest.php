@@ -39,7 +39,7 @@ class RegistrationTest extends TestCase
             'class_roll' => '4412',
             'registration_no' => '990122',
             'passing_year' => 2012,
-            'employment_status' => 'employed',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi',
             'profession' => 'Education',
             'designation' => 'Assistant Professor',
             'organization' => 'Rajshahi College',
