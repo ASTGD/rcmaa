@@ -45,7 +45,7 @@ class AlumniPortalTest extends TestCase
             'degree' => 'both',
             'masters_session' => '2012-13',
             'passing_year' => 2012,
-            'employment_status' => 'employed',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi',
             'profession' => 'Education',
             'organization' => 'Rajshahi College',
             'tshirt_size' => 'XL',
@@ -143,7 +143,7 @@ class AlumniPortalTest extends TestCase
             'mobile' => '01799999999',
             'present_address' => 'New address, Rajshahi',
             'tshirt_size' => 'M',
-            'employment_status' => 'employed',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi',
             'listed_in_directory' => '1',
         ])->assertRedirect()->assertSessionHasNoErrors();
 

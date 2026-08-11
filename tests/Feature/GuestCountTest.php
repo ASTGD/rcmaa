@@ -36,7 +36,7 @@ class GuestCountTest extends TestCase
             'degree' => 'both',
             'masters_session' => '2012-13',
             'passing_year' => 2012,
-            'employment_status' => 'employed',
+            'employment_status' => 'employed', 'work_location' => 'Rajshahi',
             'profession' => 'Education',
             'organization' => 'Rajshahi College',
             'tshirt_size' => 'XL',

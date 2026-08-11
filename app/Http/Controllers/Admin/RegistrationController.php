@@ -129,7 +129,7 @@ class RegistrationController extends Controller
         } elseif (count($currentGuests) < $numGuests) {
             $data['guests'] = $currentGuests;
             for ($i = count($currentGuests); $i < $numGuests; $i++) {
-                $data['guests'][] = ['name' => 'Guest ' . ($i + 1), 'relation' => 'Spouse/Family', 'occupation' => ''];
+                $data['guests'][] = ['name' => 'Guest '.($i + 1), 'relation' => 'Spouse/Family', 'occupation' => ''];
             }
         } else {
             $data['guests'] = $currentGuests;
