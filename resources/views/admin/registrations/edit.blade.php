@@ -105,6 +105,7 @@
                         ['tshirt_size', 'T-shirt size', array_combine($opt['tshirt_sizes'], $opt['tshirt_sizes']), true],
                         ['employment_status', 'Employment', $opt['employment_statuses'], true],
                         ['payment_method', 'Payment method', collect($methods)->map(fn ($m) => $m['label'])->all(), true],
+                        ['guest_count', 'Accompanying Guests / Spouse · অতিথি সংখ্যা', $opt['guest_counts'], true],
                     ] as [$name, $label, $choices, $required])
                         <div>
                             <label for="s-{{ $name }}" class="field-label">

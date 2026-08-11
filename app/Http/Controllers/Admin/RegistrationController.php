@@ -106,7 +106,28 @@ class RegistrationController extends Controller
             ],
             'sender_number' => ['required', 'string', 'max:32'],
             'amount_paid' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'guest_count' => ['required', Rule::in(array_keys($options['guest_counts']))],
         ]);
+
+        // Adjust the guests array to match the updated guest_count
+        $guestCountVal = $data['guest_count'];
+        if (! RegistrationPricing::allowsGuests($data['category'])) {
+            $guestCountVal = '0';
+            $data['guest_count'] = '0';
+        }
+
+        $numGuests = $guestCountVal === '3+' ? 3 : (int) $guestCountVal;
+        $currentGuests = $registration->guests ?? [];
+        if (count($currentGuests) > $numGuests) {
+            $data['guests'] = array_slice($currentGuests, 0, $numGuests);
+        } elseif (count($currentGuests) < $numGuests) {
+            $data['guests'] = $currentGuests;
+            for ($i = count($currentGuests); $i < $numGuests; $i++) {
+                $data['guests'][] = ['name' => 'Guest ' . ($i + 1), 'relation' => 'Spouse/Family', 'occupation' => ''];
+            }
+        } else {
+            $data['guests'] = $currentGuests;
+        }
 
         $data['cultural_program'] = $request->boolean('cultural_program');
         $data['listed_in_directory'] = $request->boolean('listed_in_directory');
@@ -116,7 +137,7 @@ class RegistrationController extends Controller
         $data['guest_fee'] = RegistrationPricing::allowsGuests($data['category'])
             ? RegistrationPricing::guestFee()
             : 0;
-        $data['amount_due'] = RegistrationPricing::total($data['category'], $registration->guest_total);
+        $data['amount_due'] = RegistrationPricing::total($data['category'], count($data['guests']));
 
         $changed = collect($data)
             ->reject(fn ($v, $k) => $registration->{$k} == $v)

@@ -80,6 +80,7 @@ class AdminOperationsTest extends TestCase
             'sender_number' => $r->sender_number,
             'amount_paid' => $r->amount_paid,
             'listed_in_directory' => '1',
+            'guest_count' => $r->guest_count ?? '0',
         ], $overrides);
     }
 
