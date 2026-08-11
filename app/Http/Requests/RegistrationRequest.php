@@ -34,7 +34,11 @@ class RegistrationRequest extends FormRequest
             'whatsapp' => ['nullable', 'string', 'max:32', 'regex:/^(\+?\d{1,3})?[\d\s-]{6,18}$/'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
-            'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
+            'work_location' => [
+                'required_if:employment_status,employed,self_employed',
+                'nullable',
+                Rule::in(array_keys(config('bd-geo'))),
+            ],
             'teacher_type' => ['required_if:category,teacher', 'nullable', Rule::in(array_keys($options['teacher_types']))],
             // Deliberately not `dns` — it makes a submission depend on a live DNS
             // lookup and rejects otherwise-valid domains that publish no MX record.
@@ -141,6 +145,7 @@ class RegistrationRequest extends FormRequest
             'mobile.unique' => 'A registration already exists with this mobile number. Sign in to your member account instead, or use "Forgot password" if you cannot remember it.',
             'present_district.required' => 'Please choose your district.',
             'present_upazila.required' => 'Please choose your upazila or thana.',
+            'work_location.required_if' => 'Please select your work location district.',
             'memories.max' => 'Please keep your memory within 180 characters.',
             'photo.required' => 'Please upload a passport-size photograph — it is printed on your reunion identity card.',
             'email.unique' => 'A registration already exists for this email address. Sign in to your member account instead, or use "Forgot password" if you cannot remember it.',

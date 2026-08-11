@@ -353,7 +353,7 @@
 
                             <div class="min-w-0 sm:col-span-2" id="work-location-wrapper" style="display: {{ in_array(old('employment_status', $r->employment_status), ['employed', 'self_employed']) ? 'block' : 'none' }}">
                                 <label class="field-label" for="field-work-location">
-                                    Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span>
+                                    Work Location <span lang="bn" class="field-label-bn">&middot; কর্মস্থলের জেলা</span><span class="text-red-600" aria-hidden="true"> *</span>
                                 </label>
                                 <select id="field-work-location" name="work_location" class="input mt-2">
                                     <option value="">Select district</option>

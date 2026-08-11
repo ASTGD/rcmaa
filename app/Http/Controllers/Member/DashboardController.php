@@ -45,7 +45,11 @@ class DashboardController extends Controller
             'whatsapp' => ['nullable', 'string', 'max:32'],
             'linkedin_url' => ['nullable', 'url', 'max:255'],
             'profession_type' => ['nullable', Rule::in(array_keys($options['profession_types']))],
-            'work_location' => ['nullable', Rule::in(array_keys(config('bd-geo')))],
+            'work_location' => [
+                'required_if:employment_status,employed,self_employed',
+                'nullable',
+                Rule::in(array_keys(config('bd-geo'))),
+            ],
             'teacher_type' => [$member->category === 'teacher' ? 'required' : 'nullable', Rule::in(array_keys($options['teacher_types']))],
             'blood_group' => ['nullable', Rule::in($options['blood_groups'])],
             'present_address' => ['required', 'string', 'max:500'],
@@ -59,6 +63,7 @@ class DashboardController extends Controller
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:'.config('rcmaa.registration.photo_max_kb', 3072)],
         ], [
             'mobile.regex' => 'Enter a valid Bangladeshi mobile number, e.g. 01712345678.',
+            'work_location.required_if' => 'Please select your work location district.',
             'photo.image' => 'Your profile picture must be an image.',
             'photo.max' => 'Your profile picture is too large.',
         ]);

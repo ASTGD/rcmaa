@@ -365,7 +365,10 @@ export default (config = {}) => ({
                 ...(this.needsMastersSession ? ['masters_session'] : []),
                 ...(this.form.category === 'current_student' ? [] : ['passing_year']),
             ],
-            4: ['employment_status'],
+            4: [
+                'employment_status',
+                ...(['employed', 'self_employed'].includes(this.form.employment_status) ? ['profession', 'organization', 'work_location'] : [])
+            ],
             5: ['tshirt_size', 'cultural_program'],
             6: [],
             7: ['payment_method', 'transaction_id', 'sender_number', 'amount_paid', 'terms'],
