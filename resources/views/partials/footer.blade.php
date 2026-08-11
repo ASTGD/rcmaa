@@ -96,5 +96,11 @@
                 @endforeach
             </ul>
         </div>
+
+        {{-- Developer strip --}}
+        <div class="border-t border-white/5 py-5 text-center text-xs tracking-wide text-ink-400">
+            <span>Designed & Developed with excellence by </span>
+            <a href="https://astgd.com/" target="_blank" rel="noopener noreferrer" class="font-semibold text-brass-500 transition-colors duration-300 hover:text-parchment">ASTGD</a>
+        </div>
     </div>
 </footer>

@@ -112,7 +112,7 @@
                 <x-icon name="menu" class="h-4 w-4"/>
             </button>
 
-            <h1 class="heading-display flex-1 truncate text-xl text-ink-950">{{ $title }}</h1>
+            <h1 class="heading-display flex-1 truncate text-sm sm:text-lg md:text-xl text-ink-950">{{ $title }}</h1>
 
             {{ $actions ?? '' }}
         </header>

@@ -45,8 +45,8 @@ class PageController extends Controller
     public function howToApply(): View
     {
         return view('pages.how-to-apply', [
-            'title' => 'How to Apply',
-            'description' => 'Step-by-step guidance for joining RCMAA and registering for the Grand Reunion 2026.',
+            'title' => 'How to Register',
+            'description' => 'Join the RCMAA Alumni Network and register for the Grand Reunion in one seamless process — complete one simple form and make your payment via bKash or Bangla QR.',
         ]);
     }
 
