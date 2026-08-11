@@ -37,7 +37,7 @@
                 <ol class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4" data-reveal data-reveal-stagger="0.1">
                     @foreach ([
                             ['Fill the form', 'Six short steps covering your personal, academic and professional details, T-shirt size and any guests. Progress is saved in your browser.'],
-                            ['Send the payment', 'Pay the total amount shown in the final step to the associations bKash Merchant account or via Bangla QR. If paying through bKash, please use the Payment option in your app instead of Send Money'],
+                            ['Send the payment', 'Pay the total amount shown in the final step to the association’s bKash Merchant account, or by scanning the Bangla QR. If you pay through bKash, use the “Payment” option in your app rather than “Send Money” — it is a Merchant account, and money sent the other way will not reach it correctly.'],
                             ['Submit the transaction ID', 'Enter the TrxID from your confirmation SMS, the number you sent it from, and the exact amount.'],
                             ['Get verified', 'The committee checks the payment manually — usually one to two working days — and you receive a confirmation email.'],
                         ] as $i => [$heading, $body])
