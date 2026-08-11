@@ -130,6 +130,10 @@ class DashboardController extends Controller
     {
         $member = $this->member();
 
+        if ($member->payment_status !== Registration::STATUS_VERIFIED) {
+            abort(403, 'Your payment is not yet verified.');
+        }
+
         return $this->pdf('pdf.payment-slip', $member, "RCMAA-payment-{$member->reference}.pdf");
     }
 
@@ -137,6 +141,10 @@ class DashboardController extends Controller
     public function pass(): Response
     {
         $member = $this->member();
+
+        if ($member->payment_status !== Registration::STATUS_VERIFIED) {
+            abort(403, 'Your payment is not yet verified.');
+        }
 
         return $this->pdf('pdf.pass', $member, "RCMAA-pass-{$member->reference}.pdf");
     }

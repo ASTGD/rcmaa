@@ -37,8 +37,8 @@
     <h2>Charges</h2>
     <table class="data">
         <tr><td class="k">Registration fee</td><td class="v">BDT {{ number_format($r->category_fee) }}</td></tr>
-        @if ($r->guest_fee)
-            <tr><td class="k">Guests ({{ $r->guest_total }})</td><td class="v">BDT {{ number_format($r->guest_fee) }}</td></tr>
+        @if ($r->guest_total > 0)
+            <tr><td class="k">Guests ({{ $r->guest_total }})</td><td class="v">BDT {{ number_format($r->guest_fee * $r->guest_total) }}</td></tr>
         @endif
         <tr><td class="k">Total due</td><td class="v">BDT {{ number_format($r->amount_due) }}</td></tr>
     </table>

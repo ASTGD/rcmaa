@@ -258,16 +258,12 @@ class AlumniPortalTest extends TestCase
     }
 
     #[Test]
-    public function an_unverified_pass_says_so(): void
+    public function an_unverified_pass_is_blocked(): void
     {
         $r = $this->registration(['payment_status' => Registration::STATUS_PENDING]);
         $this->open($r);
 
-        $response = $this->get(route('member.pass'))->assertOk();
-
-        $this->assertStringContainsString(
-            'Payment not yet verified', $this->pdfText($response->getContent())
-        );
+        $this->get(route('member.pass'))->assertStatus(403);
     }
 
     #[Test]

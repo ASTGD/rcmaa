@@ -139,6 +139,12 @@ class RegistrationController extends Controller
             : 0;
         $data['amount_due'] = RegistrationPricing::total($data['category'], count($data['guests']));
 
+        if ($data['amount_due'] > $data['amount_paid']) {
+            $data['payment_status'] = Registration::STATUS_PENDING;
+            $data['verified_at'] = null;
+            $data['verified_by'] = null;
+        }
+
         $changed = collect($data)
             ->reject(fn ($v, $k) => $registration->{$k} == $v)
             ->keys()
@@ -165,16 +171,17 @@ class RegistrationController extends Controller
             'admin_note' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        // Only the status and the note. This form carries no directory checkbox,
-        // so writing listed_in_directory from $request->boolean() here set it
-        // false on every verification and emptied the public directory as the
-        // committee worked through the queue. The registrant owns that choice in
-        // their portal; an admin changes it on the edit screen.
-        $registration->update([
+        $updateData = [
             ...$data,
             'verified_at' => $data['payment_status'] === Registration::STATUS_VERIFIED ? now() : null,
             'verified_by' => $data['payment_status'] === Registration::STATUS_VERIFIED ? $request->user()->id : null,
-        ]);
+        ];
+
+        if ($data['payment_status'] === Registration::STATUS_VERIFIED && $registration->amount_paid < $registration->amount_due) {
+            $updateData['amount_paid'] = $registration->amount_due;
+        }
+
+        $registration->update($updateData);
 
         return back()->with('status', "Registration {$registration->reference} marked as {$data['payment_status']}.");
     }

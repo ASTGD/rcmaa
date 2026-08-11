@@ -7,6 +7,7 @@
         'rejected' => ['Could not be verified', 'bg-red-100 text-red-800', 'bg-red-500'],
     ];
     [$label, $chip, $dot] = $states[$r->payment_status] ?? $states['pending'];
+    $isVerified = $r->payment_status === 'verified';
 @endphp
 
 <x-layout :title="$title">
@@ -25,12 +26,21 @@
                 <a href="{{ route('member.slip.registration') }}" class="btn btn-outline-light">
                     <x-icon name="download" class="h-4 w-4"/>Registration slip
                 </a>
-                <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
-                    <x-icon name="download" class="h-4 w-4"/>Payment slip
-                </a>
-                <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
-                    <x-icon name="download" class="h-4 w-4"/>Entry pass
-                </a>
+                @if ($isVerified)
+                    <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
+                        <x-icon name="download" class="h-4 w-4"/>Payment slip
+                    </a>
+                    <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
+                        <x-icon name="download" class="h-4 w-4"/>Entry pass
+                    </a>
+                @else
+                    <button type="button" class="btn btn-outline-light opacity-50 cursor-not-allowed" disabled title="Available after verification">
+                        <x-icon name="download" class="h-4 w-4"/>Payment slip
+                    </button>
+                    <button type="button" class="btn btn-outline-light opacity-50 cursor-not-allowed" disabled title="Available after verification">
+                        <x-icon name="download" class="h-4 w-4"/>Entry pass
+                    </button>
+                @endif
                 <form method="POST" action="{{ route('member.logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-outline-light">Sign out</button>
@@ -48,8 +58,24 @@
                     <x-alert type="info" title="Note from the committee" class="mb-6">{{ $r->admin_note }}</x-alert>
                 @endif
 
-                {{-- Read-only Profile Overview --}}
-                <div x-show="!editing" class="space-y-6">
+                @if (! $isVerified)
+                    {{-- Awaiting Verification Lock Screen --}}
+                    <div class="card p-8 text-center space-y-6 max-w-2xl mx-auto">
+                        <div class="grid h-16 w-16 place-items-center rounded-full bg-amber-500/10 text-amber-600 mx-auto">
+                            <x-icon name="lock" class="h-8 w-8"/>
+                        </div>
+                        <h2 class="heading-display text-2xl text-ink-950">Awaiting Payment Verification</h2>
+                        <p class="text-ink-600 leading-relaxed text-sm">
+                            Thank you for registering! Your registration is currently pending payment verification. 
+                            To secure your seat and view your complete profile, event details, and entry pass, the committee must verify your payment.
+                        </p>
+                        <p class="text-xs text-ink-400">
+                            If you haven't uploaded your payment receipt yet, please use the upload form on the right.
+                        </p>
+                    </div>
+                @else
+                    {{-- Read-only Profile Overview --}}
+                    <div x-show="!editing" class="space-y-6">
                     {{-- Header Profile Card --}}
                     <div class="card p-6 md:p-8 flex flex-col sm:flex-row gap-6 justify-between items-center sm:items-start">
                         <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 flex-1 min-w-0">
@@ -361,37 +387,38 @@
                         <button type="button" @click="editing = false" class="btn btn-outline">Cancel</button>
                     </div>
                 </form>
+                @endif
             </div>
 
             {{-- Payment Details --}}
             <aside class="space-y-4 lg:sticky lg:top-28">
+                @if ($isVerified)
                 <div class="card overflow-hidden">
                     <h2 class="border-b border-ink-900/8 bg-parchment-dim px-5 py-3 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-ink-500">
                         Payment Status
                     </h2>
                     <dl class="divide-y divide-ink-900/6 text-sm">
                         @php
-                            $isVerified = $r->payment_status === 'verified';
-                            $due = $isVerified ? 0 : $r->amount_due;
-                            $paid = $isVerified ? $r->amount_paid : 0;
+                            $due = $r->amount_due;
+                            $paid = $r->amount_paid;
                         @endphp
                         @foreach ([
-                            'Status' => $isVerified ? 'Paid (পরিশোধিত)' : 'Pending (অপেক্ষমান)',
-                            'Amount due' => 'BDT '.number_format($due),
+                            'Status' => 'Paid (পরিশোধিত)',
+                            'Total fee' => 'BDT '.number_format($due),
                             'Amount paid' => 'BDT '.number_format($paid),
                         ] as $k => $v)
                             <div class="flex justify-between gap-3 px-5 py-2.5">
                                 <dt class="text-ink-500">{{ $k }}</dt>
                                 <dd @class([
                                     'text-right font-medium',
-                                    'text-emerald-700 font-bold' => $k === 'Status' && $isVerified,
-                                    'text-amber-700 font-bold' => $k === 'Status' && ! $isVerified,
+                                    'text-emerald-700 font-bold' => $k === 'Status',
                                     'text-ink-900' => $k !== 'Status',
                                 ])>{{ $v }}</dd>
                             </div>
                         @endforeach
                     </dl>
                 </div>
+                @endif
                 {{-- Receipt. Its own form, because it posts a file and nothing else. --}}
                 <div class="card overflow-hidden">
                     <h2 class="border-b border-ink-900/8 bg-parchment-dim px-5 py-3 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-ink-500">
