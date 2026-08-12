@@ -113,7 +113,11 @@
                     <ul class="mt-6 space-y-0">
                         @foreach ($heads as $i => [$name, $period])
                             <li @class(['border-t border-white/8', 'hidden' => $i >= 5])
-                                @if ($i >= 5) x-show="all" x-collapse.duration.400ms @endif>
+                                @if ($i >= 5)
+                                    x-show="all"
+                                    x-collapse.duration.400ms
+                                    :class="{ 'hidden': !all }"
+                                @endif>
                                 <div class="flex items-baseline justify-between gap-5 py-3">
                                     <span class="text-sm text-ink-200">{{ $name }}</span>
                                     <span class="flex-none font-mono text-[0.68rem] text-brass-400">{{ $period }}</span>
@@ -124,7 +128,7 @@
 
                     <button type="button" @click="all = !all"
                             class="mt-5 inline-flex items-center gap-2 text-[0.76rem] font-semibold uppercase tracking-[0.1em] text-brass-400 transition hover:text-parchment">
-                        <span x-text="all ? 'Show fewer' : 'Show all {{ $heads->count() }} since 1912'"></span>
+                        <span x-text="all ? 'Show fewer' : 'Show all {{ $heads->count() }} since 1883'"></span>
                         <x-icon name="chevron-down" class="h-3.5 w-3.5 transition-transform" ::class="all && 'rotate-180'"/>
                     </button>
 

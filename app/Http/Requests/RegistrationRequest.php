@@ -178,6 +178,7 @@ class RegistrationRequest extends FormRequest
                 ->filter(fn ($guest) => filled($guest['name'] ?? null))
                 ->values()
                 ->all(),
+            'amount_paid' => filled($this->input('amount_paid')) ? $this->input('amount_paid') : $this->expectedFee(),
         ]);
     }
 

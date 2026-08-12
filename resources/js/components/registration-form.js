@@ -371,7 +371,7 @@ export default (config = {}) => ({
             ],
             5: ['tshirt_size', 'cultural_program'],
             6: [],
-            7: ['payment_method', 'transaction_id', 'sender_number', 'amount_paid', 'terms'],
+            7: ['payment_method', 'transaction_id', 'sender_number', 'terms'],
         }[step] ?? [];
     },
 

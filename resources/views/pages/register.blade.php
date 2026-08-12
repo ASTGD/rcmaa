@@ -741,10 +741,61 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                                      class="mt-3 h-40 w-40 rounded-lg border border-ink-900/10 bg-white object-contain p-1.5">
                                                 <p class="mt-2 text-[0.78rem] leading-relaxed text-ink-500">
                                                     {{ $method['instruction'] }}
-                                                    <span lang="bn" class="font-bangla">&middot; যেকোনো ব্যাংক বা এমএফএস অ্যাপ দিয়ে স্ক্যান করুন</span>
+                                                    <span lang="bn" class="font-bangla">&middot; যেকোনো ব্যাংক বা এমএফএস অ্যাপ দিয়ে স্ক্যান করুন</span>
                                                 </p>
                                             @else
                                                 <p class="mt-2 font-mono text-[0.9rem] break-all text-ink-700">{{ $method['number'] }}</p>
+                                                @if ($key === 'bkash')
+                                                     <div class="mt-6 space-y-4 border-t border-ink-900/5 pt-5">
+                                                         <p class="font-semibold text-ink-800 text-[0.8rem] text-center">bKash Payment Flow (পেমেন্ট ফ্লো)</p>
+                                                         <div class="relative pl-7 border-l-2 border-brass-500/25 ml-4 space-y-5 py-1 max-w-sm mx-auto">
+                                                             <!-- Step 1 -->
+                                                             <div class="relative">
+                                                                 <div class="absolute -left-[39px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-brass-500 text-[10px] font-bold text-ink-950 shadow-sm ring-4 ring-white">1</div>
+                                                                 <div>
+                                                                     <p class="text-xs font-bold text-ink-900 leading-tight">Open App or dial *247#</p>
+                                                                     <p class="text-[10px] text-ink-500 mt-0.5">বিকাশ অ্যাপ ওপেন করুন অথবা *247# ডায়াল করুন</p>
+                                                                 </div>
+                                                             </div>
+                                                             
+                                                             <!-- Step 2 -->
+                                                             <div class="relative">
+                                                                 <div class="absolute -left-[39px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-brass-500 text-[10px] font-bold text-ink-950 shadow-sm ring-4 ring-white">2</div>
+                                                                 <div>
+                                                                     <p class="text-xs font-bold text-ink-900 leading-tight">Choose "Payment" (পেমেন্ট)</p>
+                                                                     <p class="text-[10px] text-ink-500 mt-0.5">মেনু থেকে পেমেন্ট অপশন সিলেক্ট করুন</p>
+                                                                 </div>
+                                                             </div>
+                                                             
+                                                             <!-- Step 3 -->
+                                                             <div class="relative">
+                                                                 <div class="absolute -left-[39px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-brass-500 text-[10px] font-bold text-ink-950 shadow-sm ring-4 ring-white">3</div>
+                                                                 <div>
+                                                                     <p class="text-xs font-bold text-ink-900 leading-tight">Enter Merchant No: <strong class="bg-brass-100 px-1.5 py-0.5 rounded font-mono text-[11px] text-brass-800 ml-1">{{ $method['number'] }}</strong></p>
+                                                                     <p class="text-[10px] text-ink-500 mt-0.5">মার্চেন্ট অ্যাকাউন্ট নাম্বারটি প্রবেশ করান</p>
+                                                                 </div>
+                                                             </div>
+                                                             
+                                                             <!-- Step 4 -->
+                                                             <div class="relative">
+                                                                 <div class="absolute -left-[39px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-brass-500 text-[10px] font-bold text-ink-950 shadow-sm ring-4 ring-white">4</div>
+                                                                 <div>
+                                                                     <p class="text-xs font-bold text-ink-900 leading-tight">Enter BDT Amount: <strong class="bg-brass-100 px-1.5 py-0.5 rounded font-mono text-[11px] text-brass-800 ml-1">&#2547;<span x-text="formattedFee"></span></strong></p>
+                                                                     <p class="text-[10px] text-ink-500 mt-0.5">রেজিস্ট্রেশন ফি এর সঠিক পরিমাণ লিখুন</p>
+                                                                 </div>
+                                                             </div>
+                                                             
+                                                             <!-- Step 5 -->
+                                                             <div class="relative">
+                                                                 <div class="absolute -left-[39px] top-0.5 grid h-5 w-5 place-items-center rounded-full bg-brass-500 text-[10px] font-bold text-ink-950 shadow-sm ring-4 ring-white">5</div>
+                                                                 <div>
+                                                                     <p class="text-xs font-bold text-ink-900 leading-tight">Enter PIN & Confirm</p>
+                                                                     <p class="text-[10px] text-ink-500 mt-0.5">আপনার পিন দিয়ে পেমেন্ট নিশ্চিত করুন</p>
+                                                                 </div>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 @endif
                                             @endif
                                         </div>
                                     @endforeach
@@ -855,48 +906,6 @@ From BDT {{ number_format($cheapest) }} &mdash; priced by category
                                          hint="Copy it exactly from the confirmation SMS."/>
                                 <x-field name="sender_number" label="Number / account you sent from" type="tel" required
                                          placeholder="017******28"/>
-                                <x-field name="amount_paid" label="Total Paid Amount (BDT)" type="number" required
-                                         class="sm:col-span-2"
-                                         placeholder="Enter the exact amount you sent"/>
-
-                                {{-- Receipt. Optional, because somebody who has already
-                                     deleted the SMS must still be able to register. --}}
-                                <div class="sm:col-span-2">
-                                    <label for="field-payment-receipt" class="field-label">
-                                        Payment receipt
-                                        <span lang="bn" class="field-label-bn"> &middot; পেমেন্টের রসিদ</span>
-                                    </label>
-
-                                    <label for="field-payment-receipt"
-                                           class="group mt-1.5 flex cursor-pointer items-center gap-4 rounded-2xl border-2 border-dashed border-ink-900/15 bg-white px-5 py-5 transition hover:border-brass-500 hover:bg-brass-100">
-                                        <input id="field-payment-receipt" type="file" name="payment_receipt"
-                                               accept="image/jpeg,image/png,image/webp,application/pdf"
-                                               class="sr-only" @change="handleReceipt($event)">
-                                        <span class="grid h-11 w-11 flex-none place-items-center rounded-xl bg-brass-100 text-brass-700 transition group-hover:bg-brass-500 group-hover:text-ink-950">
-                                            <x-icon name="upload" class="h-5 w-5"/>
-                                        </span>
-                                        <span class="min-w-0">
-                                            <span class="block text-sm font-semibold text-ink-800"
-                                                  x-text="receiptName || 'Attach your bKash confirmation'"></span>
-                                            <span class="block text-xs text-ink-400">
-                                                Screenshot of your bKash confirmation SMS &middot;
-                                                JPG, PNG, WebP or PDF &middot; maximum 4 MB
-                                            </span>
-                                        </span>
-                                    </label>
-
-                                    <div x-show="receiptPreview" x-cloak class="mt-3">
-                                        <img :src="receiptPreview" alt="Receipt preview"
-                                             class="max-h-56 rounded-xl border border-ink-900/10 object-contain">
-                                    </div>
-
-                                    <p class="field-error" x-show="errors.payment_receipt" x-text="errors.payment_receipt" x-cloak></p>
-                                    @error('payment_receipt')<p class="field-error">{{ $message }}</p>@enderror
-                                    <p class="field-hint">
-                                        Optional, but it lets the committee confirm your payment without
-                                        telephoning you if the transaction ID does not match.
-                                    </p>
-                                </div>
                             </div>
 
                             {{-- Confirmation --}}

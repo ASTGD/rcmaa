@@ -30,9 +30,9 @@
                     <a href="{{ route('member.slip.payment') }}" class="btn btn-outline-light">
                         <x-icon name="download" class="h-4 w-4"/>Payment slip
                     </a>
-                    <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
+                    <!-- <a href="{{ route('member.pass') }}" class="btn btn-outline-light">
                         <x-icon name="download" class="h-4 w-4"/>Entry pass
-                    </a>
+                    </a> -->
                 @else
                     <button type="button" class="btn btn-outline-light opacity-50 cursor-not-allowed" disabled title="Available after verification">
                         <x-icon name="download" class="h-4 w-4"/>Payment slip
