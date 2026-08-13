@@ -79,6 +79,17 @@
                         </a>
                     </li>
                 @endforeach
+                <li>
+                    <a href="{{ route('admin.database.index') }}"
+                       @class([
+                           'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm transition-colors',
+                           'bg-brass-500 font-semibold text-ink-950' => request()->routeIs('admin.database.*'),
+                           'text-ink-300 hover:bg-white/5 hover:text-parchment' => ! request()->routeIs('admin.database.*'),
+                       ])>
+                        <x-icon name="database" class="h-4 w-4 flex-none"/>
+                        Database
+                    </a>
+                </li>
             </ul>
         </nav>
 

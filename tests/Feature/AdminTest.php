@@ -405,4 +405,45 @@ class AdminTest extends TestCase
         $this->assertSame($original, $item->image_path);
         Storage::disk('public')->assertExists($original);
     }
+
+    #[Test]
+    public function guests_cannot_access_database_backup(): void
+    {
+        $this->get(route('admin.database.index'))->assertRedirect(route('login'));
+        $this->post(route('admin.database.backup'))->assertRedirect(route('login'));
+    }
+
+    #[Test]
+    public function admins_can_access_database_backup_page(): void
+    {
+        $admin = $this->admin();
+        $this->actingAs($admin)->get(route('admin.database.index'))
+            ->assertOk()
+            ->assertSee('Database Backup');
+    }
+
+    #[Test]
+    public function admins_can_download_database_backup(): void
+    {
+        $admin = $this->admin();
+        $response = $this->actingAs($admin)->post(route('admin.database.backup'));
+
+        $response->assertOk();
+        $response->assertHeader('Content-Type', 'application/sql');
+        $this->assertStringStartsWith(
+            'attachment; filename=backup-' . now()->format('Y-m-d'),
+            $response->headers->get('Content-Disposition')
+        );
+        
+        $content = $response->streamedContent();
+        $this->assertStringContainsString('-- RCMAA Database Backup', $content);
+        
+        if (\Illuminate\Support\Facades\DB::getDriverName() === 'sqlite') {
+            $this->assertStringContainsString('PRAGMA foreign_keys = OFF;', $content);
+            $this->assertStringContainsString('PRAGMA foreign_keys = ON;', $content);
+        } else {
+            $this->assertStringContainsString('SET FOREIGN_KEY_CHECKS=0;', $content);
+            $this->assertStringContainsString('SET FOREIGN_KEY_CHECKS=1;', $content);
+        }
+    }
 }

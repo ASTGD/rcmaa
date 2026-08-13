@@ -13,8 +13,21 @@
        margins. */
     @page { margin: 15mm 14mm 13mm; }
 
+    @font-face {
+        font-family: 'Noto Sans Bengali';
+        src: url('{{ storage_path("fonts/NotoSansBengali-Regular.ttf") }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'Noto Sans Bengali';
+        src: url('{{ storage_path("fonts/NotoSansBengali-Bold.ttf") }}') format('truetype');
+        font-weight: bold;
+        font-style: normal;
+    }
+
     body {
-        font-family: DejaVu Sans, sans-serif;   /* the one bundled font with wide coverage */
+        font-family: 'Noto Sans Bengali', DejaVu Sans, sans-serif;   /* Noto Sans Bengali for Bangla support */
         font-size: 10.5px;
         line-height: 1.5;
         color: #1c2434;

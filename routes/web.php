@@ -179,6 +179,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::patch('/donations/{donation}', [Admin\DonationController::class, 'update'])->name('donations.update');
     Route::delete('/donations/{donation}', [Admin\DonationController::class, 'destroy'])->name('donations.destroy');
 
+    // Database Backup
+    Route::get('/database', [Admin\DatabaseController::class, 'index'])->name('database.index');
+    Route::post('/database/backup', [Admin\DatabaseController::class, 'backup'])->name('database.backup');
+
     // Content CMS — one generic controller drives every simple content model.
     Route::get('/content/{type}', [Admin\ContentController::class, 'index'])->name('content.index');
     Route::get('/content/{type}/create', [Admin\ContentController::class, 'create'])->name('content.create');
