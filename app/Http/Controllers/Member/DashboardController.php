@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Registration;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Mpdf\Mpdf;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -156,32 +156,40 @@ class DashboardController extends Controller
 
     private function pdf(string $view, Registration $member, string $filename): Response
     {
-        $pdf = Pdf::loadView($view, [
+        $html = view($view, [
             'r' => $member,
-            // dompdf cannot fetch over the network, so anything shown in the PDF
-            // has to be handed to it as a local path or a data URI.
-            'logo' => $this->dataUri(public_path('media/logo.png')),
-            'photo' => $member->photo_path ? $this->dataUri(Storage::disk('public')->path($member->photo_path)) : null,
-        ])->setPaper('a4');
+            'logo' => public_path('media/logo.png'),
+            'photo' => $member->photo_path ? Storage::disk('public')->path($member->photo_path) : null,
+        ])->render();
 
-        return $pdf->download($filename);
-    }
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'margin_left' => 14,
+            'margin_right' => 14,
+            'margin_top' => 15,
+            'margin_bottom' => 13,
+            'fontDir' => array_merge((new \Mpdf\Config\ConfigVariables())->getDefaults()['fontDir'], [
+                storage_path('fonts')
+            ]),
+            'fontdata' => (new \Mpdf\Config\FontVariables())->getDefaults()['fontdata'] + [
+                'notosansbengali' => [
+                    'R' => 'SolaimanLipi.ttf',
+                    'B' => 'SolaimanLipi.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 75,
+                ]
+            ],
+            'default_font' => 'notosansbengali'
+        ]);
 
-    /** dompdf renders images from data URIs reliably; from URLs it does not. */
-    private function dataUri(string $path): ?string
-    {
-        if (! is_file($path)) {
-            return null;
-        }
+        $mpdf->WriteHTML($html);
+        $pdfContent = $mpdf->Output('', \Mpdf\Output\Destination::STRING_RETURN);
 
-        $mime = match (strtolower(pathinfo($path, PATHINFO_EXTENSION))) {
-            'png' => 'image/png',
-            'jpg', 'jpeg' => 'image/jpeg',
-            'gif' => 'image/gif',
-            default => null,
-        };
-
-        return $mime ? 'data:'.$mime.';base64,'.base64_encode(file_get_contents($path)) : null;
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
     }
 
     private function member(): Registration
