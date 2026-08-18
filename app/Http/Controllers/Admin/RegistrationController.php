@@ -87,7 +87,10 @@ class RegistrationController extends Controller
                 array_keys(config('rcmaa.options.sessions')),
                 array_filter([$registration->session])
             ))],
-            'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_keys(config('rcmaa.options.sessions')))],
+            'masters_session' => ['required_if:degree,both', 'nullable', Rule::in(array_merge(
+                array_keys(config('rcmaa.options.sessions')),
+                array_filter([$registration->masters_session])
+            ))],
             'degree' => ['required_unless:category,teacher', 'nullable', Rule::in(array_keys($options['degrees']))],
             'class_roll' => ['nullable', 'string', 'max:64'],
             'registration_no' => ['nullable', 'string', 'max:64'],

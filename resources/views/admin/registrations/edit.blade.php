@@ -11,6 +11,11 @@
     if ($registration->session && ! isset($sessionChoices[$registration->session])) {
         $sessionChoices = [$registration->session => $registration->session.' (as recorded)'] + $sessionChoices;
     }
+
+    $mastersSessionChoices = $opt['sessions'];
+    if ($registration->masters_session && ! isset($mastersSessionChoices[$registration->masters_session])) {
+        $mastersSessionChoices = [$registration->masters_session => $registration->masters_session.' (as recorded)'] + $mastersSessionChoices;
+    }
 @endphp
 
 <x-admin-layout :title="$title">
@@ -26,6 +31,7 @@
     </x-alert>
 
     <form method="POST" action="{{ route('admin.registrations.update-details', $registration) }}"
+          x-data="{ degree: '{{ $val('degree') }}' }"
           class="grid max-w-5xl gap-6 lg:grid-cols-[1fr_18rem] lg:items-start">
         @csrf
         @method('PUT')
@@ -109,9 +115,10 @@
                     ] as [$name, $label, $choices, $required])
                         <div>
                             <label for="s-{{ $name }}" class="field-label">
-                                {{ $label }}@if ($required)<span class="text-red-600">*</span>@endif
+                                <span @if ($name === 'session') x-text="{ bsc: 'Honours Session', msc: 'Masters Session', both: 'Honours Session', previous_masters: 'Previous Master\'s Session' }[degree] || 'Session'" @endif>{{ $label }}</span>@if ($required)<span class="text-red-600">*</span>@endif
                             </label>
-                            <select id="s-{{ $name }}" name="{{ $name }}" class="input">
+                            <select id="s-{{ $name }}" name="{{ $name }}" class="input"
+                                    @if ($name === 'degree') x-model="degree" @endif>
                                 @unless ($required)<option value="">—</option>@endunless
                                 @foreach ($choices as $k => $text)
                                     @php $v = is_int($k) ? $text : $k; @endphp
@@ -120,6 +127,22 @@
                             </select>
                             @error($name)<p class="field-error">{{ $message }}</p>@enderror
                         </div>
+
+                        @if ($name === 'degree')
+                            <div x-show="degree === 'both'" x-cloak>
+                                <label for="s-masters_session" class="field-label">
+                                    Masters Session<span class="text-red-600">*</span>
+                                </label>
+                                <select id="s-masters_session" name="masters_session" class="input">
+                                    <option value="">—</option>
+                                    @foreach ($mastersSessionChoices as $k => $text)
+                                        @php $v = is_int($k) ? $text : $k; @endphp
+                                        <option value="{{ $v }}" @selected($val('masters_session') === $v)>{{ $text }}</option>
+                                    @endforeach
+                                </select>
+                                @error('masters_session')<p class="field-error">{{ $message }}</p>@enderror
+                            </div>
+                        @endif
                     @endforeach
 
                     <div>
