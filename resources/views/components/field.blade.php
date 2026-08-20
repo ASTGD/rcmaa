@@ -76,7 +76,7 @@
                 @if ($serverError) aria-invalid="true" @endif {!! $binding !!}>
             <option value="">{{ $placeholder ?? 'Select…' }}</option>
             @foreach ($options as $value => $text)
-                @php $optionValue = is_int($value) ? $text : $value; @endphp
+                @php $optionValue = (is_int($value) && array_is_list($options)) ? $text : $value; @endphp
                 <option value="{{ $optionValue }}" @selected((string) $current === (string) $optionValue)>{{ $text }}</option>
             @endforeach
         </select>

@@ -121,7 +121,7 @@
                                     @if ($name === 'degree') x-model="degree" @endif>
                                 @unless ($required)<option value="">—</option>@endunless
                                 @foreach ($choices as $k => $text)
-                                    @php $v = is_int($k) ? $text : $k; @endphp
+                                    @php $v = (is_int($k) && array_is_list($choices)) ? $text : $k; @endphp
                                     <option value="{{ $v }}" @selected($val($name) === $v)>{{ $text }}</option>
                                 @endforeach
                             </select>

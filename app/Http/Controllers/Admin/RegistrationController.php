@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RegistrationVerified;
 use App\Models\Registration;
 use App\Support\RegistrationPricing;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -190,7 +193,20 @@ class RegistrationController extends Controller
             $updateData['amount_paid'] = $registration->amount_due;
         }
 
+        $wasVerified = $registration->payment_status === Registration::STATUS_VERIFIED;
+
         $registration->update($updateData);
+
+        if ($registration->payment_status === Registration::STATUS_VERIFIED && ! $wasVerified) {
+            try {
+                Mail::to($registration->email)->send(new RegistrationVerified($registration));
+            } catch (\Throwable $e) {
+                Log::warning('Registration verification email failed to send', [
+                    'reference' => $registration->reference,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         return back()->with('status', "Registration {$registration->reference} marked as {$data['payment_status']}.");
     }
